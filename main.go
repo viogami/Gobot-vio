@@ -56,9 +56,6 @@ func main() {
 		}
 	}()
 
-	// 等待服务器完全启动
-	waitForServer()
-
 	// 监听来自 Telegram 的 Webhook 更新
 	updates := bot.ListenForWebhook("/" + bot.Token)
 
@@ -80,16 +77,5 @@ func main() {
 		if err != nil {
 			log.Println("发送回复消息失败:", err)
 		}
-	}
-}
-
-// 等待服务器启动完成
-func waitForServer() {
-	for {
-		_, err := http.Get("https://0.0.0.0:443")
-		if err == nil {
-			break
-		}
-		log.Println("等待服务器启动...")
 	}
 }
