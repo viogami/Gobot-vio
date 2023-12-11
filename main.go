@@ -15,10 +15,6 @@ func main() {
 	if webhookURL == "" {
 		panic("TELEGRAM_WEBHOOK_URL is not set")
 	}
-	certPath := os.Getenv("TELEGRAM_CERT_PATH")
-	if certPath == "" {
-		panic("TELEGRAM_CERT_PATH is not set")
-	}
 
 	// 创建一个 Telegram Bot 实例
 	bot, err := tgbotapi.NewBotAPI(BOT_TOKEN)
@@ -32,8 +28,8 @@ func main() {
 	// 打印 Bot 用户名，表示授权成功
 	log.Printf("成功授权给： %s", bot.Self.UserName)
 
-	// 创建一个带证书的 Webhook，指定 Webhook 的 URL 和证书文件
-	wh, _ := tgbotapi.NewWebhookWithCert(webhookURL+bot.Token, tgbotapi.FilePath(certPath))
+	// 创建一个带证书的 Webhook
+	wh, _ := tgbotapi.NewWebhook(webhookURL + bot.Token)
 
 	// 使用 Bot 实例向 Telegram 设置 Webhook
 	_, err = bot.Request(wh)
