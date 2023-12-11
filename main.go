@@ -29,7 +29,7 @@ func main() {
 	log.Printf("成功授权给： %s", bot.Self.UserName)
 
 	// 创建一个 Webhook
-	wh, _ := tgbotapi.NewWebhook(webhookURL + bot.Token)
+	wh, _ := tgbotapi.NewWebhook(webhookURL)
 
 	// 使用 Bot 实例向 Telegram 设置 Webhook
 	_, err = bot.Request(wh)
