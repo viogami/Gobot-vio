@@ -12,8 +12,11 @@ import (
 var (
 	BOT_TOKEN      = os.Getenv("BOT_TOKEN")
 	TG_WEBHOOK_URL = os.Getenv("TG_WEBHOOK_URL")
-	chatGPTAPIURL  = "https://api.openai.com/v1/completions"
 	chatGPTAPIKey  = os.Getenv("chatGPTAPIKey")
+)
+
+const (
+	chatGPTAPIURL = "https://api.openai.com/v1/completions"
 )
 
 func main() {
@@ -43,9 +46,18 @@ func main() {
 	}
 
 	updates := bot.ListenForWebhook("/" + bot.Token)
-	go http.ListenAndServe(":8443", nil)
+	go http.ListenAndServe(":443", nil)
 
 	for update := range updates {
 		log.Printf("%+v\n", update)
+		if update.Message == nil {
+			// ignore any non-Message Updates
+			continue
+		}
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+		msg.ReplyToMessageID = update.Message.MessageID
+		if _, err := bot.Send(msg); err != nil {
+			log.Panic(err)
+		}
 	}
 }
