@@ -28,7 +28,7 @@ func main() {
 	// 打印 Bot 用户名，表示授权成功
 	log.Printf("成功授权给： %s", bot.Self.UserName)
 
-	// 创建一个带证书的 Webhook
+	// 创建一个 Webhook
 	wh, _ := tgbotapi.NewWebhook(webhookURL + bot.Token)
 
 	// 使用 Bot 实例向 Telegram 设置 Webhook
