@@ -30,7 +30,7 @@ func main() {
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	//创建webhook,指向你的URL
-	wh, _ := tgbotapi.NewWebhook(TG_WEBHOOK_URL + bot.Token)
+	wh, _ := tgbotapi.NewWebhook(TG_WEBHOOK_URL + ":" + port + "/" + bot.Token)
 
 	_, err = bot.Request(wh)
 	if err != nil {
@@ -53,7 +53,7 @@ func main() {
 	log.Println("Listenning on port", port, ".")
 	go http.ListenAndServe(":"+port, nil)
 
-	// 对监听到的updates遍历,并作出回应
+	// 对监听到的updates)遍历,并作出回应
 	for update := range updates {
 		log.Printf("%+v\n", update)
 		if update.Message == nil {

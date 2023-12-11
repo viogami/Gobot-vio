@@ -51,7 +51,7 @@ zeabur上项目部署非常快,甚至不用写dockfile,而且对go项目有完�
 
 但是注意一下项目的端口号设置,最好设置在环境变量中,然后在项目中通过`os.Getenv("xxx")`来获取端口号.
 
-zeabur的环境变量`PORT`是全局的.
+zeabur的go项目中，环境变量`PORT`是默认8080，且为全局的。也可以不设置，直接调用就好了。
 
 ### 证书问题
 zeabur部署项目自带证书,做完域名映射可以直接https访问.
@@ -59,6 +59,8 @@ zeabur部署项目自带证书,做完域名映射可以直接https访问.
 
 在部署tg的bot时,可以修改tgbot官方对go语言搭建bot示例中的:
 ``` go
+  ...
+
   log.Printf("Authorized on account %s", bot.Self.UserName)
 	wh, _ := tgbotapi.NewWebhook(TG_WEBHOOK_URL + bot.Token)
 
