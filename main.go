@@ -29,7 +29,7 @@ func main() {
 	log.Printf("成功授权给： %s", bot.Self.UserName)
 
 	// 创建一个 Webhook
-	wh, _ := tgbotapi.NewWebhook(webhookURL)
+	wh, _ := tgbotapi.NewWebhook(webhookURL + bot.Token)
 
 	// 使用 Bot 实例向 Telegram 设置 Webhook
 	_, err = bot.Request(wh)
@@ -52,7 +52,7 @@ func main() {
 	updates := bot.ListenForWebhook("/" + bot.Token)
 
 	// 启动 HTTPS 服务器，用于接收 Telegram 的 Webhook 更新
-	go http.ListenAndServeTLS("0.0.0.0", "cert.pem", "key.pem", nil)
+	go http.ListenAndServeTLS("0.0.0.0:8443", "cert.pem", "key.pem", nil)
 
 	// 循环处理来自 Telegram 的更新
 	for update := range updates {
