@@ -48,13 +48,19 @@ func main() {
 		log.Printf("Telegram callback 失败: %s", info.LastErrorMessage)
 	}
 
+	// 启动 HTTPS 服务器，用于接收 Telegram 的 Webhook 更新
+	go func() {
+		err := http.ListenAndServeTLS("0.0.0.0:8443", "cert.pem", "key.pem", nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// 等待服务器完全启动
+	waitForServer()
+
 	// 监听来自 Telegram 的 Webhook 更新
 	updates := bot.ListenForWebhook("/" + bot.Token)
-	log.Println(updates)
-
-	// 启动 HTTPS 服务器，用于接收 Telegram 的 Webhook 更新
-	go http.ListenAndServeTLS("0.0.0.0:8443", "cert.pem", "key.pem", nil)
-	log.Println("启动 HTTPS 服务器，用于接收 Telegram 的 Webhook 更新")
 
 	// 循环处理来自 Telegram 的更新
 	for update := range updates {
@@ -74,5 +80,16 @@ func main() {
 		if err != nil {
 			log.Println("发送回复消息失败:", err)
 		}
+	}
+}
+
+// 等待服务器启动完成
+func waitForServer() {
+	for {
+		_, err := http.Get("https://0.0.0.0:8443")
+		if err == nil {
+			break
+		}
+		log.Println("等待服务器启动...")
 	}
 }
