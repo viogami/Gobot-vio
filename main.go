@@ -12,8 +12,8 @@ func main() {
 	// 读取环境变量
 	BOT_TOKEN := os.Getenv("BOT_TOKEN")
 	webhookURL := os.Getenv("TELEGRAM_WEBHOOK_URL")
-	if webhookURL == "" {
-		panic("TELEGRAM_WEBHOOK_URL is not set")
+	if webhookURL == "" || BOT_TOKEN == "" {
+		log.Println("env var not set!")
 	}
 
 	// 创建一个 Telegram Bot 实例
