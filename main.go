@@ -13,6 +13,7 @@ var (
 	BOT_TOKEN      = os.Getenv("BOT_TOKEN")
 	TG_WEBHOOK_URL = os.Getenv("TG_WEBHOOK_URL")
 	chatGPTAPIKey  = os.Getenv("chatGPTAPIKey")
+	port           = os.Getenv("PORT")
 )
 
 const (
@@ -46,7 +47,8 @@ func main() {
 	}
 
 	updates := bot.ListenForWebhook("/" + bot.Token)
-	go http.ListenAndServe(":8443", nil)
+	log.Println("Listenning on port", port, ".")
+	go http.ListenAndServe(":"+port, nil)
 
 	for update := range updates {
 		log.Printf("%+v\n", update)
@@ -57,7 +59,7 @@ func main() {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
 		msg.ReplyToMessageID = update.Message.MessageID
 		if _, err := bot.Send(msg); err != nil {
-			log.Panic(err)
+			log.Fatal(err)
 		}
 	}
 }
