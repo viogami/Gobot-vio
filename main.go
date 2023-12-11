@@ -46,7 +46,7 @@ func main() {
 	}
 
 	updates := bot.ListenForWebhook("/" + bot.Token)
-	go http.ListenAndServe(":443", nil)
+	go http.ListenAndServe(":8443", nil)
 
 	for update := range updates {
 		log.Printf("%+v\n", update)
