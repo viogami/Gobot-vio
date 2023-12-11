@@ -30,7 +30,7 @@ func main() {
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	//创建webhook,指向你的URL
-	wh, _ := tgbotapi.NewWebhook(TG_WEBHOOK_URL + ":" + port + "/" + bot.Token)
+	wh, _ := tgbotapi.NewWebhook(TG_WEBHOOK_URL + bot.Token)
 
 	_, err = bot.Request(wh)
 	if err != nil {
