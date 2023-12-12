@@ -47,7 +47,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		for _, replymessage := range replyMessages {
 			//定义回复的message
 			var msg tgbotapi.MessageConfig
-			if message.Chat.IsGroup() {
+			if message.Chat.IsSuperGroup() || message.Chat.IsGroup() {
 				msg = tgbotapi.NewMessage(GroupID, replymessage)
 			} else {
 				msg = tgbotapi.NewMessage(UserID, replymessage)

@@ -13,12 +13,15 @@ var (
 )
 
 const (
-	chatGPTAURL_chat = "https://api.openai.com/v1/chat/completions"
-	chatGPTAURL_img  = "https://api.openai.com/v1/images/generations"
-	chatGPTAURL_mood = "https://api.openai.com/v1/moderations"
+	chatGPTURL_chat   = "https://api.openai.com/v1/chat/completions"
+	chatGPTURL_img    = "https://api.openai.com/v1/images/generations"
+	chatGPTURL_mood   = "https://api.openai.com/v1/moderations"
+	chatGPTURL_broker = "https://one-api.bltcy.top"
 )
 
 func invokeChatGPTAPI(text string) (string, error) {
+	/* 	config := openai.DefaultConfig(chatGPTAPIKey)
+	   	config.BaseURL = chatGPTURL_broker */
 	client := openai.NewClient(chatGPTAPIKey)
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
