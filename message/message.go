@@ -21,6 +21,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		sendMsg = false
 	}
 
+	log.Println("现在的发送条件：", sendMsg)
 	if sendMsg {
 		// 定义回复信息的数组
 		replyMessages := []string{"你好,即将调用gpt3.5turbo的API"}
@@ -33,7 +34,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		gptResponse, err := invokeChatGPTAPI(text)
 		if err != nil {
 			log.Printf("Error calling ChatGPT API: %v", err)
-			return
+			gptResponse = "gpt调用失败了😥"
 		}
 		replyMessages = append(replyMessages, gptResponse)
 
