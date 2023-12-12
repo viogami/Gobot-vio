@@ -1,4 +1,4 @@
-module vio_bot
+module Gobot-vio
 
 go 1.21.4
 
