@@ -11,6 +11,8 @@ import (
 func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// 分析消息数据
 	UserID := message.From.ID
+	MessageID := message.MessageID
+	GroupID := message.Chat.ID
 	UserName := message.From.UserName
 	text := message.Text
 	// 是否发送消息触发器
@@ -43,8 +45,14 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 		// 遍历发送每条信息
 		for _, replymessage := range replyMessages {
-			msg := tgbotapi.NewMessage(UserID, replymessage)
-			msg.ReplyToMessageID = message.MessageID //@发信息的人回复
+			//定义回复的message
+			var msg tgbotapi.MessageConfig
+			if message.Chat.IsGroup() {
+				msg = tgbotapi.NewMessage(GroupID, replymessage)
+			} else {
+				msg = tgbotapi.NewMessage(UserID, replymessage)
+			}
+			msg.ReplyToMessageID = MessageID //@发信息的人回复
 			_, err = bot.Send(msg)
 			if err != nil {
 				log.Println("Error sending message to user:", err)
