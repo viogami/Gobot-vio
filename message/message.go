@@ -10,8 +10,8 @@ import (
 // HandleIncomingMessage 处理用户消息
 func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// 分析消息数据
-	messageFromID := message.From.ID
-	userID := message.From.UserName
+	UserID := message.From.ID
+	UserName := message.From.UserName
 	text := message.Text
 	// 是否发送消息触发器
 	var sendMsg bool
@@ -24,12 +24,12 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	if message.Chat.IsSuperGroup() && !strings.Contains(message.Text, "@"+bot.Self.UserName) {
 		sendMsg = false //超级群组，被@才回复
 	}
-	log.Println(message.From)
+
 	if sendMsg {
 		// 定义回复信息的数组
 		replyMessages := []string{"你好,即将调用gpt3.5turbo的API"}
 
-		if userID == "viogami" {
+		if UserName == "viogami" {
 			replyMessages[0] = "主人你好,即将为你调用gpt3.5turbo的API~"
 		}
 
@@ -43,7 +43,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 		// 遍历发送每条信息
 		for _, replymessage := range replyMessages {
-			msg := tgbotapi.NewMessage(messageFromID, replymessage)
+			msg := tgbotapi.NewMessage(UserID, replymessage)
 			msg.ReplyToMessageID = message.MessageID //@发信息的人回复
 			_, err = bot.Send(msg)
 			if err != nil {
