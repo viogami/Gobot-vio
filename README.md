@@ -11,6 +11,8 @@
 ## 写在前面/preface
 有部署聊天机器人的想法，但是我使用的国内服务器，而且服务器性能也堪忧，于是决定不要laas--即用云服务器部署了，找个国外的Paas平台，把写的后端送上去就好了，而且一般也都有免费计划，够用了。
 
+传统的聊天机器人服务都是一体化的，和聊天平台需要集成。我希望把消息处理的逻辑和平台部署的逻辑做两个服务，后者发送信息给前者，前者返回需要发送的信息，后者再在聊天平台呈现信息。
+
 ## 对比表格/compare popular Paas
 | 服务提供商  | Fly.io          | Railway        | Render         | Glitch         | Adaptable      | **Zeabur**      |
 |-------------|-----------------|----------------|----------------|----------------|----------------|----------------|
@@ -53,6 +55,9 @@ zeabur上项目部署非常快,甚至不用写dockfile,而且对go项目有完�
 
 zeabur的go项目中，环境变量`PORT`是默认8080，且为全局的。也可以不设置，直接调用就好了。
 
+ - 对于tgbot：官方示例中使用的8443端口，在部署到paas平台时8443端口需要确认是否开放。
+  我建议不要使用官方示例中把端口号写明的写法，通过环境变量`PORT`调用端口号，避免webhook创建失败，或者监听未开放的端口等问题。
+
 ### 证书问题
 zeabur部署项目自带证书,做完域名映射可以直接https访问.
 所以在设置webhook进行和tg服务器通讯的时候不需要手动加载`cert.pem`和`key.pem`
@@ -62,7 +67,7 @@ zeabur部署项目自带证书,做完域名映射可以直接https访问.
   ...
 
   log.Printf("Authorized on account %s", bot.Self.UserName)
-	wh, _ := tgbotapi.NewWebhook(TG_WEBHOOK_URL + bot.Token)
+  wh, _ := tgbotapi.NewWebhook(TG_WEBHOOK_URL + bot.Token)
 
   ...
 
