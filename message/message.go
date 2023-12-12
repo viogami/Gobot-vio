@@ -10,7 +10,8 @@ import (
 // HandleIncomingMessage 处理用户消息
 func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// 分析消息数据
-	userID := message.From.ID
+	messageFromID := message.From.ID
+	userID := message.From.UserName
 	text := message.Text
 	// 是否发送消息触发器
 	var sendMsg bool
@@ -18,16 +19,17 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		sendMsg = true
 	}
 	if message.Chat.IsGroup() && !strings.Contains(message.Text, "@"+bot.Self.UserName) {
-		sendMsg = false
+		sendMsg = false //普通群组，被@才回复
 	}
-
-	log.Println(message.Chat.IsChannel(), message.Chat.IsSuperGroup())
-	log.Println(message.Text, message.MessageID, message.From.ID)
+	if message.Chat.IsSuperGroup() && !strings.Contains(message.Text, "@"+bot.Self.UserName) {
+		sendMsg = false //超级群组，被@才回复
+	}
+	log.Println(message.From)
 	if sendMsg {
 		// 定义回复信息的数组
 		replyMessages := []string{"你好,即将调用gpt3.5turbo的API"}
 
-		if userID == 5094809802 {
+		if userID == "viogami" {
 			replyMessages[0] = "主人你好,即将为你调用gpt3.5turbo的API~"
 		}
 
@@ -35,13 +37,13 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		gptResponse, err := invokeChatGPTAPI(text)
 		if err != nil {
 			log.Printf("Error calling ChatGPT API: %v", err)
-			gptResponse = "gpt调用失败了😥 错误信息：" + err.Error()
+			gptResponse = "gpt调用失败了😥 错误信息：\n" + err.Error()
 		}
 		replyMessages = append(replyMessages, gptResponse)
 
 		// 遍历发送每条信息
 		for _, replymessage := range replyMessages {
-			msg := tgbotapi.NewMessage(userID, replymessage)
+			msg := tgbotapi.NewMessage(messageFromID, replymessage)
 			msg.ReplyToMessageID = message.MessageID //@发信息的人回复
 			_, err = bot.Send(msg)
 			if err != nil {
