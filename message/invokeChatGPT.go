@@ -19,7 +19,7 @@ const (
 )
 
 func invokeChatGPTAPI(text string) (string, error) {
-	client := openai.NewClient("your token")
+	client := openai.NewClient(chatGPTAPIKey)
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
