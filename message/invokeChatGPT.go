@@ -16,7 +16,7 @@ const (
 	chatGPTURL_chat   = "https://api.openai.com/v1/chat/completions"
 	chatGPTURL_img    = "https://api.openai.com/v1/images/generations"
 	chatGPTURL_mood   = "https://api.openai.com/v1/moderations"
-	chatGPTURL_broker = "https://one-api.bltcy.top"
+	chatGPTURL_broker = "https://one-api.bltcy.top/chat/completions"
 )
 
 func invokeChatGPTAPI(text string) (string, error) {
