@@ -34,7 +34,7 @@ func invokeChatGPTAPI(text string) (string, error) {
 		},
 	)
 	if err != nil {
-		log.Printf("ChatCompletion error: %v\n", err)
+		log.Printf("APIKey是: %v\n", chatGPTAPIKey)
 		return "", err
 	}
 
