@@ -51,7 +51,7 @@ func main() {
 
 	// 对监听到的updates)遍历,并作出回应
 	for update := range updates {
-		log.Println("接受到消息：", update.Message)
+		log.Printf("接受到消息：%v", update.Message)
 		if update.Message == nil {
 			continue
 		}
