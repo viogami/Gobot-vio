@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Gobot-vio/message"
 	"log"
 	"net/http"
 	"os"
@@ -12,12 +13,7 @@ import (
 var (
 	BOT_TOKEN      = os.Getenv("BOT_TOKEN")
 	TG_WEBHOOK_URL = os.Getenv("TG_WEBHOOK_URL")
-	chatGPTAPIKey  = os.Getenv("chatGPTAPIKey")
 	port           = os.Getenv("PORT")
-)
-
-const (
-	chatGPTAPIURL = "https://api.openai.com/v1/completions"
 )
 
 func main() {
@@ -60,6 +56,6 @@ func main() {
 			continue
 		}
 		//回复信息
-		HandleIncomingMessage(bot, update.Message)
+		message.HandleIncomingMessage(bot, update.Message)
 	}
 }

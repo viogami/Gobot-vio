@@ -1,11 +1,22 @@
-package main
+package message
 
 import (
 	"encoding/json"
+	"os"
 
 	"github.com/go-resty/resty/v2"
 )
 
+// 定义环境变量
+var (
+	chatGPTAPIKey = os.Getenv("chatGPTAPIKey")
+)
+
+const (
+	chatGPTAPIURL = "https://api.openai.com/v1/completions"
+)
+
+// 定义消息结构体
 type ChatGPTRequest struct {
 	Model     string    `json:"model"`
 	Messages  []Message `json:"messages"`
@@ -25,6 +36,7 @@ type Choice struct {
 	Message Message `json:"message"`
 }
 
+// 调用chatgpt的函数，通过resty
 func invokeChatGPTAPI(text string) (string, error) {
 	client := resty.New()
 

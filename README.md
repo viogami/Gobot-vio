@@ -15,7 +15,7 @@
 
 ### 分支说明
  - master：该分支为主分支，其他为针对的各自平台（目前master是最简单的搭建tgbot，更多细节还未写）
- - tgbot：添加了针对Telegram的消息处理
+ - tgbot：添加了针对Telegram的消息处理,添加了chatgpt聊天支持
 
 ## 对比表格/compare popular Paas
 | 服务提供商  | Fly.io          | Railway        | Render         | Glitch         | Adaptable      | **Zeabur**      |
