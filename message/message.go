@@ -22,11 +22,11 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	}
 
 	if sendMsg {
-		//定义回复字段
-		ResponseText := ""
+		// 定义回复信息的数组
+		replyMessages := []string{"你好,即将调用gpt3.5turbo的API"}
 
 		if userID == 5094809802 {
-			ResponseText = "主人你好~\n"
+			replyMessages[0] = "主人你好,即将为你调用gpt3.5turbo的API~"
 		}
 
 		// 调用ChatGPT API
@@ -35,13 +35,16 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 			log.Printf("Error calling ChatGPT API: %v", err)
 			return
 		}
+		replyMessages = append(replyMessages, gptResponse)
 
-		// 发送ChatGPT的回复给用户
-		msg := tgbotapi.NewMessage(userID, ResponseText+gptResponse)
-		msg.ReplyToMessageID = message.MessageID //@发信息的人回复
-		_, err = bot.Send(msg)
-		if err != nil {
-			log.Println("Error sending message to user:", err)
+		// 遍历发送每条信息
+		for _, replymessage := range replyMessages {
+			msg := tgbotapi.NewMessage(userID, replymessage)
+			msg.ReplyToMessageID = message.MessageID //@发信息的人回复
+			_, err = bot.Send(msg)
+			if err != nil {
+				log.Println("Error sending message to user:", err)
+			}
 		}
 	}
 }

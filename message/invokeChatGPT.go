@@ -1,10 +1,10 @@
 package message
 
 import (
-	"encoding/json"
+	"context"
 	"os"
 
-	"github.com/go-resty/resty/v2"
+	openai "github.com/sashabaranov/go-openai"
 )
 
 // 定义环境变量
@@ -13,57 +13,25 @@ var (
 )
 
 const (
-	chatGPTAPIURL = "https://api.openai.com/v1/completions"
+	chatGPTAURL_chat = "https://api.openai.com/v1/chat/completions"
+	chatGPTAURL_img  = "https://api.openai.com/v1/images/generations"
+	chatGPTAURL_mood = "https://api.openai.com/v1/moderations"
 )
 
-// 定义消息结构体
-type ChatGPTRequest struct {
-	Model     string    `json:"model"`
-	Messages  []Message `json:"messages"`
-	MaxTokens int       `json:"max_tokens"`
-}
-
-type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-type ChatGPTResponse struct {
-	Choices []Choice `json:"choices"`
-}
-
-type Choice struct {
-	Message Message `json:"message"`
-}
-
-// 调用chatgpt的函数，通过resty
 func invokeChatGPTAPI(text string) (string, error) {
-	client := resty.New()
-
-	requestData := ChatGPTRequest{
-		Model: "gpt-3.5-turbo",
-		Messages: []Message{
-			{Role: "system", Content: "You are a helpful assistant."},
-			{Role: "user", Content: text},
+	client := openai.NewClient("your token")
+	resp, err := client.CreateChatCompletion(
+		context.Background(),
+		openai.ChatCompletionRequest{
+			Model: openai.GPT3Dot5Turbo,
+			Messages: []openai.ChatCompletionMessage{
+				{
+					Role:    openai.ChatMessageRoleUser,
+					Content: text,
+				},
+			},
 		},
-		MaxTokens: 256,
-	}
+	)
 
-	response, err := client.R().
-		SetHeader("Content-Type", "application/json").
-		SetHeader("Authorization", "Bearer "+chatGPTAPIKey).
-		SetBody(requestData).
-		Post(chatGPTAPIURL)
-
-	if err != nil {
-		return "", err
-	}
-
-	var responseData ChatGPTResponse
-	err = json.Unmarshal(response.Body(), &responseData)
-	if err != nil {
-		return "", err
-	}
-
-	return responseData.Choices[0].Message.Content, nil
+	return resp.Choices[0].Message.Content, err
 }
