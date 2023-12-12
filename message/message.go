@@ -21,9 +21,8 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		sendMsg = false
 	}
 
-	log.Println(message.Chat.IsGroup())
-	log.Println(!strings.Contains(message.Text, "@"+bot.Self.UserName))
-	log.Println(message.Text, "@"+bot.Self.UserName)
+	log.Println(message.Chat.IsChannel(), message.Chat.IsSuperGroup())
+	log.Println(message.Text, message.MessageID, message.From.ID)
 	if sendMsg {
 		// 定义回复信息的数组
 		replyMessages := []string{"你好,即将调用gpt3.5turbo的API"}
