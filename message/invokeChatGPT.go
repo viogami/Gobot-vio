@@ -35,6 +35,8 @@ func invokeChatGPTAPI(text string) (string, error) {
 	)
 	if err != nil {
 		log.Printf("ChatCompletion error: %v\n", err)
+		return "", err
 	}
+
 	return resp.Choices[0].Message.Content, err
 }

@@ -21,7 +21,6 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		sendMsg = false
 	}
 
-	log.Println("现在的发送条件：", sendMsg)
 	if sendMsg {
 		// 定义回复信息的数组
 		replyMessages := []string{"你好,即将调用gpt3.5turbo的API"}
