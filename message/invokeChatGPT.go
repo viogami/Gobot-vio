@@ -22,7 +22,8 @@ const (
 func invokeChatGPTAPI(text string) (string, error) {
 	config := openai.DefaultConfig(chatGPTAPIKey)
 	config.BaseURL = chatGPTURL_broker
-	client := openai.NewClient(chatGPTAPIKey)
+
+	client := openai.NewClientWithConfig(config)
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
