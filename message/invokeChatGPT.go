@@ -2,7 +2,6 @@ package message
 
 import (
 	"context"
-	"log"
 	"os"
 
 	openai "github.com/sashabaranov/go-openai"
@@ -34,7 +33,6 @@ func invokeChatGPTAPI(text string) (string, error) {
 		},
 	)
 	if err != nil {
-		log.Printf("APIKey是: %v\n", chatGPTAPIKey)
 		return "", err
 	}
 
