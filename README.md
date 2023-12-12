@@ -13,6 +13,11 @@
 
 传统的聊天机器人服务都是一体化的，和聊天平台需要集成。我希望把消息处理的逻辑和平台部署的逻辑做两个服务，后者发送信息给前者，前者返回需要发送的信息，后者再在聊天平台呈现信息。
 
+### 分支说明
+- master：该分支为主分支，其他为针对的各自平台（目前master是最简单的搭建tgbot，更多细节还未写）
+ master分支只实现了最基本的bot复读功能，没有其他调用，拥有最简单的go实现。
+- tgbot：添加了针对Telegram的消息处理,添加了chatgpt聊天支持。
+
 ## 对比表格/compare popular Paas
 | 服务提供商  | Fly.io          | Railway        | Render         | Glitch         | Adaptable      | **Zeabur**      |
 |-------------|-----------------|----------------|----------------|----------------|----------------|----------------|
@@ -75,6 +80,13 @@ zeabur部署项目自带证书,做完域名映射可以直接https访问.
 ```
 直接使用`NewWebhook`和`ListenAndServe`函数即可.
 
+### 环境变量
+在目前我的实现中，我只定义了三个环境变量
+```env
+TG_WEBHOOK_URL=https://yousite.com/
+BOT_TOKEN=your token
+chatGPTAPIKey=sk-your key
+```
 --------------
 --------------
 表格和paas平台对比参考：[免费的 PaaS 平台汇总][1]
