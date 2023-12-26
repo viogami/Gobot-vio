@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Gobot-vio/tgbot"
 	"log"
 	"net/http"
 	"os"
@@ -12,12 +13,7 @@ import (
 var (
 	BOT_TOKEN      = os.Getenv("BOT_TOKEN")
 	TG_WEBHOOK_URL = os.Getenv("TG_WEBHOOK_URL")
-	chatGPTAPIKey  = os.Getenv("chatGPTAPIKey")
 	port           = os.Getenv("PORT")
-)
-
-const (
-	chatGPTAPIURL = "https://api.openai.com/v1/completions"
 )
 
 func main() {
@@ -53,17 +49,13 @@ func main() {
 	log.Println("Listenning on port", port, ".")
 	go http.ListenAndServe(":"+port, nil)
 
-	// 对监听到的updates)遍历,并作出回应
+	// 对监听到的updates遍历,并作出回应
 	for update := range updates {
-		log.Printf("%+v\n", update)
+		log.Printf("接受到消息：%v", update.Message)
 		if update.Message == nil {
 			continue
 		}
 		//回复信息
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		msg.ReplyToMessageID = update.Message.MessageID
-		if _, err := bot.Send(msg); err != nil {
-			log.Fatal(err)
-		}
+		tgbot.HandleIncomingMessage(bot, update.Message)
 	}
 }

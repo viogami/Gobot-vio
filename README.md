@@ -8,6 +8,12 @@
  - [x] Telegram bot
  - [ ] QQ bot
 
+## 关于本分支/about this branch
+本分支为针对telegram平台开发的的bot实现，依赖于tg官方的tgbot库，拥有一些附加功能。
+目前已经完成了：
+ - 针对Telegram的消息处理，对私人，群组，超级群组各有不同的应答模式。
+ - 添加了chatgpt api的调用，在聊天中支持chatgpt的回复。该功能使用了[go-openai](https://github.com/sashabaranov/go-openai)库，支持了go语言对openai api的调用
+
 ## 写在前面/preface
 有部署聊天机器人的想法，但是我使用的国内服务器，而且服务器性能也堪忧，于是决定不要laas--即用云服务器部署了，找个国外的Paas平台，把写的后端送上去就好了，而且一般也都有免费计划，够用了。
 
