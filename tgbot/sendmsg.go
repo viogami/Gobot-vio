@@ -17,10 +17,7 @@ func SendMessage(message *tgbotapi.Message, replymsg tgbotapi.MessageConfig, atr
 	if atreply {
 		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
 	}
-	_, err := bot.Send(replymsg)
-	if err != nil {
-		log.Println("Error sending message to user:", err)
-	}
+	bot.Send(replymsg)
 }
 
 /**
