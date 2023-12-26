@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Gobot-vio/message"
+	"Gobot-vio/tgbot"
 	"log"
 	"net/http"
 	"os"
@@ -49,13 +49,13 @@ func main() {
 	log.Println("Listenning on port", port, ".")
 	go http.ListenAndServe(":"+port, nil)
 
-	// 对监听到的updates)遍历,并作出回应
+	// 对监听到的updates遍历,并作出回应
 	for update := range updates {
 		log.Printf("接受到消息：%v", update.Message)
 		if update.Message == nil {
 			continue
 		}
 		//回复信息
-		message.HandleIncomingMessage(bot, update.Message)
+		tgbot.HandleIncomingMessage(bot, update.Message)
 	}
 }

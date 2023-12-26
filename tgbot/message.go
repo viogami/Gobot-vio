@@ -1,6 +1,7 @@
-package message
+package tgbot
 
 import (
+	"Gobot-vio/chatgpt"
 	"log"
 	"strings"
 
@@ -36,7 +37,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		}
 
 		// 调用ChatGPT API
-		gptResponse, err := invokeChatGPTAPI(text)
+		gptResponse, err := chatgpt.InvokeChatGPTAPI(text)
 		if err != nil {
 			log.Printf("Error calling ChatGPT API: %v", err)
 			gptResponse = "gpt调用失败了😥 错误信息：\n" + err.Error()

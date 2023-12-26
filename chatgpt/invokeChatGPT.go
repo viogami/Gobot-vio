@@ -1,4 +1,4 @@
-package message
+package chatgpt
 
 import (
 	"context"
@@ -19,7 +19,7 @@ const (
 	chatGPTURL_broker = "https://one-api.bltcy.top/v1"
 )
 
-func invokeChatGPTAPI(text string) (string, error) {
+func InvokeChatGPTAPI(text string) (string, error) {
 	config := openai.DefaultConfig(chatGPTAPIKey)
 	config.BaseURL = chatGPTURL_broker
 
