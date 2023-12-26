@@ -9,15 +9,18 @@ import (
 /**
  * 发送文字消息
  */
-func SendMessage(message *tgbotapi.Message, replymsg tgbotapi.MessageConfig, atreply bool) {
-	replymsg = tgbotapi.NewMessage(message.From.ID, "")
-	if message.Chat.IsSuperGroup() || message.Chat.IsGroup() {
-		replymsg = tgbotapi.NewMessage(message.Chat.ID, "")
-	}
+func SendMessage(message *tgbotapi.Message, replymsg tgbotapi.MessageConfig, atreply bool) tgbotapi.Message {
+
+	msg := tgbotapi.NewMessage(message.From.ID, replymsg.Text)
+
 	if atreply {
-		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
+		msg.ReplyToMessageID = message.MessageID //@发信息的人回复
 	}
-	bot.Send(replymsg)
+	mmsg, err := bot.Send(msg)
+	if err != nil {
+		log.Println("Error sending message to user:", err)
+	}
+	return mmsg
 }
 
 /**
