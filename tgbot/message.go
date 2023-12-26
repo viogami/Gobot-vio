@@ -48,6 +48,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		if UserName == "viogami" {
 			replymsg.Text = "主人你好,即将为你调用gpt3.5turbo的API~"
 		}
+		log.Println(replymsg)
 		SendMessage(message, replymsg, true)
 
 		// 调用ChatGPT API

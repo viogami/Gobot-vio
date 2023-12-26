@@ -13,7 +13,6 @@ func SendMessage(message *tgbotapi.Message, replymsg tgbotapi.MessageConfig, atr
 	if atreply {
 		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
 	}
-	log.Println("要发送信息了")
 	mmsg, err := bot.Send(replymsg)
 	if err != nil {
 		log.Println("Error sending message to user:", err)
