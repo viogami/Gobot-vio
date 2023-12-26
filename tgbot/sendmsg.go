@@ -9,16 +9,21 @@ import (
 /**
  * 发送文字消息
  */
-func sendMessage(msg tgbotapi.MessageConfig) tgbotapi.Message {
-	if msg.Text == "" {
-		return tgbotapi.Message{}
-	}
-	mmsg, err := bot.Send(msg)
-	if err != nil {
-		log.Println(err)
+func sendMessage(message *tgbotapi.Message, replymsg tgbotapi.MessageConfig, atreply bool) {
+	if message.Chat.IsSuperGroup() || message.Chat.IsGroup() {
+		replymsg = tgbotapi.NewMessage(message.Chat.ID, replymsg.Text)
+	} else {
+		replymsg = tgbotapi.NewMessage(message.From.ID, replymsg.Text)
 	}
 
-	return mmsg
+	if atreply {
+		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
+	}
+
+	_, err := bot.Send(replymsg)
+	if err != nil {
+		log.Println("Error sending message to user:", err)
+	}
 }
 
 /**

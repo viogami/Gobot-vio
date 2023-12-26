@@ -12,7 +12,7 @@ import (
 
 // 检查当前是否应该发送消息,私有
 func checksmg(message *tgbotapi.Message) bool {
-	var issend bool
+	issend := false
 	if message.Chat != nil {
 		issend = true
 	}
@@ -29,23 +29,21 @@ func checksmg(message *tgbotapi.Message) bool {
 func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// 分析消息数据
 	uid := message.From.ID
-	MessageID := message.MessageID
 	gid := message.Chat.ID
 	UserName := message.From.UserName
 	text := message.Text
-	// 是否发送消息触发器
+	// 是否发送消息
 	issend := checksmg(message)
 
 	//定义回复的message
-	var msg tgbotapi.MessageConfig
+	var replymsg tgbotapi.MessageConfig
 
 	if issend {
-		// 定义回复信息的数组
-		msg.Text = "你好,即将调用gpt3.5turbo的API"
+		replymsg.Text = "你好,即将调用gpt3.5turbo的API"
 		if UserName == "viogami" {
-			msg.Text = "主人你好,即将为你调用gpt3.5turbo的API~"
+			replymsg.Text = "主人你好,即将为你调用gpt3.5turbo的API~"
 		}
-		sendMessage(msg)
+		sendMessage(message, replymsg, true)
 
 		// 调用ChatGPT API
 		gptResponse, err := chatgpt.InvokeChatGPTAPI(text)
@@ -53,24 +51,15 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 			log.Printf("Error calling ChatGPT API: %v", err)
 			gptResponse = "gpt调用失败了😥 错误信息：\n" + err.Error()
 		}
-
-		if message.Chat.IsSuperGroup() || message.Chat.IsGroup() {
-			msg = tgbotapi.NewMessage(gid, gptResponse)
-		} else {
-			msg = tgbotapi.NewMessage(uid, gptResponse)
-		}
-		msg.ReplyToMessageID = MessageID //@发信息的人回复
-		_, err = bot.Send(msg)
-		if err != nil {
-			log.Println("Error sending message to user:", err)
-		}
+		replymsg.Text = gptResponse
+		sendMessage(message, replymsg, true)
 	}
 
 	//机器人命令
 	switch message.Command() {
 	case "start", "help":
-		msg.Text = "我是用go编写的bot:vio,我能够基于chatgpt进行回复,并可以自动回复特定关键词"
-		sendMessage(msg)
+		replymsg.Text = "我是用go编写的bot:vio,我能够基于chatgpt进行回复,并可以自动回复特定关键词"
+		sendMessage(message, replymsg, false)
 	// case "add":
 	// 	if CheckAdmin(gid, *message.From) {
 	// 		order := message.CommandArguments()
@@ -111,10 +100,13 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// 		}
 	// 	}
 	case "admin":
-		msg.Text = "[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ") 请求管理员出来打屁股\r\n\r\n" + getAdmins(gid)
-		msg.ParseMode = "Markdown"
-		sendMessage(msg)
-		banMember(gid, uid, 30)
+		replymsg.Text = "[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ") 请求管理员出来打屁股\r\n\r\n" + getAdmins(gid)
+		replymsg.ParseMode = "Markdown"
+		sendMessage(message, replymsg, false)
+
+		if !checkAdmin(gid, *message.From) {
+			banMember(gid, uid, 30)
+		}
 	case "banme":
 		botme, _ := bot.GetChatMember(tgbotapi.GetChatMemberConfig{
 			ChatConfigWithUser: tgbotapi.ChatConfigWithUser{
@@ -123,22 +115,22 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		if botme.CanRestrictMembers {
 			sec := rand.Intn(10) + 5
 			banMember(gid, uid, int64(sec))
-			msg.Text = "恭喜[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ")获得" + strconv.Itoa(sec) + "秒的禁言礼包"
-			msg.ParseMode = "Markdown"
+			replymsg.Text = "恭喜[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ")获得" + strconv.Itoa(sec) + "秒的禁言礼包"
+			replymsg.ParseMode = "Markdown"
 		} else {
-			msg.Text = "请给我禁言权限,否则无法进行"
+			replymsg.Text = "请给我禁言权限,否则无法进行"
 		}
-		sendMessage(msg)
+		sendMessage(message, replymsg, false)
 	case "me":
 		myuser := message.From
-		msg.Text = "[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ") 的账号信息" +
+		replymsg.Text = "[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ") 的账号信息" +
 			"\r\nID: " + strconv.FormatInt(uid, 10) +
 			"\r\nUseName: [" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ")" +
 			"\r\nLastName: " + myuser.LastName +
 			"\r\nFirstName: " + myuser.FirstName +
 			"\r\nIsBot: " + strconv.FormatBool(myuser.IsBot)
-		msg.ParseMode = "Markdown"
-		sendMessage(msg)
+		replymsg.ParseMode = "Markdown"
+		sendMessage(message, replymsg, false)
 	default:
 	}
 }
