@@ -37,6 +37,11 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 	//定义回复的message
 	var replymsg tgbotapi.MessageConfig
+	if message.Chat.IsSuperGroup() || message.Chat.IsGroup() {
+		replymsg = tgbotapi.NewMessage(message.Chat.ID, "")
+	} else {
+		replymsg = tgbotapi.NewMessage(message.From.ID, "")
+	}
 
 	if issend {
 		replymsg.Text = "你好,即将调用gpt3.5turbo的API"
