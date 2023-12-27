@@ -38,9 +38,9 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	//定义回复的message
 	var replymsg tgbotapi.MessageConfig
 	if message.Chat.IsSuperGroup() || message.Chat.IsGroup() {
-		replymsg = tgbotapi.NewMessage(message.Chat.ID, replymsg.Text)
+		replymsg = tgbotapi.NewMessage(message.Chat.ID, "")
 	} else {
-		replymsg = tgbotapi.NewMessage(message.From.ID, replymsg.Text)
+		replymsg = tgbotapi.NewMessage(message.From.ID, "")
 	}
 
 	if issend {
@@ -59,7 +59,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 			gptResponse = "gpt调用失败了😥 错误信息：\n" + err.Error()
 		}
 		replymsg.Text = gptResponse
-		SendMessage(message, replymsg, true)
+		bot.Send(replymsg)
 	}
 
 	//机器人命令
