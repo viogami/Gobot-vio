@@ -27,6 +27,7 @@ func SendMessage(message *tgbotapi.Message, replymsg tgbotapi.MessageConfig, atr
  * 发送图片消息, 需要是已经存在的图片链接
  */
 func SendPhoto(chatid int64, photoid tgbotapi.RequestFileData) tgbotapi.Message {
+
 	file := tgbotapi.NewPhoto(chatid, photoid)
 	mmsg, err := bot.Send(file)
 	if err != nil {
