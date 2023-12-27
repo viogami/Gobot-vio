@@ -9,18 +9,14 @@ import (
 /**
  * 发送文字消息
  */
-func SendMessage(message *tgbotapi.Message, replymsg tgbotapi.MessageConfig, atreply bool) tgbotapi.Message {
-
-	msg := tgbotapi.NewMessage(message.From.ID, "收到消息")
-
+func SendMessage(message *tgbotapi.Message, replymsg *tgbotapi.MessageConfig, atreply bool) {
 	if atreply {
-		msg.ReplyToMessageID = message.MessageID //@发信息的人回复
+		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
 	}
-	mmsg, err := bot.Send(msg)
+	_, err := bot.Send(replymsg)
 	if err != nil {
 		log.Println("Error sending message to user:", err)
 	}
-	return mmsg
 }
 
 /**
