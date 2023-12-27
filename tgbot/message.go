@@ -108,11 +108,11 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// 		}
 	// 	}
 	case "admin":
-		replymsg.Text = "[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ") 请求管理员出来打屁股\r\n\r\n" + getAdmins(gid)
+		replymsg.Text = "[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ") 请求管理员出来打屁股\r\n\r\n" + getAdmins(bot, gid)
 		replymsg.ParseMode = "Markdown"
 		sendMessage(bot, replymsg)
-		if !checkAdmin(gid, *message.From) {
-			banMember(gid, uid, 30)
+		if !checkAdmin(bot, gid, *message.From) {
+			banMember(bot, gid, uid, 30)
 		}
 	case "banme":
 		botme, _ := bot.GetChatMember(tgbotapi.GetChatMemberConfig{
@@ -121,7 +121,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 				UserID: uid}})
 		if botme.CanRestrictMembers {
 			sec := rand.Intn(10) + 5
-			banMember(gid, uid, int64(sec))
+			banMember(bot, gid, uid, int64(sec))
 			replymsg.Text = "恭喜[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ")获得" + strconv.Itoa(sec) + "秒的禁言礼包"
 			replymsg.ParseMode = "Markdown"
 		} else {

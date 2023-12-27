@@ -10,7 +10,7 @@ import (
 /**
  * 检查是否是群组的管理员
  */
-func checkAdmin(gid int64, user tgbotapi.User) bool {
+func checkAdmin(bot *tgbotapi.BotAPI, gid int64, user tgbotapi.User) bool {
 	admins, _ := bot.GetChatAdministrators(tgbotapi.ChatAdministratorsConfig{
 		ChatConfig: tgbotapi.ChatConfig{
 			ChatID: gid}})
@@ -29,7 +29,7 @@ func checkAdmin(gid int64, user tgbotapi.User) bool {
 /**
  * 禁言群员
  */
-func banMember(gid int64, uid int64, sec int64) {
+func banMember(bot *tgbotapi.BotAPI, gid int64, uid int64, sec int64) {
 	if sec <= 0 {
 		sec = 9999999999999
 	}
@@ -44,7 +44,7 @@ func banMember(gid int64, uid int64, sec int64) {
 	_, _ = bot.Request(banChatMemberConfig)
 }
 
-func unbanMember(gid int64, uid int64) {
+func unbanMember(bot *tgbotapi.BotAPI, gid int64, uid int64) {
 	banChatMemberConfig := tgbotapi.BanChatMemberConfig{
 		ChatMemberConfig: tgbotapi.ChatMemberConfig{
 			ChatID: gid,
@@ -59,18 +59,18 @@ func unbanMember(gid int64, uid int64) {
 /**
  * 踢出群员
  */
-func kickMember(gid int64, uid int64) {
+func kickMember(bot *tgbotapi.BotAPI, gid int64, uid int64) {
 
 }
 
-func unkickMember(gid int64, uid int64) {
+func unkickMember(bot *tgbotapi.BotAPI, gid int64, uid int64) {
 
 }
 
 /**
  * 返回群组的所有管理员, 用来进行一次性@
  */
-func getAdmins(gid int64) string {
+func getAdmins(bot *tgbotapi.BotAPI, gid int64) string {
 	admins, _ := bot.GetChatAdministrators(tgbotapi.ChatAdministratorsConfig{
 		ChatConfig: tgbotapi.ChatConfig{
 			ChatID: gid}})
