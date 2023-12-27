@@ -11,7 +11,7 @@ import (
  */
 func SendMessage(message *tgbotapi.Message, replymsg tgbotapi.MessageConfig, atreply bool) {
 	if atreply {
-		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
+		//replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
 	}
 	_, err := bot.Send(replymsg)
 	if err != nil {
