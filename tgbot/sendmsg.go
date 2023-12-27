@@ -9,12 +9,6 @@ import (
 /*
  * 发送文字消息
  */
-func SendMessage(replymsg tgbotapi.MessageConfig) {
-	_, err := bot.Send(replymsg)
-	if err != nil {
-		log.Println("Error sending message to user:", err)
-	}
-}
 
 /*
  * 发送图片消息, 需要是已经存在的图片链接

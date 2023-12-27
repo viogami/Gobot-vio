@@ -25,6 +25,13 @@ func checksmg(message *tgbotapi.Message) bool {
 	return issend
 }
 
+func SendMessage(replymsg tgbotapi.MessageConfig) {
+	_, err := bot.Send(replymsg)
+	if err != nil {
+		log.Println("Error sending message to user:", err)
+	}
+}
+
 // 处理用户消息逻辑，公有
 func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// 分析消息数据
