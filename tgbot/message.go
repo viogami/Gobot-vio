@@ -11,7 +11,7 @@ import (
 )
 
 // 检查当前是否应该发送消息,私有
-func checksmg(message *tgbotapi.Message) bool {
+func checksmg(bot *tgbotapi.BotAPI, message *tgbotapi.Message) bool {
 	issend := false
 	if message.Chat != nil && !message.IsCommand() {
 		issend = true
@@ -33,7 +33,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	UserName := message.From.UserName
 	text := message.Text
 	// 是否发送消息
-	issend := checksmg(message)
+	issend := checksmg(bot, message)
 
 	// 定义回复的message 并初始化
 	var replymsg tgbotapi.MessageConfig
@@ -108,11 +108,15 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// 		}
 	// 	}
 	case "admin":
-		replymsg.Text = "[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ") 请求管理员出来打屁股\r\n\r\n" + getAdmins(gid)
-		replymsg.ParseMode = "Markdown"
+		if message.Chat.IsGroup() || message.Chat.IsSuperGroup() {
+			replymsg.Text = "[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ") 请求管理员出来打屁股\r\n\r\n" + getAdmins(bot, gid)
+			replymsg.ParseMode = "Markdown"
+		} else {
+			replymsg.Text = "这是群聊命令，亲~"
+		}
 		sendMessage(bot, replymsg)
-		if !checkAdmin(gid, *message.From) {
-			banMember(gid, uid, 30)
+		if !checkAdmin(bot, gid, *message.From) {
+			banMember(bot, gid, uid, 30)
 		}
 	case "banme":
 		botme, _ := bot.GetChatMember(tgbotapi.GetChatMemberConfig{
@@ -121,7 +125,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 				UserID: uid}})
 		if botme.CanRestrictMembers {
 			sec := rand.Intn(10) + 5
-			banMember(gid, uid, int64(sec))
+			banMember(bot, gid, uid, int64(sec))
 			replymsg.Text = "恭喜[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ")获得" + strconv.Itoa(sec) + "秒的禁言礼包"
 			replymsg.ParseMode = "Markdown"
 		} else {
