@@ -9,7 +9,7 @@ import (
 /**
  * 发送文字消息
  */
-func SendMessage(message *tgbotapi.Message, replymsg *tgbotapi.MessageConfig, atreply bool) {
+func SendMessage(message *tgbotapi.Message, replymsg tgbotapi.MessageConfig, atreply bool) {
 	if atreply {
 		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
 	}
