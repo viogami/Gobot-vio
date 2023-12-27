@@ -13,7 +13,7 @@ import (
 // 检查当前是否应该发送消息,私有
 func checksmg(message *tgbotapi.Message) bool {
 	issend := false
-	if message.Chat != nil {
+	if message.Chat != nil && !message.IsCommand() {
 		issend = true
 	}
 	if message.Chat.IsGroup() && !strings.Contains(message.Text, "@"+bot.Self.UserName) {
