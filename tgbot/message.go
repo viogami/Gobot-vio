@@ -25,14 +25,7 @@ func checksmg(message *tgbotapi.Message) bool {
 	return issend
 }
 
-func SendMessage(replymsg tgbotapi.MessageConfig) {
-	_, err := bot.Send(replymsg)
-	if err != nil {
-		log.Println("Error sending message to user:", err)
-	}
-}
-
-// 处理用户消息逻辑，公有
+// 处理用户消息逻辑
 func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	// 分析消息数据
 	uid := message.From.ID
@@ -56,10 +49,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 			replymsg.Text = "主人你好,即将为你调用gpt3.5turbo的API~"
 		}
 		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
-		_, err := bot.Send(replymsg)
-		if err != nil {
-			log.Println("Error sending message to user:", err)
-		}
+		sendMessage(bot, replymsg)
 
 		// 调用ChatGPT API
 		gptResponse, err := chatgpt.InvokeChatGPTAPI(text)
@@ -70,17 +60,14 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		replymsg.Text = gptResponse
 
 		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
-		_, err = bot.Send(replymsg)
-		if err != nil {
-			log.Println("Error sending message to user:", err)
-		}
+		sendMessage(bot, replymsg)
 	}
 
 	//机器人命令
 	switch message.Command() {
 	case "start", "help":
 		replymsg.Text = "我是用go编写的bot:vio,我能够基于chatgpt进行回复,并可以自动回复特定关键词"
-		SendMessage(replymsg)
+		sendMessage(bot, replymsg)
 	// case "add":
 	// 	if CheckAdmin(gid, *message.From) {
 	// 		order := message.CommandArguments()
@@ -123,7 +110,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	case "admin":
 		replymsg.Text = "[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ") 请求管理员出来打屁股\r\n\r\n" + getAdmins(gid)
 		replymsg.ParseMode = "Markdown"
-		SendMessage(replymsg)
+		sendMessage(bot, replymsg)
 		if !checkAdmin(gid, *message.From) {
 			banMember(gid, uid, 30)
 		}
@@ -140,7 +127,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		} else {
 			replymsg.Text = "请给我禁言权限,否则无法进行"
 		}
-		SendMessage(replymsg)
+		sendMessage(bot, replymsg)
 	case "me":
 		myuser := message.From
 		replymsg.Text = "[" + message.From.String() + "](tg://user?id=" + strconv.FormatInt(uid, 10) + ") 的账号信息" +
@@ -150,7 +137,7 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 			"\r\nFirstName: " + myuser.FirstName +
 			"\r\nIsBot: " + strconv.FormatBool(myuser.IsBot)
 		replymsg.ParseMode = "Markdown"
-		SendMessage(replymsg)
+		sendMessage(bot, replymsg)
 	default:
 	}
 }

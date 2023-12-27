@@ -9,11 +9,17 @@ import (
 /*
  * 发送文字消息
  */
+func sendMessage(bot *tgbotapi.BotAPI, replymsg tgbotapi.MessageConfig) {
+	_, err := bot.Send(replymsg)
+	if err != nil {
+		log.Println("Error sending message to user:", err)
+	}
+}
 
 /*
  * 发送图片消息, 需要是已经存在的图片链接
  */
-func SendPhoto(chatid int64, photoid tgbotapi.RequestFileData) tgbotapi.Message {
+func sendPhoto(chatid int64, photoid tgbotapi.RequestFileData) tgbotapi.Message {
 
 	file := tgbotapi.NewPhoto(chatid, photoid)
 	mmsg, err := bot.Send(file)
