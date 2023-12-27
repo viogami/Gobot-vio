@@ -56,7 +56,10 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 			replymsg.Text = "主人你好,即将为你调用gpt3.5turbo的API~"
 		}
 		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
-		SendMessage(replymsg)
+		_, err := bot.Send(replymsg)
+		if err != nil {
+			log.Println("Error sending message to user:", err)
+		}
 
 		// 调用ChatGPT API
 		gptResponse, err := chatgpt.InvokeChatGPTAPI(text)
@@ -67,7 +70,10 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		replymsg.Text = gptResponse
 
 		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复
-		SendMessage(replymsg)
+		_, err = bot.Send(replymsg)
+		if err != nil {
+			log.Println("Error sending message to user:", err)
+		}
 	}
 
 	//机器人命令
