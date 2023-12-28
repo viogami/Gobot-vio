@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/gin-gonic/gin"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -16,7 +15,7 @@ var (
 
 var superUserId int64 //管理员id
 
-func CreateTgbot(router *gin.Engine) {
+func CreateTgbot() {
 	// 初始化bot
 	bot, err := tgbotapi.NewBotAPI(BOT_TOKEN)
 	if err != nil {
@@ -43,7 +42,7 @@ func CreateTgbot(router *gin.Engine) {
 	}
 
 	// 监听webhook是否有更新,更新存放到updates中
-	updates := bot.ListenForWebhook("/" + bot.Token)
+	updates := bot.ListenForWebhook("/tgbot" + bot.Token)
 
 	// 对监听到的updates遍历,并作出回应
 	for update := range updates {

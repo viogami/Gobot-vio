@@ -7,38 +7,41 @@ import (
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	var port = os.Getenv("PORT")
 
-	// 创建一个默认的 Gin 引擎
-	router := gin.Default()
+	// 设置 /post 路径的 HTTP 处理函数
+	http.HandleFunc("/post", handlePost)
+
+	// 启动 Web 服务器监听 port 端口
+	go func() {
+		err := http.ListenAndServe(":"+port, nil)
+		if err != nil {
+			log.Println("Error starting HTTP server:", err)
+		}
+		log.Println("HTTP server is running on port", port)
+	}()
 
 	//创建一个tgbot
-	tgbot.CreateTgbot(router)
+	tgbot.CreateTgbot()
+}
 
-	// 设置一个 POST 请求的路由
-	router.POST("/post", func(c *gin.Context) {
-		// 从请求中获取字符串参数
-		receivemsgText := c.PostForm("receivemsg")
+func handlePost(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == http.MethodPost {
+		// 读取请求体
+		postmsg := r.Form.Get("usermsg")
 
 		// 调用ChatGPT API
-		gptResponse, err := chatgpt.InvokeChatGPTAPI(receivemsgText)
+		gptResponse, err := chatgpt.InvokeChatGPTAPI(postmsg)
 		if err != nil {
 			log.Printf("Error calling ChatGPT API: %v", err)
 			gptResponse = "gpt调用失败了😥 错误信息：\n" + err.Error()
 		}
-
-		// 返回响应
-		c.JSON(http.StatusOK, gin.H{"response": gptResponse})
-	})
-
-	// 启动 Web 服务器监听 port 端口
-	err := router.Run(":" + port)
-	if err != nil {
-		fmt.Println("Error starting server:", err)
+		fmt.Fprintln(w, gptResponse)
+	} else {
+		http.Error(w, "只接受POST请求", http.StatusMethodNotAllowed)
 	}
 }
