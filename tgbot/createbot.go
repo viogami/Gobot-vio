@@ -42,7 +42,7 @@ func CreateTgbot() {
 	}
 
 	// 监听webhook是否有更新,更新存放到updates中
-	updates := bot.ListenForWebhook("/tgbot" + bot.Token)
+	updates := bot.ListenForWebhook("/tgbot/" + bot.Token)
 
 	// 对监听到的updates遍历,并作出回应
 	for update := range updates {

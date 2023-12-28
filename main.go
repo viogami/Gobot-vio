@@ -28,9 +28,15 @@ func main() {
 	tgbot.CreateTgbot()
 }
 
+// 提取post中的msg字符串，调用chatgpt api，返回响应回答
 func handlePost(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method == http.MethodPost {
+		// 获取表单数据
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, "Error parsing form data", http.StatusInternalServerError)
+			return
+		}
 		// 读取请求体
 		postmsg := r.Form.Get("usermsg")
 
@@ -42,6 +48,6 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Fprintln(w, gptResponse)
 	} else {
-		http.Error(w, "只接受POST请求", http.StatusMethodNotAllowed)
+		http.Error(w, "Only allowed POST request", http.StatusMethodNotAllowed)
 	}
 }
