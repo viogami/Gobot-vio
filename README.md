@@ -2,7 +2,7 @@
 
 ![Go Reference](https://pkg.go.dev/badge/github.com/go-telegram-bot-api/telegram-bot-api/v5.svg)
 
-使用go搭建的bot，取名为 **Vio** ，旨在提供一个接口，用来完成chatgpt聊天等任务，部署在一个服务器可以多个平台共同调用。
+使用go搭建的bot，取名为 **Vio** ，旨在提供一个接口，用来接受post请求，调用转发外部讯息并返回，目前可以完成基于chatgpt聊天任务，部署在一个服务器可以多个平台共同调用。
 
 实现平台:
  - [x] Telegram bot
@@ -15,36 +15,38 @@
 传统的聊天机器人服务都是一体化的，和聊天平台需要集成。我希望把消息处理的逻辑和平台部署的逻辑做两个服务，后者发送信息给前者，前者返回需要发送的信息，后者再在聊天平台呈现信息。
 
 目前已经完成了：
+ - 为Tg设置了webhook，可以监听tg服务器的消息，实现tgbot。
  - 针对Telegram的消息处理，对私人，群组，超级群组各有不同的应答模式。
  - 添加了chatgpt api的调用，在聊天中支持chatgpt的回复。该功能使用了[go-openai](https://github.com/sashabaranov/go-openai)库，支持了go语言对openai api的调用
+ - 创建了一个接受post请求的路由，可以解析post内容转发调用chatgpt，目前我将其使用在微信公众号的后端上。
 
 
-## 对比表格/compare popular Paas
-| 服务提供商  | Fly.io          | Railway        | Render         | Glitch         | Adaptable      | **Zeabur**      |
-|-------------|-----------------|----------------|----------------|----------------|----------------|----------------|
-| 长时间不活动关闭 | 否             | 否              | 15 分钟         | 5 分钟          | 是*            | 否             |
-| 需要信用卡    | 是             | 是             | 否             | 否             | 否             | 否             |
-| 免费计划      | 免费创建三个最低配应用| 试用$5额度| 750 小时       | 1000 小时      | 无*            | $5/mo        |
-| 内存          | 256MB          | 512MB          | 512MB          | 512MB          | 256MB          | 512MB          |
-| 磁盘空间      | 3GB            | 1GB            | -              | 200MB*         | 1GB            | 1GB            |
-| 可写磁盘      | 是             | -              | 否             | 是             | 是*            | 是             |
-| 网络带宽      | 160GB          | $0.10/GB       | 100GB          | 4000 次请求/时  | 100GB          | -              |
-| 可用 Dockerfile | 是             | 是             | 是             | 否             | 否*            | 是             |
-| GitHub 集成  | 是            | 是             | 是             | 是             | 是             | 是             |
+## Paas平台推荐
+
+目前我正在使用Zeabur这个平台，国人开发的，discord上官方也很活跃。
 
 对于
  - Cloudflare Workers 
  - AirCode（国内团队做的） 
- - Vercel
 它们主要侧重于
 >Fullstack Javascript Apps - Deploy and Host in Seconds
 
 对非 Nodejs 的后端参考意义不大。
 主要思路都是 Edge Network + Serverless Functions（函数代码在轻量级的 V8 沙盒中执行）
+ - Fly.io
+ - Railway
 
-## 对于我/for me
-只使用过cloudflare的workers部署服务，但是只能使用js，不熟悉还是挺难搞了，但是用js的可能比较舒服。
-应该是完全免费的，只要绑了自己的域名在CF上，CF也提供子域名
+ 这两需要绑信用卡，并且railway免费计划只有试用5$了
+ - glitch
+ - adaptable
+
+ 这两不能使用dockerfile
+
+ 看重免费计划可以查询 [Free for dev](https://github.com/ripienaar/free-for-dev)中的列表
+### 对于我/for me
+
+只使用过cloudflare的workers部署服务，只能使用js，不熟悉还是挺难搞了，但是写js的可能比较舒服。
+是完全免费的，只要绑了自己的域名在CF上，CF也提供子域名
 
 目前感觉Zeabur挺不错，~~主要看重免费计划~~。国内社区，discord上回复也很即使，一键部署挺快的，github集成。
 
@@ -84,7 +86,7 @@ zeabur部署项目自带证书,做完域名映射可以直接https访问.
 ### 环境变量
 在目前我的实现中，定义了三个环境变量
 ```env
-TG_WEBHOOK_URL=https://yousite.com/
+TG_WEBHOOK_URL=https://yousite.com/tgbot
 BOT_TOKEN=your token
 chatGPTAPIKey=sk-your key
 ```
