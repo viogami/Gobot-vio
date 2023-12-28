@@ -13,8 +13,6 @@ import (
 
 func main() {
 	var port = os.Getenv("PORT")
-	//创建一个tgbot
-	tgbot.CreateTgbot()
 
 	// 创建一个默认的 Gin 引擎
 	router := gin.Default()
@@ -41,4 +39,7 @@ func main() {
 		fmt.Println("Error starting server:", err)
 	}
 	log.Println("gin启动完毕,正在监听 ", port, "端口的post请求")
+
+	//创建一个tgbot
+	tgbot.CreateTgbot(router)
 }

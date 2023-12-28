@@ -10,7 +10,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// 检查当前是否应该发送消息,私有
+// 检查当前是否应该发送消息
 func checksmg(bot *tgbotapi.BotAPI, message *tgbotapi.Message) bool {
 	issend := false
 	if message.Chat != nil && !message.IsCommand() {
