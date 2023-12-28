@@ -42,6 +42,7 @@ func CreateTgbot() {
 	}
 
 	// 监听webhook是否有更新,更新存放到updates中
+	// 此处的/tgbot/，是为了和URL匹配，URL：https://your-website/tgbot
 	updates := bot.ListenForWebhook("/tgbot/" + bot.Token)
 
 	// 对监听到的updates遍历,并作出回应

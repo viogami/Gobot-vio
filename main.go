@@ -40,6 +40,8 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 		// 读取请求体
 		postmsg := r.Form.Get("usermsg")
 
+		log.Println(postmsg)
+
 		// 调用ChatGPT API
 		gptResponse, err := chatgpt.InvokeChatGPTAPI(postmsg)
 		if err != nil {
