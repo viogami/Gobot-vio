@@ -17,6 +17,9 @@ func main() {
 	// 创建一个默认的 Gin 引擎
 	router := gin.Default()
 
+	//创建一个tgbot
+	tgbot.CreateTgbot(router)
+
 	// 设置一个 POST 请求的路由
 	router.POST("/post", func(c *gin.Context) {
 		// 从请求中获取字符串参数
@@ -38,8 +41,4 @@ func main() {
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 	}
-	log.Println("gin启动完毕,正在监听 ", port, "端口的post请求")
-
-	//创建一个tgbot
-	tgbot.CreateTgbot(router)
 }
