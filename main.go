@@ -39,9 +39,11 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 		}
 		// 读取请求体
 		postmsg := r.Form.Get("usermsg")
-
-		log.Println(postmsg)
-
+		if postmsg != "" {
+			log.Println("POST request,the usersmg:", postmsg)
+		} else {
+			http.Error(w, "Error:Don`t find the key:usersmg in the POST", http.StatusBadRequest)
+		}
 		// 调用ChatGPT API
 		gptResponse, err := chatgpt.InvokeChatGPTAPI(postmsg)
 		if err != nil {
