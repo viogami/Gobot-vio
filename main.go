@@ -52,6 +52,6 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Fprintln(w, gptResponse)
 	} else {
-		http.Error(w, "Only allowed POST request", http.StatusMethodNotAllowed)
+		http.Error(w, "Not "+r.Method+".Only allowed POST request.", http.StatusMethodNotAllowed)
 	}
 }
