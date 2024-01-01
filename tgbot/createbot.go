@@ -16,6 +16,11 @@ var (
 var superUserId int64 //管理员id
 
 func CreateTgbot() {
+	// appConfig := flag.String("config", "./app.yaml", "application config path")
+	// conf, _ := config.ConfigParse(*appConfig)
+	// BOT_TOKEN = conf.Tgbot.BOT_TOKEN
+	// TG_WEBHOOK_URL = conf.Tgbot.TG_WEBHOOK_URL
+
 	// 初始化bot
 	bot, err := tgbotapi.NewBotAPI(BOT_TOKEN)
 	if err != nil {

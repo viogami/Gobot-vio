@@ -13,13 +13,14 @@ var (
 )
 
 const (
-	chatGPTURL_chat   = "https://api.openai.com/v1"
-	chatGPTURL_img    = "https://api.openai.com/v1/images/generations"
-	chatGPTURL_mood   = "https://api.openai.com/v1/moderations"
 	chatGPTURL_broker = "https://one-api.bltcy.top/v1"
 )
 
 func InvokeChatGPTAPI(text string) (string, error) {
+	// appConfig := flag.String("config", "./app.yaml", "application config path")
+	// conf, _ := config.ConfigParse(*appConfig)
+	// chatGPTAPIKey = conf.Chatgpt.chatGPTAPIKey
+
 	config := openai.DefaultConfig(chatGPTAPIKey)
 	config.BaseURL = chatGPTURL_broker
 

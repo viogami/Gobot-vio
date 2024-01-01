@@ -1,0 +1,21 @@
+# 请注意，该配置文件尚未在项目中使用，目前仍使用os.getenv获取环境变量的方式得到配置
+
+# 这是示例配置，请根据实际重写，并改文件名为 app.yaml
+server:
+  env: "debug"
+  address: "127.0.0.1"
+  port: 8080
+
+tgbot:
+  TG_WEBHOOK_URL: https://your-site/tgbot
+  BOT_TOKEN: your BOT_TOKEN
+
+
+chatgpt:
+  chatGPTAPIKey: sk-your key
+
+wx:
+  port: 8000
+  wxTOKEN: "your wxtoken"
+
+
