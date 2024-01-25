@@ -1,7 +1,6 @@
 package server
 
 import (
-	"Gobot-vio/tgbot"
 	"net/http"
 )
 
@@ -23,8 +22,6 @@ func (s *Server) Run(port string) error {
 	// 启动 Web 服务器监听 port 端口
 	err := http.ListenAndServe(":"+port, s.mux)
 
-	//创建一个tgbot
-	tgbot.CreateTgbot()
 	return err
 }
 

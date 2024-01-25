@@ -2,6 +2,7 @@ package main
 
 import (
 	"Gobot-vio/server"
+	"Gobot-vio/tgbot"
 	"log"
 	"os"
 )
@@ -9,6 +10,9 @@ import (
 var port = os.Getenv("PORT")
 
 func main() {
+	//创建一个tgbot
+	tgbot.CreateTgbot()
+
 	//创建一个http server
 	server := server.New()
 	err := server.Run(port)
