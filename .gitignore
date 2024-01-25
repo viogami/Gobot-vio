@@ -1,4 +1,5 @@
 *.pem
 .env
 app.yaml
-config_test.go
+config
+main
