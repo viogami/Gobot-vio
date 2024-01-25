@@ -1,6 +1,7 @@
 package server
 
 import (
+	"Gobot-vio/tgbot"
 	"log"
 	"net/http"
 )
@@ -28,6 +29,9 @@ func (s *Server) Run(port string) {
 			log.Printf("Error starting server: %v\n", err)
 		}
 	}()
+
+	//创建一个tgbot
+	tgbot.CreateTgbot()
 }
 
 // Close 方法用于关闭服务器
