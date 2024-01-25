@@ -11,7 +11,6 @@ var port = os.Getenv("PORT")
 
 func main() {
 	go func() {
-		server := server.New()
 		err := server.Run(port)
 		log.Println("HTTP server is running on port:", port)
 		if err != nil {
