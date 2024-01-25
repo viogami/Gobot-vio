@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+func handleHome(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "hello,this is a bot server")
+}
+
 // 提取post中的msg字符串，调用chatgpt api，返回响应回答
 func handlePost(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
