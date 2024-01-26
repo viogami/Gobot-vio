@@ -31,7 +31,6 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-
 		// 打印接收到的消息
 		err = gocq.Log_post_type(p)
 		if err != nil {

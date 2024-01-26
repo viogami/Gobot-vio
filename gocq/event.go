@@ -118,10 +118,10 @@ func Send_by_event(conn *websocket.Conn) {
 		}
 
 		if msgtype == "private" {
-			log.Println("将对私聊回复,userID:", receivedMsgEvent)
+			log.Println("将对私聊回复,receivedMsgEvent:", receivedMsgEvent)
 			Send_msg(conn, &receivedMsgEvent, msgText)
 		} else if msgtype == "group" && Atme {
-			log.Println("将对at我的群聊回复,goupID:", receivedMsgEvent)
+			log.Println("将对at我的群聊回复,receivedMsgEvent:", receivedMsgEvent)
 			Send_msg(conn, &receivedMsgEvent, msgText)
 		} else {
 			log.Println("不是私聊或者at我的群聊")
