@@ -89,12 +89,11 @@ func Log_post_type(p []byte) error {
 		}
 		log.Println("Received ", post_type, ":", receivedMetaEvent.MetaEventType)
 	}
-	return fmt.Errorf("error: check post_type,must message, request, notice or meta_event")
+	return nil
 }
 
 // 发送消息
 func Send_by_event(conn *websocket.Conn) {
-	log.Println("开始发送消息")
 	if receivedEvent.PostType == "message" {
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
@@ -107,13 +106,10 @@ func Send_by_event(conn *websocket.Conn) {
 				Atme = true
 			}
 		}
-		log.Println(receivedMsgEvent)
 		if msgtype == "private" {
-			log.Println("将对私聊回复,userID:", receivedMsgEvent.UserID)
 			targetID := receivedMsgEvent.UserID
 			Send_msg(conn, msgtype, targetID, msgText)
 		} else if msgtype == "group" && Atme {
-			log.Println("将对at我的群聊回复,goupID:", receivedMsgEvent.GroupID)
 			targetID := receivedMsgEvent.GroupID
 			Send_msg(conn, msgtype, targetID, msgText)
 		} else {
