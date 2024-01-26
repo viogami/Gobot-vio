@@ -118,9 +118,19 @@ func Send_by_event(conn *websocket.Conn) {
 		targetID := receivedMsgEvent.UserID
 		CQcodes := ParseCQmsg(receivedMsgEvent.Message).CQcodes
 		msgText := ParseCQmsg(receivedMsgEvent.Message).Text
+		Atme := false
+		// 判断是否at我
+		if CQcodes != nil {
+			for _, CQcode := range CQcodes {
+				if CQcode.Type == "at" && CQcode.Params["id"] == receivedEvent.SelfID {
+					Atme = true
+				}
+			}
+		}
+
 		if msgtype == "private" {
 			Send_msg(conn, msgtype, targetID, msgText)
-		} else if msgtype == "group" && CQcodes[0].Type == "at" && CQcodes[0].Params["id"] == receivedEvent.SelfID {
+		} else if msgtype == "group" && Atme {
 			Send_msg(conn, msgtype, targetID, msgText)
 		} else {
 			log.Println("不是私聊或者at我的群聊")
