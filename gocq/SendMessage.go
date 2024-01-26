@@ -33,13 +33,13 @@ func Send_msg(conn *websocket.Conn, msgtype string, targetID int64, message stri
 	}
 	// 构建消息结构
 	sendMessage := ReplyMessage{
-		Action: "send_msg",
+		Action: "send_private_msg",
 		Params: Params{
-			MessageType: msgtype,  // "private" / "group
-			UserID:      targetID, // 仅在发送私聊消息时使用
-			GroupID:     targetID, // 仅在发送群消息时使用
-			Message:     message_reply,
-			AutoEscape:  false, // 消息内容是否作为纯文本发送 ( 即不解析 CQ 码 )，只在 message 字段是字符串时有效
+			// MessageType: msgtype,  // "private" / "group
+			UserID:     targetID, // 仅在发送私聊消息时使用
+			GroupID:    targetID, // 仅在发送群消息时使用
+			Message:    message_reply,
+			AutoEscape: false, // 消息内容是否作为纯文本发送 ( 即不解析 CQ 码 )，只在 message 字段是字符串时有效
 		},
 		Echo: "echo_test", // 用于识别回调消息
 	}
