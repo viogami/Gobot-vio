@@ -14,14 +14,14 @@ type Event struct {
 }
 
 type MessageEvent struct {
-	MessageType string    `json:"message_type"`
-	SubType     string    `json:"sub_type"`
-	MessageID   int32     `json:"message_id"`
-	UserID      int64     `json:"user_id"`
-	Message     []Message `json:"message"`
-	RawMessage  string    `json:"raw_message"`
-	Font        int       `json:"font"`
-	Sender      Sender    `json:"sender"`
+	MessageType string  `json:"message_type"`
+	SubType     string  `json:"sub_type"`
+	MessageID   int32   `json:"message_id"`
+	UserID      int64   `json:"user_id"`
+	Message     Message `json:"message"`
+	RawMessage  string  `json:"raw_message"`
+	Font        int     `json:"font"`
+	Sender      Sender  `json:"sender"`
 }
 type Message struct {
 	Type string      `json:"type"`
@@ -53,6 +53,10 @@ type MetaEvent struct {
 	MetaEventType string `json:"meta_event_type"`
 }
 
+type P struct {
+	P interface{} `json:"p"`
+}
+
 // 接收的事件
 var (
 	receivedEvent        Event
@@ -60,6 +64,7 @@ var (
 	receivedRequestEvent RequestEvent
 	receivedNoticeEvent  NoticeEvent
 	receivedMetaEvent    MetaEvent
+	pp                   P
 )
 
 // 判断上报类型
@@ -73,7 +78,7 @@ func Log_post_type(p []byte) error {
 
 	if post_type == "message" || post_type == "message_sent" {
 		// 消息事件
-		log.Println(p)
+		log.Println(json.Unmarshal(p, &pp))
 		err := json.Unmarshal(p, &receivedMsgEvent)
 		if err != nil {
 			log.Println("Error parsing JSON to receivedMsgEvent:", err)
