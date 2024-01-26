@@ -106,7 +106,7 @@ func Send_by_event(conn *websocket.Conn) {
 				Atme = true
 			}
 		}
-		log.Println(receivedMsgEvent)
+
 		if msgtype == "private" {
 			log.Println("将对私聊回复,userID:", receivedMsgEvent.UserID)
 			targetID := receivedMsgEvent.UserID
