@@ -23,10 +23,15 @@ type MessageEvent struct {
 	Font        int       `json:"font"`
 	Sender      Sender    `json:"sender"`
 }
-
 type Message struct {
 	Type string      `json:"type"`
 	Data interface{} `json:"data"`
+}
+type AtData struct {
+	QQ int64 `json:"qq"`
+}
+type TextData struct {
+	Text string `json:"text"`
 }
 
 type Sender struct {
@@ -58,20 +63,21 @@ var (
 )
 
 // 判断上报类型
-func Log_post_type(p []byte) {
+func Log_post_type(p []byte) error {
 	err := json.Unmarshal(p, &receivedEvent)
 	if err != nil {
 		log.Println("Error parsing JSON:", err)
-		return
+		return err
 	}
 	post_type := receivedEvent.PostType
 
 	if post_type == "message" || post_type == "message_sent" {
 		// 消息事件
+		log.Println(p)
 		err := json.Unmarshal(p, &receivedMsgEvent)
 		if err != nil {
 			log.Println("Error parsing JSON to receivedMsgEvent:", err)
-			return
+			return err
 		}
 		log.Println("Received message_event:", receivedMsgEvent.MessageType)
 	} else if post_type == "request" {
@@ -79,7 +85,7 @@ func Log_post_type(p []byte) {
 		err := json.Unmarshal(p, &receivedRequestEvent)
 		if err != nil {
 			log.Println("Error parsing JSON to receivedRequestEvent:", err)
-			return
+			return err
 		}
 		log.Println("Received request_event:", receivedRequestEvent.RequestType)
 	} else if post_type == "notice" {
@@ -87,7 +93,7 @@ func Log_post_type(p []byte) {
 		err := json.Unmarshal(p, &receivedNoticeEvent)
 		if err != nil {
 			log.Println("Error parsing JSON to receivedNoticeEvent:", err)
-			return
+			return err
 		}
 		log.Println("Received notice_event:", receivedNoticeEvent.NoticeType)
 	} else if post_type == "meta_event" {
@@ -95,10 +101,11 @@ func Log_post_type(p []byte) {
 		err := json.Unmarshal(p, &receivedMetaEvent)
 		if err != nil {
 			log.Println("Error parsing JSON to receivedMetaEvent:", err)
-			return
+			return err
 		}
 		log.Println("Received meta_event:", receivedMetaEvent.MetaEventType)
 	}
+	return nil
 }
 
 // 发送消息
