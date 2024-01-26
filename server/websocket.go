@@ -3,6 +3,7 @@ package server
 import (
 	"Gobot-vio/gocq"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -33,7 +34,9 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 		// 打印接收到的消息
 		err = gocq.Log_post_type(p)
-		if err == nil {
+		if err != nil {
+			log.Println(err)
+		} else {
 			// 发送消息
 			gocq.Send_by_event(conn)
 		}
