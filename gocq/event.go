@@ -55,7 +55,8 @@ func Log_post_type(p []byte) error {
 		return err
 	}
 	post_type := receivedEvent.PostType
-
+	/////////////////////////////
+	log.Println(receivedEvent)
 	if post_type == "message " || post_type == "message_sent" {
 		// 消息事件
 		err := json.Unmarshal(p, &receivedMsgEvent)
@@ -106,8 +107,7 @@ func Send_by_event(conn *websocket.Conn) {
 				Atme = true
 			}
 		}
-		// 判断消息类型
-		log.Println(receivedMsgEvent)
+
 		if msgtype == "private" {
 			targetID := receivedMsgEvent.UserID
 			Send_msg(conn, msgtype, targetID, msgText)
