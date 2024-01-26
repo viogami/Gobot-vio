@@ -56,14 +56,14 @@ func Log_post_type(p []byte) error {
 	}
 	post_type := receivedEvent.PostType
 
-	if post_type == "message" || post_type == "message_sent" {
+	if post_type == "message " || post_type == "message_sent" {
 		// 消息事件
 		err := json.Unmarshal(p, &receivedMsgEvent)
 		if err != nil {
 			log.Println("Error parsing JSON to receivedMsgEvent:", err)
 			return err
 		}
-		log.Println("Received message_event:", receivedMsgEvent.MessageType)
+		log.Println("Received ", post_type, ":", receivedMsgEvent.MessageType)
 	} else if post_type == "request" {
 		// 请求事件
 		err := json.Unmarshal(p, &receivedRequestEvent)
@@ -71,7 +71,7 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedRequestEvent:", err)
 			return err
 		}
-		log.Println("Received request_event:", receivedRequestEvent.RequestType)
+		log.Println("Received ", post_type, ":", receivedRequestEvent.RequestType)
 	} else if post_type == "notice" {
 		// 通知事件
 		err := json.Unmarshal(p, &receivedNoticeEvent)
@@ -79,7 +79,7 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedNoticeEvent:", err)
 			return err
 		}
-		log.Println("Received notice_event:", receivedNoticeEvent.NoticeType)
+		log.Println("Received ", post_type, ":", receivedNoticeEvent.NoticeType)
 	} else if post_type == "meta_event" {
 		// 元事件
 		err := json.Unmarshal(p, &receivedMetaEvent)
@@ -87,14 +87,14 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedMetaEvent:", err)
 			return err
 		}
-		log.Println("Received meta_event:", receivedMetaEvent.MetaEventType)
+		log.Println("Received", post_type, ":", receivedMetaEvent.MetaEventType)
 	}
 	return nil
 }
 
 // 发送消息
 func Send_by_event(conn *websocket.Conn) {
-	if receivedEvent.PostType == "message" || receivedEvent.PostType == "message_sent" {
+	if receivedEvent.PostType == "message" {
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
 		CQcodes := ParseCQmsg(receivedMsgEvent.Message).CQcodes
