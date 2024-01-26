@@ -8,28 +8,27 @@ import (
 )
 
 type ReplyMessage struct {
-	Action string `json:"action"`
-	Params Params `json:"params"`
-	Echo   string `json:"echo"`
+	Action string
+	Params Params
+	Echo   string
 }
 
 type Params struct {
-	MessageType string `json:"message_type"`
-	UserID      int64  `json:"user_id"`
-	GroupID     int64  `json:"group_id"`
-	Message     string `json:"message"`
-	AutoEscape  bool   `json:"auto_escape"`
+	MessageType string
+	UserID      int64
+	GroupID     int64
+	Message     string
+	AutoEscape  bool
 }
 
 func Send_msg(conn *websocket.Conn, msgtype string, targetID int64, message string) {
-
-	message = Filter_text(message)
+	message_reply := Filter_text(message)
 	if Filter_ID(targetID) {
-		message = "主人，你好！Ciallo～(∠・ω< )⌒☆"
+		message_reply = "主人，你好！Ciallo～(∠・ω< )⌒☆"
 	}
 	// chatgpt回复
 	if message == "" {
-		message = reply(message)
+		message_reply = reply(message)
 	}
 	// 构建消息结构
 	sendMessage := ReplyMessage{
@@ -38,7 +37,7 @@ func Send_msg(conn *websocket.Conn, msgtype string, targetID int64, message stri
 			MessageType: msgtype,  // "private" / "group
 			UserID:      targetID, // 仅在发送私聊消息时使用
 			GroupID:     targetID, // 仅在发送群消息时使用
-			Message:     message,
+			Message:     message_reply,
 			AutoEscape:  false, // 消息内容是否作为纯文本发送 ( 即不解析 CQ 码 )，只在 message 字段是字符串时有效
 		},
 		Echo: "echo_test", // 用于识别回调消息
