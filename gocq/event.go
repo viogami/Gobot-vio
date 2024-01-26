@@ -121,7 +121,7 @@ func Send_by_event(conn *websocket.Conn) {
 		Atme := false
 		// 判断是否at我
 		for _, CQcode := range CQcodes {
-			if CQcode.Type == "at" && CQcode.Params["id"] == receivedEvent.SelfID {
+			if CQcode.Type == "at" && CQcode.Params["qq"] == receivedEvent.SelfID {
 				Atme = true
 			}
 		}
