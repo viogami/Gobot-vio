@@ -1,9 +1,8 @@
 package server
 
 import (
-	"Gobot-vio/chatgpt"
+	"Gobot-vio/gocq"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -32,25 +31,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// 处理接收到的消息
-		p = []byte(reply(string(p)))
+		// 打印接收到的消息
+		fmt.Print("messageType:", messageType)
 		fmt.Printf("Received message: %s\n", p)
 
-		// 原样返回消息
-		err = conn.WriteMessage(messageType, p)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+		// 发送消息
+		gocq.Send_private_msg(conn, 2654613995, string(p))
 	}
-}
-
-func reply(text string) string {
-	// 调用ChatGPT API
-	gptResponse, err := chatgpt.InvokeChatGPTAPI(text)
-	if err != nil {
-		log.Printf("Error calling ChatGPT API: %v", err)
-		gptResponse = "gpt调用失败了😥 错误信息：\n" + err.Error()
-	}
-	return gptResponse
 }
