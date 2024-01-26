@@ -25,17 +25,15 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		// 从WebSocket连接读取消息
-		messageType, p, err := conn.ReadMessage()
+		_, p, err := conn.ReadMessage()
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
 		// 打印接收到的消息
-		fmt.Print("messageType:", messageType)
-		fmt.Printf("Received message: %s\n", p)
-
+		gocq.Log_post_type(p)
 		// 发送消息
-		gocq.Send_private_msg(conn, 2654613995, string(p))
+		gocq.Send_by_event(conn)
 	}
 }
