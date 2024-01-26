@@ -46,6 +46,7 @@ var (
 	receivedNoticeEvent  NoticeEvent
 	receivedMetaEvent    MetaEvent
 )
+var heart_count = 0
 
 // 判断上报类型
 func Log_post_type(p []byte) error {
@@ -87,7 +88,16 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedMetaEvent:", err)
 			return err
 		}
-		log.Println("Received ", post_type, ":", receivedMetaEvent.MetaEventType)
+
+		if receivedMetaEvent.MetaEventType == "heartbeat" {
+			heart_count++
+		} else {
+			log.Println("Received ", post_type, ":", receivedMetaEvent.MetaEventType)
+		}
+
+		if heart_count == 200 {
+			log.Println(receivedMetaEvent.MetaEventType, " 200次")
+		}
 	}
 	return nil
 }
@@ -108,11 +118,11 @@ func Send_by_event(conn *websocket.Conn) {
 		}
 
 		if msgtype == "private" {
-			log.Println("将对私聊回复,userID:", receivedMsgEvent.UserID)
+			log.Println("将对私聊回复,userID:", receivedMsgEvent)
 			targetID := receivedMsgEvent.UserID
 			Send_msg(conn, msgtype, targetID, msgText)
 		} else if msgtype == "group" && Atme {
-			log.Println("将对at我的群聊回复,goupID:", receivedMsgEvent.GroupID)
+			log.Println("将对at我的群聊回复,goupID:", receivedMsgEvent)
 			targetID := receivedMsgEvent.GroupID
 			Send_msg(conn, msgtype, targetID, msgText)
 		} else {
