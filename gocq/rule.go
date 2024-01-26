@@ -10,5 +10,8 @@ func Filter_text(text string) string {
 	if strings.Contains(text, "陈义卫") {
 		return "谢谢你提及我的主人~"
 	}
+	if strings.Contains(text, "习近平") {
+		return "已过滤"
+	}
 	return ""
 }
