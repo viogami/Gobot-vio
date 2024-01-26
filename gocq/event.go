@@ -19,6 +19,7 @@ type MessageEvent struct {
 	SubType     string `json:"sub_type"`
 	MessageID   int32  `json:"message_id"`
 	UserID      int64  `json:"user_id"`
+	GroupID     int64  `json:"group_id"`
 	Message     string `json:"message"`
 	RawMessage  string `json:"raw_message"`
 	Font        int    `json:"font"`
@@ -41,8 +42,6 @@ type MetaEvent struct {
 var (
 	receivedEvent        Event
 	receivedMsgEvent     MessageEvent
-	privateMessage       PrivateMessage
-	groupMessage         GroupMessage
 	receivedRequestEvent RequestEvent
 	receivedNoticeEvent  NoticeEvent
 	receivedMetaEvent    MetaEvent
@@ -64,8 +63,6 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedMsgEvent:", err)
 			return err
 		}
-		// 获取消息具体结构 私聊和群聊的消息结构不一样
-		Get_msg_info(p, receivedMsgEvent.MessageType)
 		log.Println("Received message_event:", receivedMsgEvent.MessageType)
 	} else if post_type == "request" {
 		// 请求事件
@@ -111,10 +108,10 @@ func Send_by_event(conn *websocket.Conn) {
 		}
 
 		if msgtype == "private" {
-			targetID := privateMessage.UserID
+			targetID := receivedMsgEvent.UserID
 			Send_msg(conn, msgtype, targetID, msgText)
 		} else if msgtype == "group" && Atme {
-			targetID := groupMessage.GroupID
+			targetID := receivedMsgEvent.GroupID
 			Send_msg(conn, msgtype, targetID, msgText)
 		} else {
 			log.Println("不是私聊或者at我的群聊")
