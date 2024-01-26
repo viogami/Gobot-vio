@@ -94,6 +94,7 @@ func Log_post_type(p []byte) error {
 
 // 发送消息
 func Send_by_event(conn *websocket.Conn) {
+	log.Println("开始发送消息")
 	if receivedEvent.PostType == "message" {
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
@@ -106,7 +107,7 @@ func Send_by_event(conn *websocket.Conn) {
 				Atme = true
 			}
 		}
-
+		log.Println(receivedMsgEvent)
 		if msgtype == "private" {
 			log.Println("将对私聊回复,userID:", receivedMsgEvent.UserID)
 			targetID := receivedMsgEvent.UserID
