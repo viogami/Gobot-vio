@@ -15,34 +15,14 @@ type Event struct {
 }
 
 type MessageEvent struct {
-	MessageType string `json:"message_type"`
-	SubType     string `json:"sub_type"`
-	MessageID   int32  `json:"message_id"`
-	UserID      int64  `json:"user_id"`
-	Message     string `json:"message"`
-	RawMessage  string `json:"raw_message"`
-	Font        int    `json:"font"`
-	Sender      Sender `json:"sender"`
-}
-
-// 下面的Message结构体为array形式，并未使用
-// 当前使用的是string形式，修改请到gocq的config文件中改变上报属性
-type Message struct {
-	Type string      `json:"type"`
-	Data interface{} `json:"data"`
-}
-type AtData struct {
-	QQ int64 `json:"qq"`
-}
-type TextData struct {
-	Text string `json:"text"`
-}
-
-type Sender struct {
-	UserID   int64  `json:"user_id"`
-	Nickname string `json:"nickname"`
-	Sex      string `json:"sex"`
-	Age      int32  `json:"age"`
+	MessageType string  `json:"message_type"`
+	SubType     string  `json:"sub_type"`
+	MessageID   int32   `json:"message_id"`
+	UserID      int64   `json:"user_id"`
+	Message     Message `json:"message"`
+	RawMessage  string  `json:"raw_message"`
+	Font        int     `json:"font"`
+	Sender      Sender  `json:"sender"`
 }
 
 type RequestEvent struct {
@@ -61,6 +41,8 @@ type MetaEvent struct {
 var (
 	receivedEvent        Event
 	receivedMsgEvent     MessageEvent
+	privateMessage       PrivateMessage
+	groupMessage         GroupMessage
 	receivedRequestEvent RequestEvent
 	receivedNoticeEvent  NoticeEvent
 	receivedMetaEvent    MetaEvent
@@ -82,6 +64,8 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedMsgEvent:", err)
 			return err
 		}
+		// 获取消息具体结构 私聊和群聊的消息结构不一样
+		Get_msg_info(p, receivedMsgEvent.MessageType)
 		log.Println("Received message_event:", receivedMsgEvent.MessageType)
 	} else if post_type == "request" {
 		// 请求事件
@@ -116,9 +100,8 @@ func Send_by_event(conn *websocket.Conn) {
 	if receivedEvent.PostType == "message" || receivedEvent.PostType == "message_sent" {
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
-		targetID := receivedMsgEvent.UserID
-		CQcodes := ParseCQmsg(receivedMsgEvent.Message).CQcodes
-		msgText := ParseCQmsg(receivedMsgEvent.Message).Text
+		CQcodes := ParseCQmsg(receivedMsgEvent.Message.Msg).CQcodes
+		msgText := ParseCQmsg(receivedMsgEvent.Message.Msg).Text
 		Atme := false
 		// 判断是否at我
 		for _, CQcode := range CQcodes {
@@ -128,8 +111,10 @@ func Send_by_event(conn *websocket.Conn) {
 		}
 
 		if msgtype == "private" {
+			targetID := privateMessage.UserID
 			Send_msg(conn, msgtype, targetID, msgText)
 		} else if msgtype == "group" && Atme {
+			targetID := groupMessage.GroupID
 			Send_msg(conn, msgtype, targetID, msgText)
 		} else {
 			log.Println("不是私聊或者at我的群聊")
