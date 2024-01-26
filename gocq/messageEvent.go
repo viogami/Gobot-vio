@@ -10,7 +10,6 @@ import (
 type Message struct {
 	// Type string      `json:"type"`
 	// Data interface{} `json:"data"`
-	Msg string `json:"message"`
 }
 type AtData struct {
 	QQ int64 `json:"qq"`
@@ -35,7 +34,7 @@ type PrivateMessage struct {
 	SubType     string `json:"sub_type"`
 	MessageID   int32  `json:"message_id"`
 	UserID      int64  `json:"user_id"`
-	Message     Message
+	Message     string `json:"message"`
 	RawMessage  string `json:"raw_message"`
 	Font        int32  `json:"font"`
 	Sender      Sender `json:"sender"`
@@ -45,14 +44,14 @@ type PrivateMessage struct {
 
 // 群聊消息
 type GroupMessage struct {
-	Time        int64  `json:"time"`
-	SelfID      int64  `json:"self_id"`
-	PostType    string `json:"post_type"`
-	MessageType string `json:"message_type"`
-	SubType     string `json:"sub_type"`
-	MessageID   int32  `json:"message_id"`
-	UserID      int64  `json:"user_id"`
-	Message     Message
+	Time        int64     `json:"time"`
+	SelfID      int64     `json:"self_id"`
+	PostType    string    `json:"post_type"`
+	MessageType string    `json:"message_type"`
+	SubType     string    `json:"sub_type"`
+	MessageID   int32     `json:"message_id"`
+	UserID      int64     `json:"user_id"`
+	Message     string    `json:"message"`
 	RawMessage  string    `json:"raw_message"`
 	Font        int32     `json:"font"`
 	Sender      Sender    `json:"sender"`

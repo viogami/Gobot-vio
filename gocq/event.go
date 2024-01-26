@@ -19,7 +19,7 @@ type MessageEvent struct {
 	SubType     string `json:"sub_type"`
 	MessageID   int32  `json:"message_id"`
 	UserID      int64  `json:"user_id"`
-	Message     Message
+	Message     string `json:"message"`
 	RawMessage  string `json:"raw_message"`
 	Font        int    `json:"font"`
 	Sender      Sender `json:"sender"`
@@ -100,8 +100,8 @@ func Send_by_event(conn *websocket.Conn) {
 	if receivedEvent.PostType == "message" || receivedEvent.PostType == "message_sent" {
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
-		CQcodes := ParseCQmsg(receivedMsgEvent.Message.Msg).CQcodes
-		msgText := ParseCQmsg(receivedMsgEvent.Message.Msg).Text
+		CQcodes := ParseCQmsg(receivedMsgEvent.Message).CQcodes
+		msgText := ParseCQmsg(receivedMsgEvent.Message).Text
 		Atme := false
 		// 判断是否at我
 		for _, CQcode := range CQcodes {
