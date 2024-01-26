@@ -2,7 +2,7 @@ package gocq
 
 import "strings"
 
-func Filter_ID(userID int64) bool {
+func Master_ID(userID int64) bool {
 	return userID == 123456789
 }
 

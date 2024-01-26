@@ -23,7 +23,7 @@ type Params struct {
 
 func Send_msg(conn *websocket.Conn, msgtype string, targetID int64, message string) {
 	message_reply := Filter_text(message)
-	if Filter_ID(targetID) {
+	if Master_ID(targetID) {
 		message_reply = "主人，你好！Ciallo～(∠・ω< )⌒☆"
 	}
 	// chatgpt回复
