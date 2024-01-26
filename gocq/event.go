@@ -118,9 +118,12 @@ func Send_by_event(conn *websocket.Conn) {
 
 	} else if receivedEvent.PostType == "request" {
 		// 请求事件
+
 	} else if receivedEvent.PostType == "notice" {
 		// 通知事件
+
 	} else if receivedEvent.PostType == "meta_event" {
 		// 元事件
+
 	}
 }
