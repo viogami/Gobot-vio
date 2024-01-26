@@ -87,9 +87,9 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedMetaEvent:", err)
 			return err
 		}
-		log.Println("Received", post_type, ":", receivedMetaEvent.MetaEventType)
+		log.Println("Received ", post_type, ":", receivedMetaEvent.MetaEventType)
 	}
-	return nil
+	return fmt.Errorf("error: check post_type,must message, request, notice or meta_event")
 }
 
 // 发送消息
