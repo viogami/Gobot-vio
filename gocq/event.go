@@ -106,7 +106,8 @@ func Send_by_event(conn *websocket.Conn) {
 				Atme = true
 			}
 		}
-
+		// 判断消息类型
+		log.Println(receivedMsgEvent)
 		if msgtype == "private" {
 			targetID := receivedMsgEvent.UserID
 			Send_msg(conn, msgtype, targetID, msgText)
