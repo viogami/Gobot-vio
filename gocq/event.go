@@ -15,14 +15,14 @@ type Event struct {
 }
 
 type MessageEvent struct {
-	MessageType string  `json:"message_type"`
-	SubType     string  `json:"sub_type"`
-	MessageID   int32   `json:"message_id"`
-	UserID      int64   `json:"user_id"`
-	Message     Message `json:"message"`
-	RawMessage  string  `json:"raw_message"`
-	Font        int     `json:"font"`
-	Sender      Sender  `json:"sender"`
+	MessageType string `json:"message_type"`
+	SubType     string `json:"sub_type"`
+	MessageID   int32  `json:"message_id"`
+	UserID      int64  `json:"user_id"`
+	Message     Message
+	RawMessage  string `json:"raw_message"`
+	Font        int    `json:"font"`
+	Sender      Sender `json:"sender"`
 }
 
 type RequestEvent struct {
