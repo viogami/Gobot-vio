@@ -119,10 +119,10 @@ func Send_by_event(conn *websocket.Conn) {
 		// 消息事件
 		msgtype := receivedMsgEvent.SubType
 		targetID := receivedMsgEvent.UserID
-		message := receivedMsgEvent.Message[0].Data.(string)
+		message := receivedMsgEvent.Message.Data.(string)
 		if msgtype == "private" {
 			Send_msg(conn, msgtype, targetID, message)
-		} else if msgtype == "group" && receivedMsgEvent.Message[0].Type == "at" && receivedMsgEvent.Message[0].Data.(int64) == receivedEvent.SelfID {
+		} else if msgtype == "group" && receivedMsgEvent.Message.Type == "at" && receivedMsgEvent.Message.Data.(int64) == receivedEvent.SelfID {
 			Send_msg(conn, msgtype, targetID, message)
 		} else {
 			log.Println("不是私聊或者at我的群聊")
