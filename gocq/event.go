@@ -55,9 +55,8 @@ func Log_post_type(p []byte) error {
 		return err
 	}
 	post_type := receivedEvent.PostType
-	/////////////////////////////
-	log.Println(receivedEvent)
-	if post_type == "message " || post_type == "message_sent" {
+
+	if post_type == "message" || post_type == "message_sent" {
 		// 消息事件
 		err := json.Unmarshal(p, &receivedMsgEvent)
 		if err != nil {
