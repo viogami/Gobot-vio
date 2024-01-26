@@ -24,9 +24,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	count := 0
 	for {
-		count++
 		// 从WebSocket连接读取消息
 		_, p, err := conn.ReadMessage()
 		if err != nil {
@@ -42,6 +40,5 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			// 发送消息
 			gocq.Send_by_event(conn)
 		}
-		log.Println("count:", count)
 	}
 }

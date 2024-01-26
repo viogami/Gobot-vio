@@ -21,35 +21,39 @@ type Params struct {
 	AutoEscape  bool
 }
 
-func Send_msg(conn *websocket.Conn, msgtype string, targetID int64, message string) {
-	message_reply := Filter_text(message)
+func Send_msg(conn *websocket.Conn, MsgEvent *MessageEvent, msgText string) {
+	message_reply := Filter_text(MsgEvent.Message)
 	// chatgpt回复
 	if message_reply == "" {
-		message_reply = reply(message)
+		message_reply = reply(MsgEvent.Message)
 	}
+	// 构建消息结构
+	var sendMessage map[string]interface{}
 	// 判断消息类型
-	userid := int64(0)
-	groupid := int64(0)
-	if msgtype == "private" {
-		userid = targetID
-	} else if msgtype == "group" {
-		groupid = targetID
+	if MsgEvent.MessageType == "private" {
+		sendMessage = map[string]interface{}{
+			"action": "send_private_msg",
+			"params": map[string]interface{}{
+				"user_id":     MsgEvent.UserID,
+				"group_id":    MsgEvent.GroupID,
+				"message":     message_reply,
+				"auto_escape": false, // 消息内容是否作为纯文本发送 ( 即不解析 CQ 码 )，只在 message 字段是字符串时有效
+			},
+			"echo": "echo_test", // 用于识别回调消息
+		}
+	} else if MsgEvent.MessageType == "group" {
+		sendMessage = map[string]interface{}{
+			"action": "send_group_msg",
+			"params": map[string]interface{}{
+				"group_id":    MsgEvent.GroupID,
+				"message":     message_reply,
+				"auto_escape": false, // 消息内容是否作为纯文本发送 ( 即不解析 CQ 码 )，只在 message 字段是字符串时有效
+			},
+			"echo": "echo_test", // 用于识别回调消息
+		}
 	} else {
 		log.Println("Error: msgtype is not private or group")
 		return
-	}
-
-	// 构建消息结构
-	sendMessage := map[string]interface{}{
-		"action": "send_msg",
-		"params": map[string]interface{}{
-			"message_type": msgtype, // "private" / "group
-			"user_id":      userid,  // 仅在发送私聊消息时使用
-			"group_id":     groupid, // 仅在发送群消息时使用
-			"message":      message_reply,
-			"auto_escape":  false, // 消息内容是否作为纯文本发送 ( 即不解析 CQ 码 )，只在 message 字段是字符串时有效
-		},
-		"echo": "echo_test", // 用于识别回调消息
 	}
 
 	// 发送 JSON 消息
