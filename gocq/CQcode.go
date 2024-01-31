@@ -12,8 +12,8 @@ type CQmsg struct {
 }
 
 type CQCode struct {
-	Type   string
-	Params map[string]interface{}
+	Type string
+	Data map[string]interface{}
 }
 
 func ParseCQmsg(input string) CQmsg {
@@ -29,13 +29,13 @@ func ParseCQmsg(input string) CQmsg {
 	// 处理每个CQ码句段
 	for _, match := range matches {
 		cqCode := CQCode{
-			Type:   match[1],
-			Params: make(map[string]interface{}),
+			Type: match[1],
+			Data: make(map[string]interface{}),
 		}
 
 		if match[2] != "" && match[3] != "" {
 			// 如果有参数，将参数添加到 map 中
-			cqCode.Params[match[2]] = match[3]
+			cqCode.Data[match[2]] = match[3]
 		}
 
 		result.CQcodes = append(result.CQcodes, cqCode)
@@ -54,8 +54,8 @@ func ParseCQmsg(input string) CQmsg {
 func GenerateCQCode(cq CQCode) string {
 	cqCode := fmt.Sprintf("[CQ:%s", cq.Type)
 
-	for key, value := range cq.Params {
+	for key, value := range cq.Data {
 		cqCode += fmt.Sprintf(",%s=%s", key, value)
 	}
-	return cqCode + "]"
+	return cqCode + "] "
 }

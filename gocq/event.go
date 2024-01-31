@@ -115,7 +115,7 @@ func Send_by_event(conn *websocket.Conn) {
 		// 判断是否at我
 		Atme := false
 		for _, CQcode := range CQcodes {
-			if CQcode.Type == "at" && CQcode.Params["qq"] == fmt.Sprintf("%d", receivedEvent.SelfID) {
+			if CQcode.Type == "at" && CQcode.Data["qq"] == fmt.Sprintf("%d", receivedEvent.SelfID) {
 				Atme = true
 			}
 		}
@@ -133,7 +133,7 @@ func Send_by_event(conn *websocket.Conn) {
 		} else if msgtype == "group" && Atme {
 			if Setu {
 				log.Println("将对群聊发送涩图 tags:", tags)
-				send_image(conn, &receivedMsgEvent, tags, 1, 1)
+				send_group_img(conn, &receivedMsgEvent, tags, 1, 1)
 			} else {
 				log.Printf("将对at我的群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				send_group_msg(conn, &receivedMsgEvent)
