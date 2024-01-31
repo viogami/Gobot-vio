@@ -74,7 +74,7 @@ func send_group_msg(conn *websocket.Conn, MsgEvent *MessageEvent, message_reply 
 }
 
 // 发送图片
-func send_image(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string, r18 int, num int) {
+func send_private_img(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string, r18 int, num int) {
 	// 调用Setu API
 	setu_info := utils.Get_setu(tags, r18, num)
 	if setu_info.Error != "" {
@@ -95,16 +95,30 @@ func send_image(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string, r18
 				"file": setu_url,
 			},
 		}
-		message_reply := GenerateCQCode(cq)
+		message_reply := []CQCode{
+			{
+				Type: "node",
+				Data: map[string]interface{}{
+					"name":    "LV",
+					"uin":     "1524175162",
+					"content": fmt.Sprintf("涩图 tags:%s", tags),
+				},
+			}, {
+				Type: "node",
+				Data: map[string]interface{}{
+					"name":    "LV",
+					"uin":     "1524175162",
+					"content": GenerateCQCode(cq),
+				},
+			},
+		}
+		log.Println(message_reply)
 		// 构建消息结构
 		message_send := map[string]interface{}{
-			"action": "send_msg",
+			"action": "send_private_forward_msg",
 			"params": map[string]interface{}{
-				"message_type": MsgEvent.MessageType,
-				"user_id":      MsgEvent.UserID,
-				"group_id":     MsgEvent.GroupID,
-				"message":      message_reply,
-				"auto_escape":  false,
+				"user_id":  MsgEvent.UserID,
+				"messages": message_reply,
 			},
 			"echo": "echo_test",
 		}

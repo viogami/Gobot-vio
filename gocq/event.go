@@ -125,7 +125,7 @@ func Send_by_event(conn *websocket.Conn) {
 		if msgtype == "private" {
 			if Setu {
 				log.Println("将对私聊发送涩图 tag:", tags)
-				send_image(conn, &receivedMsgEvent, tags, 1, 1)
+				send_private_img(conn, &receivedMsgEvent, tags, 1, 1)
 			} else {
 				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				// 处理消息
