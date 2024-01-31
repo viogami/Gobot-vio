@@ -106,7 +106,7 @@ func send_image(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string, r18
 	// 调用Setu API
 	setu_info := utils.Get_setu(tags, r18, num)
 	if setu_info.Error != "" {
-		log.Println(setu_info.Error)
+		log.Println("随机色图api调用出错:", setu_info.Error)
 		return
 	}
 	// 循环发送多张图片数据
