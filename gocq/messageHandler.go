@@ -3,6 +3,7 @@ package gocq
 import (
 	"Gobot-vio/chatgpt"
 	"Gobot-vio/utils"
+	"fmt"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -52,7 +53,7 @@ func send_group_msg(conn *websocket.Conn, MsgEvent *MessageEvent) {
 	cq := CQCode{
 		Type: "at",
 		Params: map[string]interface{}{
-			"qq":   MsgEvent.UserID,
+			"qq":   fmt.Sprintf("%d", MsgEvent.UserID),
 			"name": "不在群的QQ",
 		},
 	}
@@ -115,7 +116,7 @@ func send_image(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string, r18
 		cq := CQCode{
 			Type: "image",
 			Params: map[string]interface{}{
-				"url": setu_url,
+				"file": setu_url,
 			},
 		}
 		message_reply := GenerateCQCode(cq)
