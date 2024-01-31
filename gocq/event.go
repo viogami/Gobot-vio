@@ -92,13 +92,13 @@ func Log_post_type(p []byte) error {
 
 		if receivedMetaEvent.MetaEventType == "heartbeat" {
 			heart_count++
-			log.Println(heart_count)
 		} else {
 			log.Println("Received ", post_type, ":", receivedMetaEvent.MetaEventType)
 		}
 
 		if heart_count == 360 {
 			log.Println(receivedMetaEvent.MetaEventType, " 30分钟内OK")
+			heart_count = 0
 		}
 	}
 	return nil
