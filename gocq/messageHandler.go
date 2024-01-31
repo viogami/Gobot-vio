@@ -89,57 +89,52 @@ func send_private_img(conn *websocket.Conn, MsgEvent *MessageEvent, tags []strin
 	// 循环发送多张图片数据
 	for i := 0; i < num; i++ {
 		setu_url := setu_info.Data[i].Urls.Regular
-		// 图片cq码
-		cq := CQCode{
-			Type: "image",
-			Data: map[string]interface{}{
-				"file": setu_url,
-			},
-		}
+		// 构建 message_reply 切片
 		message_reply := []CQCode{
 			{
 				Type: "node",
 				Data: map[string]interface{}{
-					"name":    "LV",
-					"uin":     "1524175162",
-					"content": fmt.Sprintf("涩图 tags:%s", tags),
+					"name": "LV",
+					"uin":  "1524175162",
+					"content": []CQCode{
+						{
+							Type: "text",
+							Data: map[string]interface{}{
+								"text": fmt.Sprintf("涩图 tags:%s", tags),
+							},
+						},
+					},
 				},
-			}, {
+			},
+			{
 				Type: "node",
 				Data: map[string]interface{}{
-					"name":    "LV",
-					"uin":     "1524175162",
-					"content": GenerateCQCode(cq),
+					"name": "LV",
+					"uin":  "1524175162",
+					"content": []CQCode{
+						{
+							Type: "image",
+							Data: map[string]interface{}{
+								"file": setu_url,
+							},
+						},
+					},
 				},
 			},
 		}
 		log.Println(message_reply)
-		// // 构建消息结构
-		// message_send := map[string]interface{}{
-		// 	"action": "send_private_forward_msg",
-		// 	"params": map[string]interface{}{
-		// 		"user_id":  MsgEvent.UserID,
-		// 		"messages": message_reply,
-		// 	},
-		// 	"echo": "echo_test",
-		// }
-
-		///////////////////////////////////////////////
-		message_reply2 := GenerateCQCode(cq)
 		// 构建消息结构
-		message_send2 := map[string]interface{}{
-			"action": "send_msg",
+		message_send := map[string]interface{}{
+			"action": "send_private_forward_msg",
 			"params": map[string]interface{}{
-				"message_type": MsgEvent.MessageType,
-				"user_id":      MsgEvent.UserID,
-				"group_id":     MsgEvent.GroupID,
-				"message":      message_reply2,
-				"auto_escape":  false,
+				"user_id":  MsgEvent.UserID,
+				"messages": message_reply,
 			},
 			"echo": "echo_test",
 		}
+
 		// 发送 JSON 消息
-		err := conn.WriteJSON(message_send2)
+		err := conn.WriteJSON(message_send)
 		if err != nil {
 			log.Println("Error sending message:", err)
 		}

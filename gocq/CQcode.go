@@ -12,8 +12,8 @@ type CQmsg struct {
 }
 
 type CQCode struct {
-	Type string
-	Data map[string]interface{}
+	Type string                 `json:"type"`
+	Data map[string]interface{} `json:"data"`
 }
 
 func ParseCQmsg(input string) CQmsg {
