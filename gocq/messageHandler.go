@@ -140,19 +140,19 @@ func send_group_img(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string,
 				Type: "node",
 				Data: map[string]interface{}{
 					"name":    "LV",
-					"uin":     3085746877,
+					"uin":     "3085746877",
 					"content": fmt.Sprintf("涩图 tags:%s", tags),
 				},
 			}, {
 				Type: "node",
 				Data: map[string]interface{}{
 					"name":    "LV",
-					"uin":     3085746877,
+					"uin":     "3085746877",
 					"content": GenerateCQCode(cq),
 				},
 			},
 		}
-		log.Println(cq)
+		log.Println(message_reply)
 		// 构建消息结构
 		message_send := map[string]interface{}{
 			"action": "send_group_forward_msg",
