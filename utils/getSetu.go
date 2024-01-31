@@ -22,6 +22,10 @@ type SetuRequest struct {
 }
 
 type SetuResponse struct {
+	Error string     `json:"error"`
+	Data  []SetuData `json:"data"`
+}
+type SetuData struct {
 	Pid        int      `json:"pid"`
 	P          int      `json:"p"`
 	Uid        int      `json:"uid"`
@@ -43,14 +47,16 @@ type Urls struct {
 	Small    string `json:"small"`
 }
 
-func Get_setu(tags []string, r18 int, num int) string {
+func Get_setu(tags []string, r18 int, num int) SetuResponse {
 	// 示例：构造一个 SetuRequest
 	requestData := SetuRequest{
-		R18:   r18,
-		Num:   num,
-		Tag:   tags,
-		Size:  []string{"regular"},
-		Proxy: "i.pixiv.re",
+		R18:       r18,
+		Num:       num,
+		Tag:       tags,
+		Size:      []string{"regular"},
+		Proxy:     "i.pixiv.re",
+		DSC:       false,
+		ExcludeAI: false,
 	}
 	// 示例：调用 Setu API
 	// 将请求参数转换为 JSON
@@ -81,7 +87,7 @@ func Get_setu(tags []string, r18 int, num int) string {
 		fmt.Println("Error decoding JSON:", err)
 	}
 
-	return setuResponse.Urls.Regular
+	return setuResponse
 }
 
 // 判断是否发送涩图

@@ -104,29 +104,38 @@ func send_group_forward_msg(conn *websocket.Conn, MsgEvent *MessageEvent) {
 // 发送图片
 func send_image(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string, r18 int, num int) {
 	// 调用Setu API
-	setu_url := utils.Get_setu(tags, r18, num)
-	cq := CQCode{
-		Type: "image",
-		Params: map[string]interface{}{
-			"url": setu_url,
-		},
+	setu_info := utils.Get_setu(tags, r18, num)
+	if setu_info.Error != "" {
+		log.Println(setu_info.Error)
+		return
 	}
-	message_reply := GenerateCQCode(cq)
-	// 构建消息结构
-	message_send := map[string]interface{}{
-		"action": "send_msg",
-		"params": map[string]interface{}{
-			"message_type": MsgEvent.MessageType,
-			"user_id":      MsgEvent.UserID,
-			"group_id":     MsgEvent.GroupID,
-			"message":      message_reply,
-			"auto_escape":  false,
-		},
-		"echo": "echo_test",
+	// 循环发送多张图片数据
+	for i := 0; i < num; i++ {
+		setu_url := setu_info.Data[i].Urls.Regular
+		cq := CQCode{
+			Type: "image",
+			Params: map[string]interface{}{
+				"url": setu_url,
+			},
+		}
+		message_reply := GenerateCQCode(cq)
+		// 构建消息结构
+		message_send := map[string]interface{}{
+			"action": "send_msg",
+			"params": map[string]interface{}{
+				"message_type": MsgEvent.MessageType,
+				"user_id":      MsgEvent.UserID,
+				"group_id":     MsgEvent.GroupID,
+				"message":      message_reply,
+				"auto_escape":  false,
+			},
+			"echo": "echo_test",
+		}
+		// 发送 JSON 消息
+		err := conn.WriteJSON(message_send)
+		if err != nil {
+			log.Println("Error sending message:", err)
+		}
 	}
-	// 发送 JSON 消息
-	err := conn.WriteJSON(message_send)
-	if err != nil {
-		log.Println("Error sending message:", err)
-	}
+
 }
