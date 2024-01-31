@@ -123,17 +123,19 @@ func Send_by_event(conn *websocket.Conn) {
 		Setu, tags := utils.SetuCheck(msgText)
 
 		if msgtype == "private" {
-			log.Println("将对私聊回复,receivedMsgEvent:", receivedMsgEvent)
 			if Setu {
+				log.Println("将对私聊发送涩图 tag:", tags)
 				send_image(conn, &receivedMsgEvent, tags, 1, 1)
 			} else {
+				log.Println("将对私聊回复,receivedMsgEvent:", receivedMsgEvent)
 				send_private_msg(conn, &receivedMsgEvent)
 			}
 		} else if msgtype == "group" && Atme {
-			log.Println("将对at我的群聊回复,receivedMsgEvent:", receivedMsgEvent)
 			if Setu {
+				log.Println("将对私聊发送涩图 tag:", tags)
 				send_image(conn, &receivedMsgEvent, tags, 1, 1)
 			} else {
+				log.Println("将对at我的群聊回复,receivedMsgEvent:", receivedMsgEvent)
 				send_group_msg(conn, &receivedMsgEvent)
 			}
 		} else {

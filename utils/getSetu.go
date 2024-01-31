@@ -89,15 +89,9 @@ func SetuCheck(input string) (bool, []string) {
 	// 检查是否以 "/涩图 " 开头
 	if strings.HasPrefix(input, "/涩图 ") {
 		// 获取 "/涩图 " 后面的部分
-		tag := strings.TrimPrefix(input, "/涩图 ")
-		tags := []string{}
-		// 检查 tags 是否仅包含合法字符（字母、数字、逗号、空格）
-		for _, char := range tag {
-			if !(char == ',' || char == ' ' || ('0' <= char && char <= '9') || ('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')) {
-				return false, []string{}
-			}
-			tags = append(tags, tag)
-		}
+		tagsPart := strings.TrimPrefix(input, "/涩图 ")
+		// 使用正则表达式匹配中英文逗号
+		tags := strings.Split(tagsPart, "，")
 		return true, tags
 	}
 	return false, []string{}

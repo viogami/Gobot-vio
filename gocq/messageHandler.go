@@ -15,11 +15,10 @@ func msgHandler(MsgEvent *MessageEvent) string {
 	reply_res := Msg_Filter(msgText)
 
 	if reply_res == "" {
-		// 调用ChatGPT API
+		log.Println("调用ChatGPT API")
 		gptResponse, err := chatgpt.InvokeChatGPTAPI(msgText)
 		if err != nil {
 			log.Printf("Error calling ChatGPT API: %v", err)
-			gptResponse = "gpt调用失败了😥 错误信息：\n" + err.Error()
 		}
 		return gptResponse
 	}
