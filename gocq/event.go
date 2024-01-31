@@ -125,7 +125,7 @@ func Send_by_event(conn *websocket.Conn) {
 		if msgtype == "private" {
 			if Setu {
 				log.Println("将对私聊发送涩图 tag:", tags)
-				send_private_img(conn, &receivedMsgEvent, tags, 1, 1)
+				send_private_img(conn, &receivedMsgEvent, tags, 0, 1)
 			} else {
 				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				// 处理消息
@@ -135,7 +135,7 @@ func Send_by_event(conn *websocket.Conn) {
 		} else if msgtype == "group" && Atme {
 			if Setu {
 				log.Println("将对群聊发送涩图 tags:", tags)
-				send_group_img(conn, &receivedMsgEvent, tags, 1, 1)
+				send_group_img(conn, &receivedMsgEvent, tags, 0, 1)
 			} else {
 				log.Printf("将对at我的群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				// 处理消息

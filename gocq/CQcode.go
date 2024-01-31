@@ -57,5 +57,5 @@ func GenerateCQCode(cq CQCode) string {
 	for key, value := range cq.Data {
 		cqCode += fmt.Sprintf(",%s=%s", key, value)
 	}
-	return cqCode + "] "
+	return cqCode + "]"
 }
