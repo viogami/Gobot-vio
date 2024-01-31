@@ -128,25 +128,37 @@ func send_group_img(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string,
 	// 循环发送多张图片数据
 	for i := 0; i < num; i++ {
 		setu_url := setu_info.Data[i].Urls.Regular
-		cq := []CQCode{{
-			Type: "node",
+		// 图片cq码
+		cq := CQCode{
+			Type: "image",
 			Data: map[string]interface{}{
-				"name": "暴龙战士",
-				"uin":  "3085746877",
-				"content": []CQCode{{
-					Type: "image",
-					Data: map[string]interface{}{
-						"file": setu_url,
-					},
+				"file": setu_url,
+			},
+		}
+		message_reply := []CQCode{
+			{
+				Type: "node",
+				Data: map[string]interface{}{
+					"name":    "LV",
+					"uin":     3085746877,
+					"content": fmt.Sprintf("涩图 tags:%s", tags),
 				},
-				}},
-		}}
+			}, {
+				Type: "node",
+				Data: map[string]interface{}{
+					"name":    "LV",
+					"uin":     3085746877,
+					"content": GenerateCQCode(cq),
+				},
+			},
+		}
+		log.Println(cq)
 		// 构建消息结构
 		message_send := map[string]interface{}{
 			"action": "send_group_forward_msg",
 			"params": map[string]interface{}{
 				"group_id": MsgEvent.GroupID,
-				"messages": cq,
+				"messages": message_reply,
 			},
 			"echo": "echo_test",
 		}
