@@ -88,7 +88,7 @@ func send_private_img(conn *websocket.Conn, MsgEvent *MessageEvent, tags []strin
 	}
 	// 循环发送多张图片数据
 	for i := 0; i < num; i++ {
-		setu_url := setu_info.Data[i].Urls.Regular
+		setu_url := setu_info.Data[i].Urls.Small
 		// 构建 message_reply 切片
 		message_reply := []CQCode{
 			{
@@ -156,7 +156,7 @@ func send_group_img(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string,
 	}
 	// 循环发送多张图片数据
 	for i := 0; i < num; i++ {
-		setu_url := setu_info.Data[i].Urls.Regular
+		setu_url := setu_info.Data[i].Urls.Small
 		// 图片cq码
 		cq := CQCode{
 			Type: "image",

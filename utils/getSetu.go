@@ -53,7 +53,7 @@ func Get_setu(tags []string, r18 int, num int) SetuResponse {
 		R18:       r18,
 		Num:       num,
 		Tag:       tags,
-		Size:      []string{"regular"},
+		Size:      []string{"small", "regular"},
 		Proxy:     "i.pixiv.re",
 		DSC:       false,
 		ExcludeAI: false,
