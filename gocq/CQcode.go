@@ -1,6 +1,7 @@
 package gocq
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -47,4 +48,15 @@ func ParseCQmsg(input string) CQmsg {
 	result.Text = strings.TrimSpace(result.Text)
 
 	return result
+}
+
+// 生成CQ码字符串
+func GenerateCQCode(cq CQCode) string {
+	cqCode := fmt.Sprintf("[CQ:%s", cq.Type)
+
+	for key, value := range cq.Params {
+		cqCode += fmt.Sprintf(",%s=%s", key, value)
+	}
+
+	return cqCode
 }

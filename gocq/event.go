@@ -1,6 +1,7 @@
 package gocq
 
 import (
+	"Gobot-vio/utils"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -91,48 +92,60 @@ func Log_post_type(p []byte) error {
 
 		if receivedMetaEvent.MetaEventType == "heartbeat" {
 			heart_count++
+			log.Println(heart_count)
 		} else {
 			log.Println("Received ", post_type, ":", receivedMetaEvent.MetaEventType)
 		}
 
-		if heart_count == 200 {
-			log.Println(receivedMetaEvent.MetaEventType, " 200次")
+		if heart_count == 360 {
+			log.Println(receivedMetaEvent.MetaEventType, " 30分钟内OK")
 		}
 	}
 	return nil
 }
 
-// 发送消息
+// 根据事件发送消息
 func Send_by_event(conn *websocket.Conn) {
-	if receivedEvent.PostType == "message" {
+	switch receivedEvent.PostType {
+	case "message":
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
 		CQcodes := ParseCQmsg(receivedMsgEvent.Message).CQcodes
 		msgText := ParseCQmsg(receivedMsgEvent.Message).Text
-		Atme := false
 		// 判断是否at我
+		Atme := false
 		for _, CQcode := range CQcodes {
 			if CQcode.Type == "at" && CQcode.Params["qq"] == fmt.Sprintf("%d", receivedEvent.SelfID) {
 				Atme = true
 			}
 		}
+		// 判断是否发送涩图
+		Setu, tags := utils.SetuCheck(msgText)
 
 		if msgtype == "private" {
 			log.Println("将对私聊回复,receivedMsgEvent:", receivedMsgEvent)
-			Send_msg(conn, &receivedMsgEvent, msgText)
+			if Setu {
+				send_image(conn, &receivedMsgEvent, tags, 1, 1)
+			} else {
+				send_private_msg(conn, &receivedMsgEvent)
+			}
 		} else if msgtype == "group" && Atme {
 			log.Println("将对at我的群聊回复,receivedMsgEvent:", receivedMsgEvent)
-			Send_msg(conn, &receivedMsgEvent, msgText)
+			if Setu {
+				send_image(conn, &receivedMsgEvent, tags, 1, 1)
+			} else {
+				send_group_msg(conn, &receivedMsgEvent)
+			}
 		} else {
 			log.Println("不是私聊或者at我的群聊")
 		}
-
-	} else if receivedEvent.PostType == "request" {
-		// 请求事件
-	} else if receivedEvent.PostType == "notice" {
-		// 通知事件
-	} else if receivedEvent.PostType == "meta_event" {
+	case "message_sent":
+	// 机器人自己发送消息事件
+	case "request":
+	// 请求事件
+	case "notice":
+	// 通知事件
+	case "meta_event":
 		// 元事件
-
 	}
 }

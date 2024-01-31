@@ -1,0 +1,104 @@
+package utils
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+)
+
+type SetuRequest struct {
+	R18        int      `json:"r18"`
+	Num        int      `json:"num"`
+	Uid        []int    `json:"uid"`
+	Tag        []string `json:"tag"`
+	Size       []string `json:"size"`
+	Proxy      string   `json:"proxy"`
+	DateAfter  int64    `json:"dateAfter"`
+	DateBefore int64    `json:"dateBefore"`
+	DSC        bool     `json:"dsc"`
+	ExcludeAI  bool     `json:"excludeAI"`
+}
+
+type SetuResponse struct {
+	Pid        int      `json:"pid"`
+	P          int      `json:"p"`
+	Uid        int      `json:"uid"`
+	Title      string   `json:"title"`
+	Author     string   `json:"author"`
+	R18        bool     `json:"r18"`
+	Width      int      `json:"width"`
+	Height     int      `json:"height"`
+	Tags       []string `json:"tags"`
+	Ext        string   `json:"ext"`
+	AiType     int      `json:"aiType"`
+	UploadDate int64    `json:"uploadDate"`
+	Urls       Urls     `json:"urls"`
+}
+
+type Urls struct {
+	Original string `json:"original"`
+	Regular  string `json:"regular"`
+	Small    string `json:"small"`
+}
+
+func Get_setu(tags []string, r18 int, num int) string {
+	// 示例：构造一个 SetuRequest
+	requestData := SetuRequest{
+		R18:   r18,
+		Num:   num,
+		Tag:   tags,
+		Size:  []string{"regular"},
+		Proxy: "i.pixiv.re",
+	}
+	// 示例：调用 Setu API
+	// 将请求参数转换为 JSON
+	requestBody, err := json.Marshal(requestData)
+	if err != nil {
+		fmt.Println("Error encoding JSON:", err)
+	}
+
+	// 发送 POST 请求
+	url := "https://api.lolicon.app/setu/v2"
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+	}
+	defer resp.Body.Close()
+
+	// 读取响应
+	body := new(bytes.Buffer)
+	_, err = body.ReadFrom(resp.Body)
+	if err != nil {
+		fmt.Println("Error reading response:", err)
+	}
+
+	// 解析 JSON 响应
+	var setuResponse SetuResponse
+	err = json.Unmarshal(body.Bytes(), &setuResponse)
+	if err != nil {
+		fmt.Println("Error decoding JSON:", err)
+	}
+
+	return setuResponse.Urls.Regular
+}
+
+// 判断是否发送涩图
+func SetuCheck(input string) (bool, []string) {
+	// 检查是否以 "/涩图 " 开头
+	if strings.HasPrefix(input, "/涩图 ") {
+		// 获取 "/涩图 " 后面的部分
+		tag := strings.TrimPrefix(input, "/涩图 ")
+		tags := []string{}
+		// 检查 tags 是否仅包含合法字符（字母、数字、逗号、空格）
+		for _, char := range tag {
+			if !(char == ',' || char == ' ' || ('0' <= char && char <= '9') || ('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z')) {
+				return false, []string{}
+			}
+			tags = append(tags, tag)
+		}
+		return true, tags
+	}
+	return false, []string{}
+}
