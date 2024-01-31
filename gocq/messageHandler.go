@@ -11,7 +11,7 @@ import (
 
 // 消息处理函数
 func msgHandler(MsgEvent *MessageEvent) string {
-	msgText := ParseCQmsg(receivedMsgEvent.Message).Text
+	msgText := ParseCQmsg(MsgEvent.Message).Text
 
 	reply_res := Msg_Filter(msgText)
 
@@ -27,8 +27,7 @@ func msgHandler(MsgEvent *MessageEvent) string {
 }
 
 // 发送私聊消息
-func send_private_msg(conn *websocket.Conn, MsgEvent *MessageEvent) {
-	message_reply := msgHandler(MsgEvent)
+func send_private_msg(conn *websocket.Conn, MsgEvent *MessageEvent, message_reply string) {
 	// 构建消息结构
 	message_send := map[string]interface{}{
 		"action": "send_private_msg",
@@ -48,8 +47,7 @@ func send_private_msg(conn *websocket.Conn, MsgEvent *MessageEvent) {
 }
 
 // 发送群聊消息
-func send_group_msg(conn *websocket.Conn, MsgEvent *MessageEvent) {
-	message_reply := msgHandler(MsgEvent)
+func send_group_msg(conn *websocket.Conn, MsgEvent *MessageEvent, message_reply string) {
 	cq := CQCode{
 		Type: "at",
 		Data: map[string]interface{}{
@@ -85,6 +83,7 @@ func send_image(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string, r18
 	}
 	if len(setu_info.Data) == 0 {
 		log.Println("随机色图api调用出错:返回数据为空")
+		send_private_msg(conn, MsgEvent, "该tag搜索不到图片，呜呜~")
 		return
 	}
 	// 循环发送多张图片数据
@@ -123,6 +122,11 @@ func send_group_img(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string,
 	setu_info := utils.Get_setu(tags, r18, num)
 	if setu_info.Error != "" {
 		log.Println("随机色图api调用出错:", setu_info.Error)
+		return
+	}
+	if len(setu_info.Data) == 0 {
+		log.Println("随机色图api调用出错:返回数据为空")
+		send_group_msg(conn, MsgEvent, "该tag搜索不到图片，呜呜~")
 		return
 	}
 	// 循环发送多张图片数据
