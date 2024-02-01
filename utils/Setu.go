@@ -91,14 +91,14 @@ func Get_setu(tags []string, r18 int, num int) SetuResponse {
 }
 
 // 判断是否发送涩图
-func SetuCheck(input string) (bool, []string) {
+func Get_tags(input string) []string {
 	// 检查是否以 "/涩图 " 开头
 	if strings.HasPrefix(input, "/涩图 ") {
 		// 获取 "/涩图 " 后面的部分
 		tagsPart := strings.TrimPrefix(input, "/涩图 ")
 		// 使用正则表达式匹配中英文逗号
 		tags := strings.Split(tagsPart, "，")
-		return true, tags
+		return tags
 	}
-	return false, []string{}
+	return []string{}
 }

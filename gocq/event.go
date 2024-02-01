@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"regexp"
 
 	"github.com/gorilla/websocket"
 )
@@ -112,6 +113,12 @@ func Send_by_event(conn *websocket.Conn) {
 		msgtype := receivedMsgEvent.MessageType
 		CQcodes := ParseCQmsg(receivedMsgEvent.Message).CQcodes
 		msgText := ParseCQmsg(receivedMsgEvent.Message).Text
+
+		// 定义正则表达式匹配以中文字符开头的命令
+		commandPattern := regexp.MustCompile(`^/([^ ]+)`)
+		// 使用正则表达式查找匹配的指令
+		command := commandPattern.FindString(msgText)
+		log.Println("command:", command)
 		// 判断是否at我
 		Atme := false
 		for _, CQcode := range CQcodes {
@@ -119,26 +126,34 @@ func Send_by_event(conn *websocket.Conn) {
 				Atme = true
 			}
 		}
-		// 判断是否发送涩图
-		Setu, tags := utils.SetuCheck(msgText)
+		// 涩图tag
+		tags := utils.Get_tags(msgText)
 
 		if msgtype == "private" {
-			if Setu {
+			switch command {
+			case "/涩图":
 				log.Println("将对私聊发送涩图 tag:", tags)
 				send_private_img(conn, &receivedMsgEvent, tags, 0, 1)
-			} else {
+			case "/涩图r18":
+				log.Println("将对私聊发送r18涩图 tag:", tags)
+				send_private_img(conn, &receivedMsgEvent, tags, 1, 1)
+			default:
 				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				// 处理消息
+				// 消息处理
 				message_reply := msgHandler(&receivedMsgEvent)
 				send_private_msg(conn, &receivedMsgEvent, message_reply)
 			}
 		} else if msgtype == "group" && Atme {
-			if Setu {
+			switch command {
+			case "/涩图":
 				log.Println("将对群聊发送涩图 tags:", tags)
 				send_group_img(conn, &receivedMsgEvent, tags, 0, 1)
-			} else {
+			case "/涩图r18":
+				log.Println("将对群聊发送r18涩图 tags:", tags)
+				send_group_img(conn, &receivedMsgEvent, tags, 1, 1)
+			default:
 				log.Printf("将对at我的群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				// 处理消息
+				// 消息处理
 				message_reply := msgHandler(&receivedMsgEvent)
 				send_group_msg(conn, &receivedMsgEvent, message_reply)
 			}
