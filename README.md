@@ -29,10 +29,12 @@ webhook
  - 针对Telegram的消息处理，对私人，群组，超级群组各有不同的应答模式。
 
  反向ws：
-  - 配合[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)使用，用于实现qqbot。
+  - 配合[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)使用，用于实现qqbot,基于上报事件，调用gocq提供的api进行回复。注意参考[gocq官方文档](https://docs.go-cqhttp.org/reference/#websocket)
+  - 可以调用api发送图片，随机图片api[参考](https://api.lolicon.app/setu/v2)
 
 chatgpt调用：
  - 在聊天中支持chatgpt的回复。该功能使用了[go-openai](https://github.com/sashabaranov/go-openai)库，支持了go语言对openai api的调用
+ - 提示词参考：[awesome-chatgpt-prompts-zh](https://github.com/PlexPt/awesome-chatgpt-prompts-zh/blob/main/prompts-zh.json)
 
 
 ## Paas平台推荐
