@@ -1,12 +1,12 @@
 package gocq
 
 import (
-	"Gobot-vio/chatgpt"
-	"Gobot-vio/utils"
 	"fmt"
 	"log"
 
 	"github.com/gorilla/websocket"
+	"github.com/viogami/Gobot-vio/chatgpt"
+	"github.com/viogami/Gobot-vio/utils"
 )
 
 // 消息处理函数

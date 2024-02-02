@@ -1,13 +1,13 @@
 package tgbot
 
 import (
-	"Gobot-vio/chatgpt"
 	"log"
 	"math/rand"
 	"strconv"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/viogami/Gobot-vio/chatgpt"
 )
 
 // 检查当前是否应该发送消息

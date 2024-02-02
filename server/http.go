@@ -1,10 +1,11 @@
 package server
 
 import (
-	"Gobot-vio/chatgpt"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/viogami/Gobot-vio/chatgpt"
 )
 
 // 提取post中的msg字符串，调用chatgpt api，返回响应回答

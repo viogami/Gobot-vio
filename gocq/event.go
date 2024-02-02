@@ -1,13 +1,13 @@
 package gocq
 
 import (
-	"Gobot-vio/utils"
 	"encoding/json"
 	"fmt"
 	"log"
 	"regexp"
 
 	"github.com/gorilla/websocket"
+	"github.com/viogami/Gobot-vio/utils"
 )
 
 type Event struct {

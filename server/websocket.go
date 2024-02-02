@@ -1,10 +1,11 @@
 package server
 
 import (
-	"Gobot-vio/gocq"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/viogami/Gobot-vio/gocq"
 
 	"github.com/gorilla/websocket"
 )

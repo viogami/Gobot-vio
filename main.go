@@ -1,8 +1,9 @@
 package main
 
 import (
-	"Gobot-vio/server"
 	"os"
+
+	"github.com/viogami/Gobot-vio/server"
 )
 
 func main() {

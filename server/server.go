@@ -1,9 +1,10 @@
 package server
 
 import (
-	"Gobot-vio/tgbot"
 	"log"
 	"net/http"
+
+	"github.com/viogami/Gobot-vio/tgbot"
 )
 
 func Run(port string) {
