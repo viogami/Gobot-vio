@@ -131,6 +131,11 @@ func Send_by_event(conn *websocket.Conn) {
 
 		if msgtype == "private" {
 			switch command {
+			case "":
+				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
+				// 消息处理
+				message_reply := msgHandler(&receivedMsgEvent)
+				send_private_msg(conn, &receivedMsgEvent, message_reply)
 			case "/涩图":
 				log.Println("将对私聊发送涩图 tag:", tags)
 				send_private_img(conn, &receivedMsgEvent, tags, 0, 1)
@@ -139,12 +144,15 @@ func Send_by_event(conn *websocket.Conn) {
 				send_private_img(conn, &receivedMsgEvent, tags, 1, 1)
 			default:
 				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				// 消息处理
-				message_reply := msgHandler(&receivedMsgEvent)
-				send_private_msg(conn, &receivedMsgEvent, message_reply)
+				send_private_msg(conn, &receivedMsgEvent, "抱歉，我暂时还无法识别这个指令~")
 			}
 		} else if msgtype == "group" && Atme {
 			switch command {
+			case "":
+				log.Printf("将对at我的群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
+				// 消息处理
+				message_reply := msgHandler(&receivedMsgEvent)
+				send_group_msg(conn, &receivedMsgEvent, message_reply)
 			case "/涩图":
 				log.Println("将对群聊发送涩图 tags:", tags)
 				send_group_img(conn, &receivedMsgEvent, tags, 0, 1)
@@ -153,9 +161,7 @@ func Send_by_event(conn *websocket.Conn) {
 				send_group_img(conn, &receivedMsgEvent, tags, 1, 1)
 			default:
 				log.Printf("将对at我的群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				// 消息处理
-				message_reply := msgHandler(&receivedMsgEvent)
-				send_group_msg(conn, &receivedMsgEvent, message_reply)
+				send_group_msg(conn, &receivedMsgEvent, "抱歉，我暂时还无法识别这个指令~")
 			}
 		} else {
 			log.Println("不是私聊或者at我的群聊")

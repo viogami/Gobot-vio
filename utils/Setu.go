@@ -100,5 +100,13 @@ func Get_tags(input string) []string {
 		tags := strings.Split(tagsPart, "，")
 		return tags
 	}
-	return []string{}
+	// 检查是否以 "/涩图r18 " 开头
+	if strings.HasPrefix(input, "/涩图r18 ") {
+		// 获取 "/涩图 " 后面的部分
+		tagsPart := strings.TrimPrefix(input, "/涩图r18 ")
+		// 使用正则表达式匹配中英文逗号
+		tags := strings.Split(tagsPart, "，")
+		return tags
+	}
+	return []string{"巨乳"}
 }
