@@ -20,7 +20,7 @@ func InvokeChatGPTAPI(text string) (string, error) {
 	// appConfig := flag.String("config", "./app.yaml", "application config path")
 	// conf, _ := config.ConfigParse(*appConfig)
 	// chatGPTAPIKey = conf.Chatgpt.chatGPTAPIKey
-	prompt := GPTpreset["涩涩女友"]
+	prompt := GPTpreset["vio"]
 	config := openai.DefaultConfig(chatGPTAPIKey)
 	config.BaseURL = chatGPTURL_proxy
 
