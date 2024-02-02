@@ -13,16 +13,16 @@ var (
 )
 
 const (
-	chatGPTURL_broker = "https://one-api.bltcy.top/v1"
+	chatGPTURL_proxy = "https://one-api.bltcy.top/v1"
 )
 
 func InvokeChatGPTAPI(text string) (string, error) {
 	// appConfig := flag.String("config", "./app.yaml", "application config path")
 	// conf, _ := config.ConfigParse(*appConfig)
 	// chatGPTAPIKey = conf.Chatgpt.chatGPTAPIKey
-
+	prompt := GPTpreset["涩涩女友"]
 	config := openai.DefaultConfig(chatGPTAPIKey)
-	config.BaseURL = chatGPTURL_broker
+	config.BaseURL = chatGPTURL_proxy
 
 	client := openai.NewClientWithConfig(config)
 	resp, err := client.CreateChatCompletion(
@@ -30,6 +30,10 @@ func InvokeChatGPTAPI(text string) (string, error) {
 		openai.ChatCompletionRequest{
 			Model: openai.GPT3Dot5Turbo,
 			Messages: []openai.ChatCompletionMessage{
+				{
+					Role:    openai.ChatMessageRoleSystem,
+					Content: prompt,
+				},
 				{
 					Role:    openai.ChatMessageRoleUser,
 					Content: text,
