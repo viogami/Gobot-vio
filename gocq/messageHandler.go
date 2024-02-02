@@ -51,8 +51,7 @@ func send_group_msg(conn *websocket.Conn, MsgEvent *MessageEvent, message_reply 
 	cq := CQCode{
 		Type: "at",
 		Data: map[string]interface{}{
-			"qq":   fmt.Sprintf("%d", MsgEvent.UserID),
-			"name": "不在群的QQ",
+			"qq": fmt.Sprintf("%d", MsgEvent.UserID),
 		},
 	}
 	message_reply = GenerateCQCode(cq) + message_reply
