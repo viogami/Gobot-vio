@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"regexp"
 
 	"github.com/gorilla/websocket"
@@ -159,6 +160,11 @@ func Send_by_event(conn *websocket.Conn) {
 			case "/涩图r18":
 				log.Println("将对群聊发送r18涩图 tags:", tags)
 				send_group_img(conn, &receivedMsgEvent, tags, 1, 1)
+			case "/禁言抽奖":
+				time := rand.Intn(60) + 1
+				log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
+				set_group_ban(conn, &receivedMsgEvent, time)
+				send_group_msg(conn, &receivedMsgEvent, "已禁言"+fmt.Sprintf("%d", time)+"秒")
 			default:
 				log.Printf("将对at我的群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				send_group_msg(conn, &receivedMsgEvent, "抱歉，我暂时还无法识别这个指令~")

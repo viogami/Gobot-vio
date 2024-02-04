@@ -26,7 +26,7 @@ func checkAdmin(bot *tgbotapi.BotAPI, gid int64, user tgbotapi.User) bool {
 	return false
 }
 
-/**
+/*
  * 禁言群员
  */
 func banMember(bot *tgbotapi.BotAPI, gid int64, uid int64, sec int64) {
@@ -60,11 +60,13 @@ func unbanMember(bot *tgbotapi.BotAPI, gid int64, uid int64) {
  * 踢出群员
  */
 func kickMember(bot *tgbotapi.BotAPI, gid int64, uid int64) {
-
-}
-
-func unkickMember(bot *tgbotapi.BotAPI, gid int64, uid int64) {
-
+	kickChatMemberConfig := tgbotapi.KickChatMemberConfig{
+		ChatMemberConfig: tgbotapi.ChatMemberConfig{
+			ChatID: gid,
+			UserID: uid,
+		},
+	}
+	_, _ = bot.Request(kickChatMemberConfig)
 }
 
 /**
