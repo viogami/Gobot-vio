@@ -106,29 +106,23 @@ func Log_post_type(p []byte) error {
 	return nil
 }
 
-// 根据事件发送消息
-func Send_by_event(conn *websocket.Conn) {
+// 处理上报事件
+func Handle_event(conn *websocket.Conn) {
 	switch receivedEvent.PostType {
 	case "message":
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
-		CQcodes := ParseCQmsg(receivedMsgEvent.Message).CQcodes
-		msgText := ParseCQmsg(receivedMsgEvent.Message).Text
+		cqmsg := ParseCQmsg(receivedMsgEvent.Message)
 
 		// 定义正则表达式匹配以中文字符开头的命令
 		commandPattern := regexp.MustCompile(`^/([^ ]+)`)
 		// 使用正则表达式查找匹配的指令
-		command := commandPattern.FindString(msgText)
+		command := commandPattern.FindString(cqmsg.Text)
 		log.Println("command:", command)
 		// 判断是否at我
-		Atme := false
-		for _, CQcode := range CQcodes {
-			if CQcode.Type == "at" && CQcode.Data["qq"] == fmt.Sprintf("%d", receivedEvent.SelfID) {
-				Atme = true
-			}
-		}
+		Atme := Atme(cqmsg)
 		// 涩图tag
-		tags := utils.Get_tags(msgText)
+		tags := utils.Get_tags(cqmsg.Text)
 
 		if msgtype == "private" {
 			switch command {
@@ -174,10 +168,31 @@ func Send_by_event(conn *websocket.Conn) {
 		}
 	case "message_sent":
 	// 机器人自己发送消息事件
-	case "request":
-	// 请求事件
 	case "notice":
 	// 通知事件
+	case "request":
+		request_type := receivedRequestEvent.RequestType
+		switch request_type {
+		// 使用快速响应
+		case "friend":
+			fast_resp := map[string]interface{}{
+				"approve": true,
+				"remark":  "auto approve user",
+			}
+			err := conn.WriteJSON(fast_resp)
+			if err != nil {
+				log.Println("Error fast_resp approve:", err)
+			}
+		case "group":
+			fast_resp := map[string]interface{}{
+				"approve": false,
+				"reason":  "you must notice this to my master:qq2654613995",
+			}
+			err := conn.WriteJSON(fast_resp)
+			if err != nil {
+				log.Println("Error fast_resp approve:", err)
+			}
+		}
 	case "meta_event":
 		// 元事件
 	}
