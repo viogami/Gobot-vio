@@ -22,7 +22,5 @@ func Run(port string) {
 	}()
 
 	//创建一个tgbot
-	go func() {
-		tgbot.CreateTgbot()
-	}()
+	tgbot.CreateTgbot()
 }
