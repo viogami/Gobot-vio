@@ -137,6 +137,9 @@ func Send_by_event(conn *websocket.Conn) {
 				// 消息处理
 				message_reply := msgHandler(&receivedMsgEvent)
 				send_private_msg(conn, &receivedMsgEvent, message_reply)
+			case "/help":
+				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
+				send_private_msg(conn, &receivedMsgEvent, "目前支持的指令有：\n/help\n/涩图\n/涩图r18")
 			case "/涩图":
 				log.Println("将对私聊发送涩图 tag:", tags)
 				send_private_img(conn, &receivedMsgEvent, tags, 0, 1)
