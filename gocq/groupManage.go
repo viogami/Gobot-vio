@@ -7,13 +7,13 @@ import (
 )
 
 // 设置群组禁言
-func set_group_ban(conn *websocket.Conn, MsgEvent *MessageEvent, time int) {
+func set_group_ban(conn *websocket.Conn, UserID int64, GroupID int64, time int) {
 	// 构建消息结构
 	sendMessage := map[string]interface{}{
 		"action": "set_group_ban",
 		"params": map[string]interface{}{
-			"group_id": MsgEvent.GroupID,
-			"user_id":  MsgEvent.UserID,
+			"group_id": GroupID,
+			"user_id":  UserID,
 			"duration": time, // 单位秒，0 表示解除禁言
 		},
 		"echo": "echo_test",
