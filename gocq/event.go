@@ -178,7 +178,7 @@ func Handle_event(conn *websocket.Conn) {
 	// 机器人自己发送消息事件
 
 	case "notice":
-		log.Println("Received notice:", receivedNoticeEvent)
+		log.Println("!!!!:", receivedEvent)
 
 		notice_type := receivedNoticeEvent.NoticeType
 		GroupDecreaseNotice := GroupDecreaseNotice{}
