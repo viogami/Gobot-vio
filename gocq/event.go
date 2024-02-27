@@ -148,6 +148,8 @@ func Handle_event(conn *websocket.Conn) {
 			}
 		} else if msgtype == "group" {
 			switch command {
+			case "":
+				log.Printf("非指令消息,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 			case "/chat":
 				log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				// 消息处理
@@ -176,13 +178,15 @@ func Handle_event(conn *websocket.Conn) {
 	// 机器人自己发送消息事件
 
 	case "notice":
-		log.Println("Received notice:", receivedNoticeEvent.NoticeType)
+		log.Println("Received notice:", receivedNoticeEvent)
 
 		notice_type := receivedNoticeEvent.NoticeType
+		GroupDecreaseNotice := GroupDecreaseNotice{}
+
 		switch notice_type {
 		// 群成员增加
 		case "group_increase":
-			log.Printf("群成员增加,UserID:%d,GroupID:%d", receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
+			log.Printf("群成员增加,UserID:%d,GroupID:%d", GroupDecreaseNotice.UserID, GroupDecreaseNotice.GroupID)
 			send_group_msg(conn, &receivedMsgEvent, "欢迎新朋友~")
 		// 群成员减少
 		case "group_decrease":
@@ -191,8 +195,9 @@ func Handle_event(conn *websocket.Conn) {
 		case "group_recall":
 			log.Printf("消息撤回,UserID:%d,GroupID:%d", receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
 		}
+
 	case "request":
-		log.Println("Received request:", receivedRequestEvent.RequestType)
+		log.Println("Received request:", receivedRequestEvent)
 
 		request_type := receivedRequestEvent.RequestType
 		switch request_type {
