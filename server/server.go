@@ -3,8 +3,6 @@ package server
 import (
 	"log"
 	"net/http"
-
-	"github.com/viogami/Gobot-vio/tgbot"
 )
 
 func Run(port string) {
@@ -22,5 +20,5 @@ func Run(port string) {
 	}()
 
 	//创建一个tgbot
-	tgbot.CreateTgbot()
+	//tgbot.CreateTgbot()
 }

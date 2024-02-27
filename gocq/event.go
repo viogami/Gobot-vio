@@ -119,8 +119,10 @@ func Handle_event(conn *websocket.Conn) {
 		// 使用正则表达式查找匹配的指令
 		command := commandPattern.FindString(cqmsg.Text)
 		log.Println("command:", command)
+
 		// 判断是否at我
-		Atme := Atme(cqmsg)
+		//Atme := Atme(cqmsg)
+
 		// 涩图tag
 		tags := utils.Get_tags(cqmsg.Text)
 
@@ -144,10 +146,10 @@ func Handle_event(conn *websocket.Conn) {
 				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				send_private_msg(conn, &receivedMsgEvent, "抱歉，我暂时还无法识别这个指令~")
 			}
-		} else if msgtype == "group" && Atme {
+		} else if msgtype == "group" {
 			switch command {
-			case "":
-				log.Printf("将对at我的群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
+			case "/chat":
+				log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				// 消息处理
 				message_reply := msgHandler(&receivedMsgEvent)
 				send_group_msg(conn, &receivedMsgEvent, message_reply)
@@ -163,17 +165,35 @@ func Handle_event(conn *websocket.Conn) {
 				set_group_ban(conn, &receivedMsgEvent, time)
 				send_group_msg(conn, &receivedMsgEvent, "已禁言"+fmt.Sprintf("%d", time)+"秒")
 			default:
-				log.Printf("将对at我的群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
+				log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				send_group_msg(conn, &receivedMsgEvent, "抱歉，我暂时还无法识别这个指令~")
 			}
 		} else {
-			log.Println("不是私聊或者at我的群聊")
+			log.Println("接受到非私聊或者非指令的群聊消息")
 		}
+
 	case "message_sent":
 	// 机器人自己发送消息事件
+
 	case "notice":
-	// 通知事件
+		log.Println("Received notice:", receivedNoticeEvent.NoticeType)
+
+		notice_type := receivedNoticeEvent.NoticeType
+		switch notice_type {
+		// 群成员增加
+		case "group_increase":
+			log.Printf("群成员增加,UserID:%d,GroupID:%d", receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
+			send_group_msg(conn, &receivedMsgEvent, "欢迎新朋友~")
+		// 群成员减少
+		case "group_decrease":
+			log.Printf("群成员减少,UserID:%d,GroupID:%d", receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
+		// 消息撤回
+		case "group_recall":
+			log.Printf("消息撤回,UserID:%d,GroupID:%d", receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
+		}
 	case "request":
+		log.Println("Received request:", receivedRequestEvent.RequestType)
+
 		request_type := receivedRequestEvent.RequestType
 		switch request_type {
 		// 使用快速响应

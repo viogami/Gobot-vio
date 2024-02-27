@@ -2,7 +2,6 @@ package gocq
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 )
 
@@ -83,15 +82,4 @@ func Get_msg_info(p []byte, msgType string) interface{} {
 		return groupMessage
 	}
 	return nil
-}
-
-// 判断是否at我
-func Atme(cq CQmsg) bool {
-	CQcodes := cq.CQcodes
-	for _, CQcode := range CQcodes {
-		if CQcode.Type == "at" && CQcode.Data["qq"] == fmt.Sprintf("%d", receivedEvent.SelfID) {
-			return true
-		}
-	}
-	return false
 }

@@ -204,3 +204,14 @@ func send_group_img(conn *websocket.Conn, MsgEvent *MessageEvent, tags []string,
 		}
 	}
 }
+
+// 判断是否at我
+func Atme(cq CQmsg) bool {
+	CQcodes := cq.CQcodes
+	for _, CQcode := range CQcodes {
+		if CQcode.Type == "at" && CQcode.Data["qq"] == fmt.Sprintf("%d", receivedEvent.SelfID) {
+			return true
+		}
+	}
+	return false
+}
