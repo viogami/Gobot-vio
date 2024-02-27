@@ -38,7 +38,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		} else {
 			// 发送消息
-			gocq.Handle_event(conn)
+			gocq.Handle_event(p, conn)
 		}
 	}
 }

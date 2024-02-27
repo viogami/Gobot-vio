@@ -65,16 +65,17 @@ type Anonymous struct {
 	Flag string `json:"flag"`
 }
 
-func Get_msg_info(p []byte, msgType string) interface{} {
+func get_msg_info(p []byte, msgType string) interface{} {
 	var privateMessage PrivateMessage
 	var groupMessage GroupMessage
-	if msgType == "private" {
+	switch msgType {
+	case "private":
 		err := json.Unmarshal(p, &privateMessage)
 		if err != nil {
 			log.Println("Error parsing JSON to privateMessage:", err)
 		}
 		return privateMessage
-	} else if msgType == "group" {
+	case "group":
 		err := json.Unmarshal(p, &groupMessage)
 		if err != nil {
 			log.Println("Error parsing JSON to groupMessage:", err)

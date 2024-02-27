@@ -49,6 +49,7 @@ var (
 	receivedNoticeEvent  NoticeEvent
 	receivedMetaEvent    MetaEvent
 )
+
 var heart_count = 0
 
 // 判断上报类型
@@ -107,7 +108,7 @@ func Log_post_type(p []byte) error {
 }
 
 // 处理上报事件
-func Handle_event(conn *websocket.Conn) {
+func Handle_event(p []byte, conn *websocket.Conn) {
 	switch receivedEvent.PostType {
 	case "message":
 		// 消息事件
@@ -178,28 +179,29 @@ func Handle_event(conn *websocket.Conn) {
 	// 机器人自己发送消息事件
 
 	case "notice":
-		log.Println("!!!!:", receivedEvent)
-
 		notice_type := receivedNoticeEvent.NoticeType
-		GroupDecreaseNotice := GroupDecreaseNotice{}
-
 		switch notice_type {
 		// 群成员增加
 		case "group_increase":
-			log.Printf("群成员增加,UserID:%d,GroupID:%d", GroupDecreaseNotice.UserID, GroupDecreaseNotice.GroupID)
+			group_increase_info := get_notice_info(p, receivedNoticeEvent.NoticeType).(GroupIncreaseNotice)
+			log.Println(group_increase_info)
+			log.Printf("群成员增加,UserID:%d,GroupID:%d", group_increase_info.UserID, group_increase_info.GroupID)
 			send_group_msg(conn, &receivedMsgEvent, "欢迎新朋友~")
 		// 群成员减少
 		case "group_decrease":
-			log.Printf("群成员减少,UserID:%d,GroupID:%d", receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
+			group_decrease_info := get_notice_info(p, receivedNoticeEvent.NoticeType).(GroupDecreaseNotice)
+			log.Println(group_decrease_info)
+			log.Printf("群成员减少,UserID:%d,GroupID:%d", group_decrease_info.UserID, group_decrease_info.GroupID)
 		// 消息撤回
 		case "group_recall":
-			log.Printf("消息撤回,UserID:%d,GroupID:%d", receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
+			group_recall_info := get_notice_info(p, receivedNoticeEvent.NoticeType).(GroupRecallNotice)
+
+			log.Printf("消息撤回,UserID:%d,GroupID:%d", group_recall_info.UserID, group_recall_info.GroupID)
 		}
 
 	case "request":
-		log.Println("Received request:", receivedRequestEvent)
-
 		request_type := receivedRequestEvent.RequestType
+
 		switch request_type {
 		// 使用快速响应
 		case "friend":
