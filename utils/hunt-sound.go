@@ -203,20 +203,3 @@ func GetIndex() string {
 	result := strings.Join(uniqueValues, "\n")
 	return result
 }
-
-// 请求CQ码
-func HuntSound_GetCQCode(input string) string {
-	sound := HuntSound{
-		Name:     "",
-		Distance: "",
-	}
-	parts := strings.Split(input, " ")
-	if len(parts) == 2 {
-		sound.Name = parts[1]
-	}
-	if len(parts) == 3 {
-		sound.Name = parts[1]
-		sound.Distance = parts[2]
-	}
-	return "[CQ:record,file=" + GetHuntSound(sound) + "]"
-}

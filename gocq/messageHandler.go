@@ -3,6 +3,7 @@ package gocq
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/gorilla/websocket"
 	"github.com/viogami/Gobot-vio/chatgpt"
@@ -214,4 +215,29 @@ func Atme(cq CQmsg) bool {
 		}
 	}
 	return false
+}
+
+// 请求CQ码
+func GetCQCode_HuntSound(input string) string {
+	sound := utils.HuntSound{
+		Name:     "",
+		Distance: "",
+	}
+	parts := strings.Split(input, " ")
+	if len(parts) == 2 {
+		sound.Name = parts[1]
+	}
+	if len(parts) == 3 {
+		sound.Name = parts[1]
+		sound.Distance = parts[2]
+	}
+
+	cq := CQCode{
+		Type: "record",
+		Data: map[string]interface{}{
+			"file": utils.GetHuntSound(sound),
+		},
+	}
+
+	return GenerateCQCode(cq)
 }

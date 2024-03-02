@@ -113,6 +113,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 	case "message":
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
+		// 解析cq码，获取无cq格式的消息内容
 		cqmsg := ParseCQmsg(receivedMsgEvent.Message)
 
 		// 定义正则表达式匹配以中文字符开头的命令
@@ -146,7 +147,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				send_private_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
 			case "/枪声":
 				log.Println("将对私聊发送枪声")
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.HuntSound_GetCQCode(cqmsg.Text))
+				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
 			case "/枪声目录":
 				log.Println("将对私聊发送枪声目录")
 				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetIndex())
@@ -174,7 +175,8 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				send_group_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
 			case "/枪声":
 				log.Println("将对群聊发送枪声")
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.HuntSound_GetCQCode(cqmsg.Text))
+
+				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
 			case "/枪声目录":
 				log.Println("将对群聊发送枪声目录")
 				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetIndex())
