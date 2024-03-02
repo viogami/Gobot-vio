@@ -84,7 +84,7 @@ var GunIndex = map[string]string{
 }
 
 func GetHuntSound(sound HuntSound) string {
-	baseURL := "http://hunt.kamille.ovh/audio/"
+	baseURL := "https://hunt.kamille.ovh/audio/"
 	distance := sound.Distance
 
 	switch GunIndex[sound.Name] {

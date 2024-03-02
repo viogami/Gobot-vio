@@ -146,7 +146,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				log.Println("将对私聊发送r18涩图 tag:", tags)
 				send_private_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
 			case "/枪声":
-				log.Println("将对私聊发送枪声:" + cqmsg.Text)
+				log.Println("将对私聊发送枪声:" + GetCQCode_HuntSound(cqmsg.Text))
 				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
 			case "/枪声目录":
 				log.Println("将对私聊发送枪声目录")
@@ -174,8 +174,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				log.Println("将对群聊发送r18涩图 tags:", tags)
 				send_group_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
 			case "/枪声":
-				log.Println("将对群聊发送枪声" + cqmsg.Text)
-
+				log.Println("将对群聊发送枪声" + GetCQCode_HuntSound(cqmsg.Text))
 				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
 			case "/枪声目录":
 				log.Println("将对群聊发送枪声目录")
