@@ -175,7 +175,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				send_group_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
 			case "/枪声":
 				log.Println("将对群聊发送枪声" + GetCQCode_HuntSound(cqmsg.Text))
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
+				send_group_record(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
 			case "/枪声目录":
 				log.Println("将对群聊发送枪声目录")
 				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetIndex())

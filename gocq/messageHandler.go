@@ -73,6 +73,24 @@ func send_group_msg(conn *websocket.Conn, UserID int64, GroupID int64, message_r
 	}
 }
 
+// 发送语音
+func send_group_record(conn *websocket.Conn, UserID int64, GroupID int64, message_reply string) {
+	// 构建消息结构
+	message_send := map[string]interface{}{
+		"action": "send_group_msg",
+		"params": map[string]interface{}{
+			"group_id": GroupID,
+			"message":  message_reply,
+		},
+		"echo": "echo_test",
+	}
+	// 发送 JSON 消息
+	err := conn.WriteJSON(message_send)
+	if err != nil {
+		log.Println("Error sending message:", err)
+	}
+}
+
 // 发送图片
 func send_private_img(conn *websocket.Conn, UserID int64, GroupID int64, tags []string, r18 int, num int) {
 	// 调用Setu API
