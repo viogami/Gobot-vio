@@ -126,6 +126,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 
 		// 涩图tag
 		tags := utils.Get_tags(cqmsg.Text)
+		// 枪声
 
 		if msgtype == "private" {
 			switch command {
@@ -143,6 +144,12 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 			case "/涩图r18":
 				log.Println("将对私聊发送r18涩图 tag:", tags)
 				send_private_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
+			case "/枪声":
+				log.Println("将对私聊发送枪声")
+				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.HuntSound_GetCQCode(cqmsg.Text))
+			case "/枪声目录":
+				log.Println("将对私聊发送枪声目录")
+				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetIndex())
 			default:
 				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "抱歉，我暂时还无法识别这个指令~")
@@ -165,6 +172,12 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 			case "/涩图r18":
 				log.Println("将对群聊发送r18涩图 tags:", tags)
 				send_group_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
+			case "/枪声":
+				log.Println("将对群聊发送枪声")
+				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.HuntSound_GetCQCode(cqmsg.Text))
+			case "/枪声目录":
+				log.Println("将对群聊发送枪声目录")
+				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetIndex())
 			case "/禁言抽奖":
 				time := rand.Intn(60) + 1
 				log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
