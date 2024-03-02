@@ -89,100 +89,100 @@ func GetHuntSound(sound HuntSound) string {
 
 	switch GunIndex[sound.Name] {
 	case "Berthier Mle 1892":
-		return baseURL + "Berthier Mle 1892-" + distance2mp3(distance)
+		return baseURL + "Berthier%20Mle%201892-" + distance2mp3(distance)
 	case "Bornheim No. 3":
-		return baseURL + "Bornheim No. 3-" + distance2mp3(distance)
+		return baseURL + "Bornheim%20No.%203-" + distance2mp3(distance)
 	case "Bow":
 		return baseURL + "Bow-" + distance2mp3(distance)
 	case "Caldwell 92 New army":
-		return baseURL + "Caldwell 92 New army-" + distance2mp3(distance)
+		return baseURL + "Caldwell%2092%20New%20army-" + distance2mp3(distance)
 	case "Caldwell Conversion Pistol":
-		return baseURL + "Caldwell Conversion Pistol-" + distance2mp3(distance)
+		return baseURL + "Caldwell%20Conversion%20Pistol-" + distance2mp3(distance)
 	case "Caldwell Conversion Uppercut":
-		return baseURL + "Caldwell Conversion Uppercut-" + distance2mp3(distance)
+		return baseURL + "Caldwell%20Conversion%20Uppercut-" + distance2mp3(distance)
 	case "Caldwell Pax":
-		return baseURL + "Caldwell Pax-" + distance2mp3(distance)
+		return baseURL + "Caldwell%20Pax-" + distance2mp3(distance)
 	case "Caldwell Rival 78":
-		return baseURL + "Caldwell Rival 78-" + distance2mp3(distance)
+		return baseURL + "Caldwell%20Rival%2078-" + distance2mp3(distance)
 	case "Crossbow":
 		return baseURL + "Crossbow-" + distance2mp3(distance)
 	case "Crown & King Auto-5":
-		return baseURL + "Crown & King Auto-5-" + distance2mp3(distance)
+		return baseURL + "Crown%20&%20King%20Auto-5-" + distance2mp3(distance)
 	case "Dolch 96":
-		return baseURL + "Dolch 96-" + distance2mp3(distance)
+		return baseURL + "Dolch%2096-" + distance2mp3(distance)
 	case "Flare Pistol":
-		return baseURL + "Flare Pistol-" + distance2mp3(distance)
+		return baseURL + "Flare%20Pistol-" + distance2mp3(distance)
 	case "LeMat Mark II":
-		return baseURL + "LeMat Mark II-" + distance2mp3(distance)
+		return baseURL + "LeMat%20Mark%20II-" + distance2mp3(distance)
 	case "Lebel 1886":
-		return baseURL + "Lebel 1886-" + distance2mp3(distance)
+		return baseURL + "Lebel%201886-" + distance2mp3(distance)
 	case "Martini-Henry IC1":
-		return baseURL + "Martini-Henry IC1-" + distance2mp3(distance)
+		return baseURL + "Martini-Henry%20IC1-" + distance2mp3(distance)
 	case "Mosin-Nagant M1891":
-		return baseURL + "Mosin-Nagant M1891-" + distance2mp3(distance)
+		return baseURL + "Mosin-Nagant%20M1891-" + distance2mp3(distance)
 	case "Mosin-Nagant M1891 Avtomat":
-		return baseURL + "Mosin-Nagant M1891 Avtomat-" + distance2mp3(distance)
+		return baseURL + "Mosin-Nagant%20M1891%20Avtomat-" + distance2mp3(distance)
 	case "Nagant M1895 Officer":
-		return baseURL + "Nagant M1895 Officer-" + distance2mp3(distance)
+		return baseURL + "Nagant%20M1895%20Officer-" + distance2mp3(distance)
 	case "Nagant M1895 Silencer":
-		return baseURL + "Nagant M1895 Silencer-" + distance2mp3(distance)
+		return baseURL + "Nagant%20M1895%20Silencer-" + distance2mp3(distance)
 	case "Nitro Express Rifle":
-		return baseURL + "Nitro Express Rifle-" + distance2mp3(distance)
+		return baseURL + "Nitro%20Express%20Rifle-" + distance2mp3(distance)
 	case "Quad Derringer":
-		return baseURL + "Quad Derringer-" + distance2mp3(distance)
+		return baseURL + "Quad%20Derringer-" + distance2mp3(distance)
 	case "Romero 77":
-		return baseURL + "Romero 77-" + distance2mp3(distance)
+		return baseURL + "Romero%2077-" + distance2mp3(distance)
 	case "Scottfied Model 3":
-		return baseURL + "Scottfied Model 3-" + distance2mp3(distance)
+		return baseURL + "Scottfied%20Model 3-" + distance2mp3(distance)
 	case "Sparks LRR":
-		return baseURL + "Sparks LRR-" + distance2mp3(distance)
+		return baseURL + "Sparks%20LRR-" + distance2mp3(distance)
 	case "Sparks LRR Silencer":
-		return baseURL + "Sparks LRR Silencer-" + distance2mp3(distance)
+		return baseURL + "Sparks%20LRR%20Silencer-" + distance2mp3(distance)
 	case "Sparks Pistol":
-		return baseURL + "Sparks Pistol-" + distance2mp3(distance)
+		return baseURL + "Sparks%20Pistol-" + distance2mp3(distance)
 	case "Specter 1882":
-		return baseURL + "Specter 1882-" + distance2mp3(distance)
+		return baseURL + "Specter%201882-" + distance2mp3(distance)
 	case "Springfield 1866":
-		return baseURL + "Springfield 1866-" + distance2mp3(distance)
+		return baseURL + "Springfield%201866-" + distance2mp3(distance)
 	case "Vetterli 71 Karabiner":
-		return baseURL + "Vetterli 71 Karabiner-" + distance2mp3(distance)
+		return baseURL + "Vetterli%2071%20Karabiner-" + distance2mp3(distance)
 	case "Vetterli 71 Karabiner Silencer":
-		return baseURL + "Vetterli 71 Karabiner Silencer-" + distance2mp3(distance)
+		return baseURL + "Vetterli%2071%20Karabiner%20Silencer-" + distance2mp3(distance)
 	case "Windfield 1893 Slate":
-		return baseURL + "Windfield 1893 Slate-" + distance2mp3(distance)
+		return baseURL + "Windfield%201893%20Slate-" + distance2mp3(distance)
 	case "Winfield 1887 Terminus":
-		return baseURL + "Winfield 1887 Terminus-" + distance2mp3(distance)
+		return baseURL + "Winfield%201887%20Terminus-" + distance2mp3(distance)
 	case "Winfield M1873C":
-		return baseURL + "Winfield M1873C-" + distance2mp3(distance)
+		return baseURL + "Winfield%20M1873C-" + distance2mp3(distance)
 	case "Winfield M1873C Silencer":
-		return baseURL + "Winfield M1873C Silencer-" + distance2mp3(distance)
+		return baseURL + "Winfield%20M1873C%20Silencer-" + distance2mp3(distance)
 	case "Winfield M1876 Centennial":
-		return baseURL + "Winfield M1876 Centennial-" + distance2mp3(distance)
+		return baseURL + "Winfield%20M1876%20Centennial-" + distance2mp3(distance)
 	default:
-		return baseURL + "Lebel 1886-" + "06.mp3"
+		return baseURL + "Lebel%201886-" + "06.mp3"
 	}
 }
 
 func distance2mp3(distance string) string {
 	// 生成距离映射
 	switch distance {
-	case "1000":
+	case "1000m":
 		return "01.mp3"
-	case "500":
+	case "500m":
 		return "02,mp3"
-	case "350":
+	case "350m":
 		return "03.mp3"
-	case "200":
+	case "200m":
 		return "04.mp3"
-	case "100":
+	case "100m":
 		return "05.mp3"
-	case "50":
+	case "50m":
 		return "06.mp3"
-	case "20":
+	case "20m":
 		return "07.mp3"
-	case "5":
+	case "5m":
 		return "08.mp3"
-	case "0":
+	case "0m":
 		return "09.mp3"
 	default:
 		return "06.mp3"
