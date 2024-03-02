@@ -152,8 +152,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				log.Println("将对私聊发送枪声目录")
 				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetIndex())
 			default:
-				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "抱歉，我暂时还无法识别这个指令~")
+				log.Printf("识别到未定义指令,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 			}
 		} else if msgtype == "group" {
 			switch command {
@@ -185,8 +184,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				set_group_ban(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
 				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "已禁言"+fmt.Sprintf("%d", time)+"秒")
 			default:
-				log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "抱歉，我暂时还无法识别这个指令~")
+				log.Printf("识别到未定义指令,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 			}
 		} else {
 			log.Println("接受到非私聊或者非指令的群聊消息")
