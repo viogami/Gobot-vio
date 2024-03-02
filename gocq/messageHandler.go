@@ -3,6 +3,7 @@ package gocq
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/gorilla/websocket"
 	"github.com/viogami/Gobot-vio/chatgpt"
@@ -62,6 +63,24 @@ func send_group_msg(conn *websocket.Conn, UserID int64, GroupID int64, message_r
 			"group_id":    GroupID,
 			"message":     message_reply,
 			"auto_escape": false,
+		},
+		"echo": "echo_test",
+	}
+	// 发送 JSON 消息
+	err := conn.WriteJSON(message_send)
+	if err != nil {
+		log.Println("Error sending message:", err)
+	}
+}
+
+// 发送语音
+func send_group_record(conn *websocket.Conn, UserID int64, GroupID int64, message_reply string) {
+	// 构建消息结构
+	message_send := map[string]interface{}{
+		"action": "send_group_msg",
+		"params": map[string]interface{}{
+			"group_id": GroupID,
+			"message":  message_reply,
 		},
 		"echo": "echo_test",
 	}
@@ -214,4 +233,22 @@ func Atme(cq CQmsg) bool {
 		}
 	}
 	return false
+}
+
+// 请求CQ码
+func GetCQCode_HuntSound(input string) string {
+	sound := utils.HuntSound{
+		Name:     "",
+		Distance: "",
+	}
+	parts := strings.Split(input, " ")
+	if len(parts) == 2 {
+		sound.Name = parts[1]
+	}
+	if len(parts) == 3 {
+		sound.Name = parts[1]
+		sound.Distance = parts[2]
+	}
+
+	return "[CQ:record,file=" + utils.GetHuntSound(sound) + "]"
 }
