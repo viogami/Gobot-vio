@@ -232,12 +232,5 @@ func GetCQCode_HuntSound(input string) string {
 		sound.Distance = parts[2]
 	}
 
-	cq := CQCode{
-		Type: "record",
-		Data: map[string]interface{}{
-			"file": utils.GetHuntSound(sound),
-		},
-	}
-
-	return GenerateCQCode(cq)
+	return "[CQ:record,file=" + utils.GetHuntSound(sound) + "]"
 }

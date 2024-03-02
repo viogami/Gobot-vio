@@ -138,7 +138,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply)
 			case "/help":
 				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18")
+				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18\n/枪声\n/枪声目录")
 			case "/涩图":
 				log.Println("将对私聊发送涩图 tag:", tags)
 				send_private_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 0, 1)
@@ -146,7 +146,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				log.Println("将对私聊发送r18涩图 tag:", tags)
 				send_private_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
 			case "/枪声":
-				log.Println("将对私聊发送枪声")
+				log.Println("将对私聊发送枪声:" + cqmsg.Text)
 				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
 			case "/枪声目录":
 				log.Println("将对私聊发送枪声目录")
@@ -161,7 +161,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				log.Printf("非指令消息,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 			case "/help":
 				log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18\n/禁言抽奖")
+				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18\n/禁言抽奖\n/枪声\n/枪声目录")
 			case "/chat":
 				log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
 				// 消息处理
@@ -174,7 +174,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				log.Println("将对群聊发送r18涩图 tags:", tags)
 				send_group_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
 			case "/枪声":
-				log.Println("将对群聊发送枪声")
+				log.Println("将对群聊发送枪声" + cqmsg.Text)
 
 				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
 			case "/枪声目录":
