@@ -74,13 +74,13 @@ chatgpt调用：
 
 ### 对于我/for me
 
-使用过cloudflare的workers部署服务，只能使用js，不熟悉还是挺难搞了。是完全免费的，只要绑了自己的域名在CF上，CF也提供子域名
-
 Zeabur挺不错，国内社区，discord上回复也很即使，一键部署挺快的，github集成。
 zeabur上项目部署非常快,甚至不用写dockfile,而且对go项目有完整的支持,算是符合他们的口号:
 > Deploying your service with one click
 
-但是Zeabur每月5$，如果是聊天机器人，按量付费肯定是不够的，现在我用github学生包的heroku平台，**注册要关闭adguard，需要绑定国外银行卡，绑卡时建议关闭梯子**。
+但是Zeabur每月5$，如果是聊天机器人，按量付费肯定是不够的。
+
+现在我用github学生包的heroku平台，**注册要关闭adguard，需要绑定国外银行卡，绑卡时建议关闭梯子**。
 
 ## Paas部署注意点
 ### 端口号
