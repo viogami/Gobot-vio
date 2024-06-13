@@ -8,6 +8,8 @@ import (
 	"regexp"
 
 	"github.com/gorilla/websocket"
+	api "github.com/viogami/Gobot-vio/gocq/API"
+	"github.com/viogami/Gobot-vio/gocq/cqEvent"
 	"github.com/viogami/Gobot-vio/utils"
 )
 
@@ -18,15 +20,15 @@ type Event struct {
 }
 
 type MessageEvent struct {
-	MessageType string `json:"message_type"`
-	SubType     string `json:"sub_type"`
-	MessageID   int32  `json:"message_id"`
-	UserID      int64  `json:"user_id"`
-	GroupID     int64  `json:"group_id"`
-	Message     string `json:"message"`
-	RawMessage  string `json:"raw_message"`
-	Font        int    `json:"font"`
-	Sender      Sender `json:"sender"`
+	MessageType string         `json:"message_type"`
+	SubType     string         `json:"sub_type"`
+	MessageID   int32          `json:"message_id"`
+	UserID      int64          `json:"user_id"`
+	GroupID     int64          `json:"group_id"`
+	Message     string         `json:"message"`
+	RawMessage  string         `json:"raw_message"`
+	Font        int            `json:"font"`
+	Sender      cqEvent.Sender `json:"sender"`
 }
 
 type RequestEvent struct {
@@ -198,19 +200,19 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 		switch notice_type {
 		// 群成员增加
 		case "group_increase":
-			group_increase_info := get_notice_info(p, receivedNoticeEvent.NoticeType).(GroupIncreaseNotice)
+			group_increase_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupIncreaseNotice)
 			log.Printf("群成员增加,UserID:%d,GroupID:%d", group_increase_info.UserID, group_increase_info.GroupID)
 
 			send_group_msg(conn, group_increase_info.UserID, group_increase_info.GroupID, "欢迎新成员加入~,发送 /help 可查看机器人全部指令")
 		// 群成员减少
 		case "group_decrease":
-			group_decrease_info := get_notice_info(p, receivedNoticeEvent.NoticeType).(GroupDecreaseNotice)
+			group_decrease_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupDecreaseNotice)
 			log.Printf("群成员减少,UserID:%d,GroupID:%d", group_decrease_info.UserID, group_decrease_info.GroupID)
 
 			send_group_msg(conn, group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~")
 		// 消息撤回
 		case "group_recall":
-			group_recall_info := get_notice_info(p, receivedNoticeEvent.NoticeType).(GroupRecallNotice)
+			group_recall_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupRecallNotice)
 			log.Printf("消息撤回,UserID:%d,GroupID:%d", group_recall_info.UserID, group_recall_info.GroupID)
 		}
 
@@ -220,7 +222,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 		switch request_type {
 		// 使用快速响应
 		case "friend":
-			friend_info := get_request_info(p, receivedRequestEvent.RequestType).(AddFriendRequest)
+			friend_info := cqEvent.Get_request_info(p, receivedRequestEvent.RequestType).(cqEvent.AddFriendRequest)
 			log.Println("好友请求:", friend_info.UserID, friend_info.Comment, friend_info.Flag)
 
 			fast_resp := map[string]interface{}{
@@ -232,7 +234,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				log.Println("Error fast_resp approve:", err)
 			}
 		case "group":
-			group_info := get_request_info(p, receivedRequestEvent.RequestType).(AddGroupRequest)
+			group_info := cqEvent.Get_request_info(p, receivedRequestEvent.RequestType).(cqEvent.AddGroupRequest)
 			log.Println("群请求:", group_info.GroupID, group_info.UserID, group_info.Comment, group_info.Flag)
 
 			fast_resp := map[string]interface{}{
@@ -246,5 +248,13 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 		}
 	case "meta_event":
 		// 元事件
+		// 测试api
+		if receivedMetaEvent.MetaEventType == "lifecycle" {
+			newm := api.Get_login_info()
+			err := conn.WriteJSON(newm)
+			if err != nil {
+				log.Println("Error sending message:", err)
+			}
+		}
 	}
 }

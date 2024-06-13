@@ -1,4 +1,4 @@
-package gocq
+package cqEvent
 
 import (
 	"encoding/json"
@@ -65,7 +65,7 @@ type Anonymous struct {
 	Flag string `json:"flag"`
 }
 
-func get_msg_info(p []byte, msgType string) interface{} {
+func Get_msg_info(p []byte, msgType string) interface{} {
 	var privateMessage PrivateMessage
 	var groupMessage GroupMessage
 	switch msgType {

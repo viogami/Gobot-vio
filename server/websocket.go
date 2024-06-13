@@ -10,8 +10,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// handleWebSocket 用于处理WebSocket请求
-func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+// 用WebSocket进行gocq通信请求
+func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true

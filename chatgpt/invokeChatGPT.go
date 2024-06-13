@@ -2,18 +2,15 @@ package chatgpt
 
 import (
 	"context"
-	"os"
 
 	openai "github.com/sashabaranov/go-openai"
+	"github.com/viogami/Gobot-vio/config"
 )
 
 // 定义环境变量
 var (
-	chatGPTAPIKey = os.Getenv("chatGPTAPIKey")
-)
-
-const (
-	chatGPTURL_proxy = "https://one-api.bltcy.top/v1"
+	chatGPTAPIKey    = config.EnvConst.ChatGPTAPIKey
+	chatGPTURL_proxy = config.EnvConst.ChatGPTURL_proxy
 )
 
 func InvokeChatGPTAPI(text string) (string, error) {

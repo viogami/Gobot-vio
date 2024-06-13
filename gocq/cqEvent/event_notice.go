@@ -1,4 +1,4 @@
-package gocq
+package cqEvent
 
 import (
 	"encoding/json"
@@ -47,7 +47,7 @@ type GroupDecreaseNotice struct {
 	OperatorID int64  `json:"operator_id"`
 }
 
-func get_notice_info(p []byte, NoticeType string) interface{} {
+func Get_notice_info(p []byte, NoticeType string) interface{} {
 	var (
 		group_recall_notice   GroupRecallNotice
 		private_recall_notice PrivateRecallNotice
