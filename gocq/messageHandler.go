@@ -5,7 +5,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/gorilla/websocket"
 	"github.com/viogami/Gobot-vio/chatgpt"
 	"github.com/viogami/Gobot-vio/utils"
 )
@@ -35,12 +34,12 @@ func msgHandler(MsgEvent *MessageEvent) string {
 // group_id	int64	-	群号 ( 消息类型为 group 时需要 )
 // message	message	-	要发送的内容
 // auto_escape	boolean	false	消息内容是否作为纯文本发送 ( 即不解析 CQ 码 ) , 只在 message 字段是字符串时有效
-func send_msg(conn *websocket.Conn, message_type string, user_id int64, group_id int64, message string, auto_escape bool) {
+func msg_send(message_type string, user_id int64, group_id int64, message string, auto_escape bool) map[string]interface{} {
 	if message_type == "group" {
 		cq := CQCode{
 			Type: "at",
 			Data: map[string]interface{}{
-				"qq": fmt.Sprintf("%d", receivedMsgEvent.UserID),
+				"qq": fmt.Sprintf("%d", user_id),
 			},
 		}
 		message = GenerateCQCode(cq) + message
@@ -57,48 +56,35 @@ func send_msg(conn *websocket.Conn, message_type string, user_id int64, group_id
 		},
 		"echo": "echo_test", // 用于识别回调消息
 	}
-	// 发送 JSON 消息
-	err := conn.WriteJSON(message_send)
-	if err != nil {
-		log.Println("Error sending message:", err)
-	}
+	return message_send
 }
 
 // 发送私聊合并消息
-func send_private_forward_msg(conn *websocket.Conn, UserID int64, message_reply []CQCode) {
-		// 构建消息结构
-		message_send := map[string]interface{}{
-			"action": "send_private_forward_msg",
-			"params": map[string]interface{}{
-				"user_id":  UserID,
-				"messages": message_reply,
-			},
-			"echo": "echo_test",
-		}
-
-		// 发送 JSON 消息
-		err := conn.WriteJSON(message_send)
-		if err != nil {
-			log.Println("Error sending message:", err)
-		}
+func msg_send_private_forward(UserID int64, message_reply []CQCode) map[string]interface{} {
+	// 构建消息结构
+	message_send := map[string]interface{}{
+		"action": "send_private_forward_msg",
+		"params": map[string]interface{}{
+			"user_id":  UserID,
+			"messages": message_reply,
+		},
+		"echo": "echo_test",
+	}
+	return message_send
 }
-// 发送群聊合并消息
-func send_group_forward_msg(conn *websocket.Conn, GroupID int64, message_reply []CQCode) {
-		// 构建消息结构
-		message_send := map[string]interface{}{
-			"action": "send_group_forward_msg",
-			"params": map[string]interface{}{
-				"group_id":  GroupID,
-				"messages": message_reply,
-			},
-			"echo": "echo_test",
-		}
 
-		// 发送 JSON 消息
-		err := conn.WriteJSON(message_send)
-		if err != nil {
-			log.Println("Error sending message:", err)
-		}
+// 发送群聊合并消息
+func msg_send_group_forward(GroupID int64, message_reply []CQCode) map[string]interface{} {
+	// 构建消息结构
+	message_send := map[string]interface{}{
+		"action": "send_group_forward_msg",
+		"params": map[string]interface{}{
+			"group_id": GroupID,
+			"messages": message_reply,
+		},
+		"echo": "echo_test",
+	}
+	return message_send
 }
 
 // 判断是否at我

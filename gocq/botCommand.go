@@ -5,18 +5,16 @@ import (
 	"log"
 	"math/rand"
 
-	"github.com/gorilla/websocket"
 	"github.com/viogami/Gobot-vio/utils"
 )
 
 type cmd_params struct {
-	conn             *websocket.Conn
 	receivedMsgEvent MessageEvent
 	tags             []string
 	num              int
 }
 
-var privateCommandList = map[string]func(params cmd_params){
+var privateCommandList = map[string]func(params cmd_params) map[string]interface{}{
 	"":       privateCmd_null, // 空指令，不做任何处理
 	"/help":  privateCmd_help,
 	"/涩图":    privateCmd_setu,
@@ -24,7 +22,7 @@ var privateCommandList = map[string]func(params cmd_params){
 	"/枪声":    privateCmd_HuntSound,
 	"/枪声目录":  privateCmd_HuntSoundList,
 }
-var groupCommandList = map[string]func(cmd_params){
+var groupCommandList = map[string]func(cmd_params) map[string]interface{}{
 	"":       groupCmd_null, // 空指令，不做任何处理
 	"/help":  groupCmd_help,
 	"/chat":  groupCmd_chat,
@@ -37,28 +35,25 @@ var groupCommandList = map[string]func(cmd_params){
 
 // ---------私聊指令处理函数---------
 // 空指令
-func privateCmd_null(params cmd_params) {
-	conn := params.conn
+func privateCmd_null(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 
 	log.Printf("将对私聊回复,msgID:%d,UserID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID)
 	// 消息处理
 	message_reply := msgHandler(&receivedMsgEvent)
-	send_msg(conn, receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply, false)
+	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply, false)
 }
 
 // help 指令
-func privateCmd_help(params cmd_params) {
-	conn := params.conn
+func privateCmd_help(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 
 	log.Printf("将对私聊回复,msgID:%d,UserID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID)
-	send_msg(conn, receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18\n/枪声\n/枪声目录", false)
+	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18\n/枪声\n/枪声目录", false)
 }
 
 // 涩图 指令
-func privateCmd_setu(params cmd_params) {
-	conn := params.conn
+func privateCmd_setu(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	tags := params.tags
 	num := params.num
@@ -69,15 +64,14 @@ func privateCmd_setu(params cmd_params) {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
 	if message_reply == nil {
-		send_msg(conn, receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
+		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
 	}
 	// 发送消息
-	send_private_forward_msg(conn, UserID, message_reply)
+	return msg_send_private_forward(UserID, message_reply)
 }
 
 // r18 指令
-func privateCmd_r18(params cmd_params) {
-	conn := params.conn
+func privateCmd_r18(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	tags := params.tags
 	num := params.num
@@ -88,58 +82,55 @@ func privateCmd_r18(params cmd_params) {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 1, num)
 	if message_reply == nil {
-		send_msg(conn, receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
+		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
 	}
 	// 发送消息
-	send_private_forward_msg(conn, UserID, message_reply)
+	return msg_send_private_forward(UserID, message_reply)
 }
 
 // 枪声 指令
-func privateCmd_HuntSound(params cmd_params) {
-	conn := params.conn
+func privateCmd_HuntSound(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 
 	// 解析cq码，获取无cq格式的消息内容
 	cqmsg := ParseCQmsg(receivedMsgEvent.Message)
 	log.Println("将对私聊发送枪声:" + GetCQCode_HuntSound(cqmsg.Text))
-	send_msg(conn, receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text), false)
+	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text), false)
 }
 
 // 枪声目录 指令
-func privateCmd_HuntSoundList(params cmd_params) {
-	conn := params.conn
+func privateCmd_HuntSoundList(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 
 	log.Println("将对私聊发送枪声目录")
-	send_msg(conn, receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetGunIndex(), false)
+	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetGunIndex(), false)
 }
 
 // ---------群聊指令处理函数---------
 // null 指令
-func groupCmd_null(params cmd_params) {
+func groupCmd_null(params cmd_params) map[string]interface{} {
 	log.Printf("非指令消息")
+	return nil
 }
 
 // help 指令
-func groupCmd_help(params cmd_params) {
+func groupCmd_help(params cmd_params) map[string]interface{} {
 	log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
-	send_msg(params.conn, receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/chat\n/涩图\n/涩图r18\n/枪声\n/枪声目录\n/禁言抽奖", false)
+	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/chat\n/涩图\n/涩图r18\n/枪声\n/枪声目录\n/禁言抽奖", false)
 }
 
 // chat 指令
-func groupCmd_chat(params cmd_params) {
-	conn := params.conn
+func groupCmd_chat(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 
 	log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
 	// 消息处理
 	message_reply := msgHandler(&receivedMsgEvent)
-	send_msg(conn, receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply, false)
+	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply, false)
 }
 
 // 涩图 指令
-func groupCmd_setu(params cmd_params) {
-	conn := params.conn
+func groupCmd_setu(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	tags := params.tags
 	num := params.num
@@ -150,15 +141,14 @@ func groupCmd_setu(params cmd_params) {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
 	if message_reply == nil {
-		send_msg(conn, receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
+		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
 	}
 	// 发送消息
-	send_group_forward_msg(conn, GroupID, message_reply)
+	return msg_send_group_forward(GroupID, message_reply)
 }
 
 // r18 指令
-func groupCmd_r18(params cmd_params) {
-	conn := params.conn
+func groupCmd_r18(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	tags := params.tags
 	num := params.num
@@ -169,40 +159,37 @@ func groupCmd_r18(params cmd_params) {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 1, num)
 	if message_reply == nil {
-		send_msg(conn, receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
+		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
 	}
 	// 发送消息
-	send_group_forward_msg(conn, GroupID, message_reply)
+	return msg_send_group_forward(GroupID, message_reply)
 }
 
 // 枪声 指令
-func groupCmd_HuntSound(params cmd_params) {
-	conn := params.conn
+func groupCmd_HuntSound(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 
 	// 解析cq码，获取无cq格式的消息内容'
 	cqmsg := ParseCQmsg(receivedMsgEvent.Message)
 	log.Println("将对群聊发送枪声" + GetCQCode_HuntSound(cqmsg.Text))
-	send_msg(conn, receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text), false)
+	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text), false)
 }
 
 // 枪声目录 指令
-func groupCmd_HuntSoundList(params cmd_params) {
-	conn := params.conn
+func groupCmd_HuntSoundList(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 
 	log.Println("将对群聊发送枪声目录")
-	send_msg(conn, receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetGunIndex(), false)
+	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetGunIndex(), false)
 }
 
 // 禁言抽奖 指令
-func groupCmd_BanLottery(params cmd_params) {
-	conn := params.conn
+func groupCmd_BanLottery(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	time := rand.Intn(60) + 1
 	log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
-	set_group_ban(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
-	send_msg(conn, receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "禁言抽奖开始，禁言时间为"+fmt.Sprintf("%d", time)+"秒", false)
+	return set_group_ban(receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
+	// TODO 此处应该可以返回一个消息，提示禁言成功，但是目前没有实现
 }
 
 // ------------------------------- 可复用代码 ----------------------------------

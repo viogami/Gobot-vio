@@ -1,13 +1,7 @@
 package gocq
 
-import (
-	"log"
-
-	"github.com/gorilla/websocket"
-)
-
 // 设置群组禁言
-func set_group_ban(conn *websocket.Conn, UserID int64, GroupID int64, time int) {
+func set_group_ban(UserID int64, GroupID int64, time int) map[string]interface{} {
 	// 构建消息结构
 	sendMessage := map[string]interface{}{
 		"action": "set_group_ban",
@@ -18,9 +12,5 @@ func set_group_ban(conn *websocket.Conn, UserID int64, GroupID int64, time int) 
 		},
 		"echo": "echo_test",
 	}
-	// 发送 JSON 消息
-	err := conn.WriteJSON(sendMessage)
-	if err != nil {
-		log.Println("Error sending message:", err)
-	}
+	return sendMessage
 }

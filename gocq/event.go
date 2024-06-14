@@ -5,7 +5,6 @@ import (
 	"log"
 	"regexp"
 
-	"github.com/gorilla/websocket"
 	"github.com/viogami/Gobot-vio/gocq/cqEvent"
 	"github.com/viogami/Gobot-vio/utils"
 )
@@ -108,14 +107,14 @@ func Log_post_type(p []byte) error {
 }
 
 // 处理上报事件
-func Handle_event(p []byte, conn *websocket.Conn) {
+func Handle_event(p []byte) map[string]interface{} {
 	switch receivedEvent.PostType {
 	case "message":
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
+
 		// 解析cq码，获取无cq格式的消息内容
 		cqmsg := ParseCQmsg(receivedMsgEvent.Message)
-
 		// 定义正则表达式匹配以中文字符开头的命令
 		commandPattern := regexp.MustCompile(`^/([^ ]+)`)
 		// 使用正则表达式查找匹配的指令
@@ -127,7 +126,6 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 
 		// 构造命令参数
 		params := cmd_params{
-			conn:             conn,
 			receivedMsgEvent: receivedMsgEvent,
 			tags:             utils.Get_tags(cqmsg.Text),
 			num:              1,
@@ -162,13 +160,13 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 			group_increase_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupIncreaseNotice)
 			log.Printf("群成员增加,UserID:%d,GroupID:%d", group_increase_info.UserID, group_increase_info.GroupID)
 
-			send_msg(conn, "group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看指令列表~", false)
+			msg_send("group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看指令列表~", false)
 		// 群成员减少
 		case "group_decrease":
 			group_decrease_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupDecreaseNotice)
 			log.Printf("群成员减少,UserID:%d,GroupID:%d", group_decrease_info.UserID, group_decrease_info.GroupID)
 
-			send_msg(conn, "group", group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~", false)
+			msg_send("group", group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~", false)
 		// 消息撤回
 		case "group_recall":
 			group_recall_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupRecallNotice)
@@ -188,10 +186,7 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				"approve": true,
 				"remark":  "auto approve user",
 			}
-			err := conn.WriteJSON(fast_resp)
-			if err != nil {
-				log.Println("Error fast_resp approve:", err)
-			}
+			return fast_resp
 		case "group":
 			group_info := cqEvent.Get_request_info(p, receivedRequestEvent.RequestType).(cqEvent.AddGroupRequest)
 			log.Println("群请求:", group_info.GroupID, group_info.UserID, group_info.Comment, group_info.Flag)
@@ -200,12 +195,10 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 				"approve": false,
 				"reason":  "you must notice this to my master:qq2654613995",
 			}
-			err := conn.WriteJSON(fast_resp)
-			if err != nil {
-				log.Println("Error fast_resp approve:", err)
-			}
+			return fast_resp
 		}
 	case "meta_event":
 		// 元事件
 	}
+	return nil
 }

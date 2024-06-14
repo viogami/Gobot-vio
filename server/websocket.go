@@ -38,7 +38,15 @@ func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		} else {
 			// 发送消息
-			gocq.Handle_event(p, conn)
+			message_send := gocq.Handle_event(p)
+			if message_send == nil {
+				continue
+			}
+			err = conn.WriteJSON(message_send)
+			if err != nil {
+				log.Println("Error sending message:", err)
+				return
+			}
 		}
 	}
 }
