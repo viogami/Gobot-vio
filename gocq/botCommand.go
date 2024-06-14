@@ -115,6 +115,7 @@ func groupCmd_null(params cmd_params) map[string]interface{} {
 
 // help 指令
 func groupCmd_help(params cmd_params) map[string]interface{} {
+	receivedMsgEvent := params.receivedMsgEvent
 	log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
 	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/chat\n/涩图\n/涩图r18\n/枪声\n/枪声目录\n/禁言抽奖", false)
 }

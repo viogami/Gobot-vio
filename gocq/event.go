@@ -39,21 +39,25 @@ type MetaEvent struct {
 	MetaEventType string `json:"meta_event_type"`
 }
 
-// 接收的事件
-var (
-	receivedEvent        Event
-	receivedMsgEvent     MessageEvent
-	receivedRequestEvent RequestEvent
-	receivedNoticeEvent  NoticeEvent
-	receivedMetaEvent    MetaEvent
-)
+// 接受的事件
+var receivedEvent Event
+
 // 回复的消息内容
 var replyMsgs = make([]map[string]interface{}, 0)
+
 // 心跳计数
 var heart_count = 0
 
 // 判断上报类型
 func Log_post_type(p []byte) error {
+	// 接收的事件
+	var (
+		receivedEvent        Event
+		receivedMsgEvent     MessageEvent
+		receivedRequestEvent RequestEvent
+		receivedNoticeEvent  NoticeEvent
+		receivedMetaEvent    MetaEvent
+	)
 	err := json.Unmarshal(p, &receivedEvent)
 	if err != nil {
 		log.Println("Error parsing JSON:", err)
@@ -109,6 +113,12 @@ func Log_post_type(p []byte) error {
 
 // 处理上报事件
 func Handle_event(p []byte) []map[string]interface{} {
+	// 接收的事件
+	var (
+		receivedMsgEvent     MessageEvent
+		receivedRequestEvent RequestEvent
+		receivedNoticeEvent  NoticeEvent
+	)
 	replyMsgs = make([]map[string]interface{}, 0)
 	switch receivedEvent.PostType {
 	case "message":
