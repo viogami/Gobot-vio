@@ -68,7 +68,7 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedMsgEvent:", err)
 			return err
 		}
-		log.Println("Received ", post_type, ":", receivedMsgEvent.MessageType,"userid:",receivedMsgEvent.UserID,receivedMsgEvent.Message)
+		log.Println("Received ", post_type, ":", receivedMsgEvent.MessageType)
 	} else if post_type == "request" {
 		// 请求事件
 		err := json.Unmarshal(p, &receivedRequestEvent)
@@ -128,7 +128,7 @@ func Handle_event(p []byte) []map[string]interface{} {
 
 		// 构造命令参数
 		params := cmd_params{
-			receivedMsgEvent: receivedMsgEvent,
+			receivedMsgEvent: &receivedMsgEvent,
 			tags:             utils.Get_tags(cqmsg.Text),
 			num:              1,
 		}

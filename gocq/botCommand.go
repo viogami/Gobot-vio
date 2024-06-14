@@ -9,7 +9,7 @@ import (
 )
 
 type cmd_params struct {
-	receivedMsgEvent MessageEvent
+	receivedMsgEvent *MessageEvent
 	tags             []string
 	num              int
 }
@@ -40,7 +40,7 @@ func privateCmd_null(params cmd_params) map[string]interface{} {
 
 	log.Printf("将对私聊回复,msgID:%d,UserID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID)
 	// 消息处理
-	message_reply := msgHandler(&receivedMsgEvent)
+	message_reply := msgHandler(receivedMsgEvent)
 	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply, false)
 }
 
@@ -125,7 +125,7 @@ func groupCmd_chat(params cmd_params) map[string]interface{} {
 
 	log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
 	// 消息处理
-	message_reply := msgHandler(&receivedMsgEvent)
+	message_reply := msgHandler(receivedMsgEvent)
 	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply, false)
 }
 

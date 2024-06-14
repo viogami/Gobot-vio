@@ -43,8 +43,8 @@ func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
 				go func() {
 					for _, msg := range message_send {
 						// 发送消息
-						err = conn.WriteJSON(msg)
-						log.Println("send msg okokook")
+						// err = conn.WriteJSON(msg)
+						log.Println("send",msg)
 						if err != nil {
 							log.Println(err)
 							return
