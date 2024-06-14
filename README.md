@@ -2,7 +2,9 @@
 
 ![Go Reference](https://pkg.go.dev/badge/github.com/go-telegram-bot-api/telegram-bot-api/v5.svg)
 
-使用go搭建的bot，取名为 **Vio** ，旨在提供一个接口，用来接受不同协议的请求，调用转发外部讯息并返回，目前可以完成基于chatgpt聊天任务，部署在一个服务器可以多个平台共同调用。
+纯go编写的机器人业务后端，bot取名为 **Vio** ，qq机器人的实现基于gocq提供的api，基于gocq的上报事件调用转发外部讯息并返回。
+
+其他平台也可在开发中，可参考现有逻辑。目前可以完成基于chatgpt聊天任务，部署在一个服务器可以多个平台共同调用。
 
 **如果你有想法和意见请提issue！这对我和bot都很重要！`<br>`欢迎qq加群讨论：340961300**
 
@@ -22,39 +24,48 @@
 
 有部署聊天机器人的想法，但是我使用的国内服务器，而且服务器性能也堪忧，于是决定不用云服务器部署了，找个国外的Paas平台，把写的后端送上去就好了。
 
-传统的聊天机器人服务都是一体化的，和聊天平台需要集成。我希望把消息处理的逻辑和平台部署的逻辑做两个服务，后者发送信息给前者，前者返回需要发送的信息，后者再在聊天平台呈现信息。
-
 目前已经完成了：
 
-http：
+- http：该后端天然支持http请求，使用go原生net包，创建了一个post请求的路由，可以解析post内容转发调用chatgpt，目前我将其使用在微信公众号的后端上。
 
-- 该后端天然支持http请求，使用go原生net包，创建了一个post请求的路由，可以解析post内容转发调用chatgpt，目前我将其使用在微信公众号的后端上。
+- webhook：为Tg设置了webhook，可以监听tg服务器的消息，实现tgbot。针对Telegram的消息处理，对私人，群组，超级群组各有不同的应答模式。
 
-webhook
-
-- 为Tg设置了webhook，可以监听tg服务器的消息，实现tgbot。
-- 针对Telegram的消息处理，对私人，群组，超级群组各有不同的应答模式。
-
- 反向ws：
-
-- 配合[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)使用，用于实现qqbot,基于上报事件，调用gocq提供的api进行回复。注意参考[gocq官方文档](https://docs.go-cqhttp.org/reference/#websocket)
-- 可以调用api发送图片，随机图片api[参考](https://api.lolicon.app/setu/v2)
+- 反向ws：配合[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)使用，用于实现qqbot,基于上报事件，调用gocq提供的api进行回复。注意参考[gocq官方文档](https://docs.go-cqhttp.org/reference/#websocket)。可以调用api发送图片，随机图片api[参考](https://api.lolicon.app/setu/v2)
 
 chatgpt调用：
 
 - 在聊天中支持chatgpt的回复。该功能使用了[go-openai](https://github.com/sashabaranov/go-openai)库，支持了go语言对openai api的调用
 - 提示词参考：[awesome-chatgpt-prompts-zh](https://github.com/PlexPt/awesome-chatgpt-prompts-zh/blob/main/prompts-zh.json)
 
-只部署一个机器人接口就好了.无论什么聊天平台，通讯功能的实现基本都是互通的。
-
 本后端最终希望实现只对外暴露一个API,实现机器人通讯的应答模式,对不同平台创建不同的新服务,调用接口皆可进行通讯服务.通过环境变量设置启用平台。
+
+**2024/5更新**：目前做了一次重大项目重构，使整个项目耦合程度下降，命令通过一个commandList哈希表来控制。websocket的conn不传入业务层，而是向外不断返回一个消息体，最后交给外层的ws连接发送。整个项目更加明了易读。添加了config配置文件，统一管理环境变量的初始化。
+
+## 结构说明
+
+- chatgpt： 管理chatgpt的api调用，实现了提示词调用
+- config： 用于管理配置文件，提供一个函数用于环境变量初始化。
+- gocq： qqbot的业务层核心。
+  - cqEvent : gocq的事件数据结构
+  - botCommand.go : bot的命令函数
+  - CQCode : qq的cqcode设置
+  - event : 业务层入口，定义事件处理函数
+  - groupManage.go : 群组管理
+  - messageHandler.go : 消息处理函数
+  - rule.go : 消息过滤。
+- server： 创建or使用服务(http,ws,tgbot)
+  - websocket.go：qqbot服务入口
+  - http： http请求服务入口
+- tgbot : tgbot业务层核心。
+- utils : 调用外界功能的函数库
 
 ## 实现要点
 
-- 使用一个goroutine实现同时启动http端口的监听和webhook地址的监听
-- tgbot多参考官方示例和已有项目，官方的机器人接口很完善
+- 完全遵循gocq文档，gocq/cqEvent文件夹中有其事件消息的全部结构体实现。通过创建一个命令哈希表 `map[string]func(params cmd_params))`，在事件处理函数中调用该函数，返回一个需要发送给gocq的消息体数组，每个消息体均可让gocq做出某一单一行为。
+- 在websocket的创建函数出
 - gocq的配置建议阅读我的[个人博客](http://viogami.me/index.php/archives/144/)
 - 微信公众号不建议集成，因为公众号的后端需要连接微信官方的后端，用一个新后端通过http请求调用这个bot后端比较好。
+- tgbot多参考官方示例和已有项目，官方的机器人接口很完善
 - chatgpt的调用参考go的openai库文档即可，也很完善。注意调用api是无法进行联系上下文对话的，要实现上下文对话只有把历史消息都post给api，这显然是不现实的。`<br>`或者你将ai模型部署在本地，将历史记录存放在本地数据库中，而你的ai模型调用chatgpt(显然工作量太大)
 
 ## 部署建议
@@ -129,10 +140,13 @@ heroku和zeabur部署项目自带证书,做完域名映射可以直接https访�
 
 ### 环境变量
 
-在目前我的实现中，定义了三个环境变量
+在目前我的实现中，定义了四个环境变量
 
 ```env
 TG_WEBHOOK_URL=https://yousite.com/tgbot
 BOT_TOKEN=your token
 chatGPTAPIKey=sk-your key
+ChatGPTURL_proxy = "https://your-proxy-site/v1"
 ```
+
+ChatGPTURL_proxy="https://one-api.bltcy.top/v1"

@@ -47,7 +47,8 @@ var (
 	receivedNoticeEvent  NoticeEvent
 	receivedMetaEvent    MetaEvent
 )
-
+// 回复的消息内容
+var replyMsgs = make([]map[string]interface{}, 0)
 // 心跳计数
 var heart_count = 0
 
@@ -107,7 +108,7 @@ func Log_post_type(p []byte) error {
 }
 
 // 处理上报事件
-func Handle_event(p []byte) map[string]interface{} {
+func Handle_event(p []byte) []map[string]interface{} {
 	switch receivedEvent.PostType {
 	case "message":
 		// 消息事件
@@ -134,14 +135,16 @@ func Handle_event(p []byte) map[string]interface{} {
 		if msgtype == "private" {
 			cmd := privateCommandList[command]
 			if cmd != nil {
-				return cmd(params)
+				replyMsgs = append(replyMsgs, cmd(params))
+				return replyMsgs
 			} else {
 				log.Printf("识别到未定义指令,command:%s", command)
 			}
 		} else if msgtype == "group" {
 			cmd := groupCommandList[command]
 			if cmd != nil {
-				return cmd(params)
+				replyMsgs = append(replyMsgs, cmd(params))
+				return replyMsgs
 			} else {
 				log.Printf("识别到未定义指令,command:%s", command)
 			}
@@ -160,13 +163,15 @@ func Handle_event(p []byte) map[string]interface{} {
 			group_increase_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupIncreaseNotice)
 			log.Printf("群成员增加,UserID:%d,GroupID:%d", group_increase_info.UserID, group_increase_info.GroupID)
 
-			return msg_send("group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看指令列表~", false)
+			replyMsgs = append(replyMsgs, msg_send("group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看指令列表~", false))
+			return replyMsgs
 		// 群成员减少
 		case "group_decrease":
 			group_decrease_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupDecreaseNotice)
 			log.Printf("群成员减少,UserID:%d,GroupID:%d", group_decrease_info.UserID, group_decrease_info.GroupID)
 
-			return msg_send("group", group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~", false)
+			replyMsgs = append(replyMsgs, msg_send("group", group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~", false))
+			return replyMsgs
 		// 消息撤回
 		case "group_recall":
 			group_recall_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupRecallNotice)
@@ -182,23 +187,15 @@ func Handle_event(p []byte) map[string]interface{} {
 			friend_info := cqEvent.Get_request_info(p, receivedRequestEvent.RequestType).(cqEvent.AddFriendRequest)
 			log.Println("好友请求:", friend_info.UserID, friend_info.Comment, friend_info.Flag)
 
-			fast_resp := map[string]interface{}{
-				"approve": true,
-				"remark":  "auto approve user",
-			}
-			return fast_resp
+			return replyMsgs
 		case "group":
 			group_info := cqEvent.Get_request_info(p, receivedRequestEvent.RequestType).(cqEvent.AddGroupRequest)
 			log.Println("群请求:", group_info.GroupID, group_info.UserID, group_info.Comment, group_info.Flag)
 
-			fast_resp := map[string]interface{}{
-				"approve": false,
-				"reason":  "you must notice this to my master:qq2654613995",
-			}
-			return fast_resp
+			return replyMsgs
 		}
 	case "meta_event":
 		// 元事件
 	}
-	return nil
+	return replyMsgs
 }

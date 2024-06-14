@@ -188,6 +188,7 @@ func groupCmd_BanLottery(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	time := rand.Intn(60) + 1
 	log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
+	replyMsgs = append(replyMsgs, msg_send("group", receivedMsgEvent.UserID, receivedMsgEvent.GroupID, fmt.Sprintf("禁言抽奖，禁言时间:%d分钟", time), false))
 	return set_group_ban(receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
 	// TODO 此处应该可以返回一个消息，提示禁言成功，但是目前没有实现
 }

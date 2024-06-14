@@ -18,10 +18,10 @@ func InvokeChatGPTAPI(text string) (string, error) {
 	// conf, _ := config.ConfigParse(*appConfig)
 	// chatGPTAPIKey = conf.Chatgpt.chatGPTAPIKey
 	prompt := GPTpreset["vio"]
-	config := openai.DefaultConfig(chatGPTAPIKey)
-	config.BaseURL = chatGPTURL_proxy
+	conf := openai.DefaultConfig(chatGPTAPIKey)
+	conf.BaseURL = chatGPTURL_proxy
 
-	client := openai.NewClientWithConfig(config)
+	client := openai.NewClientWithConfig(conf)
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
