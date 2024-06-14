@@ -2,13 +2,10 @@ package gocq
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
-	"math/rand"
 	"regexp"
 
 	"github.com/gorilla/websocket"
-	api "github.com/viogami/Gobot-vio/gocq/api"
 	"github.com/viogami/Gobot-vio/gocq/cqEvent"
 	"github.com/viogami/Gobot-vio/utils"
 )
@@ -128,66 +125,27 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 		// 判断是否at我
 		//Atme := Atme(cqmsg)
 
-		// 涩图tag
-		tags := utils.Get_tags(cqmsg.Text)
-		// 枪声
+		// 构造命令参数
+		params := cmd_params{
+			conn:             conn,
+			receivedMsgEvent: receivedMsgEvent,
+			tags:             utils.Get_tags(cqmsg.Text),
+			num:              1,
+		}
 
 		if msgtype == "private" {
-			switch command {
-			case "":
-				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				// 消息处理
-				message_reply := msgHandler(&receivedMsgEvent)
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply)
-			case "/help":
-				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18\n/枪声\n/枪声目录")
-			case "/涩图":
-				log.Println("将对私聊发送涩图 tag:", tags)
-				send_private_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 0, 1)
-			case "/涩图r18":
-				log.Println("将对私聊发送r18涩图 tag:", tags)
-				send_private_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
-			case "/枪声":
-				log.Println("将对私聊发送枪声:" + GetCQCode_HuntSound(cqmsg.Text))
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
-			case "/枪声目录":
-				log.Println("将对私聊发送枪声目录")
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetIndex())
-			default:
-				log.Printf("识别到未定义指令,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
+			cmd := privateCommandList[command]
+			if cmd != nil {
+				cmd(params)
+			} else {
+				log.Printf("识别到未定义指令,command:%s", command)
 			}
 		} else if msgtype == "group" {
-			switch command {
-			case "":
-				log.Printf("非指令消息,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-			case "/help":
-				log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18\n/禁言抽奖\n/枪声\n/枪声目录")
-			case "/chat":
-				log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				// 消息处理
-				message_reply := msgHandler(&receivedMsgEvent)
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply)
-			case "/涩图":
-				log.Println("将对群聊发送涩图 tags:", tags)
-				send_group_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 0, 1)
-			case "/涩图r18":
-				log.Println("将对群聊发送r18涩图 tags:", tags)
-				send_group_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
-			case "/枪声":
-				log.Println("将对群聊发送枪声" + GetCQCode_HuntSound(cqmsg.Text))
-				send_group_record(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
-			case "/枪声目录":
-				log.Println("将对群聊发送枪声目录")
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetIndex())
-			case "/禁言抽奖":
-				time := rand.Intn(60) + 1
-				log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
-				set_group_ban(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "已禁言"+fmt.Sprintf("%d", time)+"秒")
-			default:
-				log.Printf("识别到未定义指令,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
+			cmd := groupCommandList[command]
+			if cmd != nil {
+				cmd(params)
+			} else {
+				log.Printf("识别到未定义指令,command:%s", command)
 			}
 		} else {
 			log.Println("接受到非私聊或者非指令的群聊消息")
@@ -204,13 +162,13 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 			group_increase_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupIncreaseNotice)
 			log.Printf("群成员增加,UserID:%d,GroupID:%d", group_increase_info.UserID, group_increase_info.GroupID)
 
-			send_group_msg(conn, group_increase_info.UserID, group_increase_info.GroupID, "欢迎新成员加入~,发送 /help 可查看机器人全部指令")
+			send_msg(conn, "group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看指令列表~", false)
 		// 群成员减少
 		case "group_decrease":
 			group_decrease_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupDecreaseNotice)
 			log.Printf("群成员减少,UserID:%d,GroupID:%d", group_decrease_info.UserID, group_decrease_info.GroupID)
 
-			send_group_msg(conn, group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~")
+			send_msg(conn, "group", group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~", false)
 		// 消息撤回
 		case "group_recall":
 			group_recall_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupRecallNotice)
@@ -249,13 +207,5 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 		}
 	case "meta_event":
 		// 元事件
-		// 测试api
-		if receivedMetaEvent.MetaEventType == "lifecycle" {
-			newm := api.Get_login_info()
-			err := conn.WriteJSON(newm)
-			if err != nil {
-				log.Println("Error sending message:", err)
-			}
-		}
 	}
 }
