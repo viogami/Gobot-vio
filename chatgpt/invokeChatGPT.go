@@ -10,7 +10,7 @@ import (
 // 定义环境变量
 var (
 	chatGPTAPIKey    = config.EnvConst.ChatGPTAPIKey
-	chatGPTURL_proxy = config.EnvConst.ChatGPTURL_proxy
+	chatGPTURL_proxy = "https://one-api.bltcy.top/v1"
 )
 
 func InvokeChatGPTAPI(text string) (string, error) {
