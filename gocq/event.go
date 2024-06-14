@@ -69,7 +69,6 @@ func Log_post_type(p []byte) error {
 			return err
 		}
 		log.Println("Received ", post_type, ":", receivedMsgEvent.MessageType)
-		log.Println("消息来自sender：", receivedMsgEvent.Sender.UserID, "消息来自：", receivedMsgEvent.UserID)
 	} else if post_type == "request" {
 		// 请求事件
 		err := json.Unmarshal(p, &receivedRequestEvent)
