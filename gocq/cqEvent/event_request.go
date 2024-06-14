@@ -1,4 +1,4 @@
-package gocq
+package cqEvent
 
 import (
 	"encoding/json"
@@ -27,7 +27,7 @@ type AddGroupRequest struct {
 	Flag        string `json:"flag"`
 }
 
-func get_request_info(p []byte, RequestType string) interface{} {
+func Get_request_info(p []byte, RequestType string) interface{} {
 	var add_friend_request AddFriendRequest
 	var add_group_request AddGroupRequest
 

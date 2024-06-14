@@ -1,5 +1,4 @@
-*.pem
 .env
+gocq/api
 app.yaml
-config
 main

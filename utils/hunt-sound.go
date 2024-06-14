@@ -190,7 +190,7 @@ func distance2mp3(distance string) string {
 }
 
 // 获取枪目录
-func GetIndex() string {
+func GetGunIndex() string {
 	uniqueMap := make(map[string]bool)
 	uniqueValues := []string{}
 

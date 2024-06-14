@@ -1,4 +1,4 @@
-package gocq
+package cqEvent
 
 import (
 	"encoding/json"
@@ -42,6 +42,12 @@ type PrivateMessage struct {
 	TempSource  int    `json:"temp_source"`
 }
 
+type Anonymous struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+	Flag string `json:"flag"`
+}
+
 // 群聊消息
 type GroupMessage struct {
 	Time        int64     `json:"time"`
@@ -59,13 +65,7 @@ type GroupMessage struct {
 	Anonymous   Anonymous `json:"anonymous"`
 }
 
-type Anonymous struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
-	Flag string `json:"flag"`
-}
-
-func get_msg_info(p []byte, msgType string) interface{} {
+func Get_msg_info(p []byte, msgType string) interface{} {
 	var privateMessage PrivateMessage
 	var groupMessage GroupMessage
 	switch msgType {
@@ -83,4 +83,38 @@ func get_msg_info(p []byte, msgType string) interface{} {
 		return groupMessage
 	}
 	return nil
+}
+
+// 私聊消息快速操作
+// @params
+// reply	message	要回复的内容	不回复
+// auto_escape	boolean	消息内容是否作为纯文本发送 ( 即不解析 CQ 码 ) , 只在 reply 字段是字符串时有效	不转义
+func PrivateMsgFastOperate(reply string, auto_escape bool) map[string]interface{} {
+	sendMessage := map[string]interface{}{
+		"reply":       reply,
+		"auto_escape": auto_escape,
+	}
+	return sendMessage
+}
+
+// 群消息快速操作
+// @params
+// reply	message	要回复的内容	不回复
+// auto_escape	boolean	消息内容是否作为纯文本发送 ( 即不解析 CQ 码 ) , 只在 reply 字段是字符串时有效	不转义
+// at_sender	boolean	是否要在回复开头 at 发送者 ( 自动添加 ) , 发送者是匿名用户时无效	at 发送者
+// delete	boolean	撤回该条消息	不撤回
+// kick	boolean	把发送者踢出群组 ( 需要登录号权限足够 ) , 不拒绝此人后续加群请求, 发送者是匿名用户时无效	不踢出
+// ban	boolean	禁言该消息发送者, 对匿名用户也有效	不禁言
+// ban_duration	number	若要执行禁言操作时的禁言时长	30 分钟
+func GroupMsgFastOperate(reply string, auto_escape bool, at_sender bool, delete bool, kick bool, ban bool, ban_duration int) map[string]interface{} {
+	sendMessage := map[string]interface{}{
+		"reply":        reply,
+		"auto_escape":  auto_escape,
+		"at_sender":    at_sender,
+		"delete":       delete,
+		"kick":         kick,
+		"ban":          ban,
+		"ban_duration": ban_duration,
+	}
+	return sendMessage
 }

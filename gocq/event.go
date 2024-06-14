@@ -2,12 +2,10 @@ package gocq
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
-	"math/rand"
 	"regexp"
 
-	"github.com/gorilla/websocket"
+	"github.com/viogami/Gobot-vio/gocq/cqEvent"
 	"github.com/viogami/Gobot-vio/utils"
 )
 
@@ -18,15 +16,15 @@ type Event struct {
 }
 
 type MessageEvent struct {
-	MessageType string `json:"message_type"`
-	SubType     string `json:"sub_type"`
-	MessageID   int32  `json:"message_id"`
-	UserID      int64  `json:"user_id"`
-	GroupID     int64  `json:"group_id"`
-	Message     string `json:"message"`
-	RawMessage  string `json:"raw_message"`
-	Font        int    `json:"font"`
-	Sender      Sender `json:"sender"`
+	MessageType string         `json:"message_type"`
+	SubType     string         `json:"sub_type"`
+	MessageID   int32          `json:"message_id"`
+	UserID      int64          `json:"user_id"`
+	GroupID     int64          `json:"group_id"`
+	Message     string         `json:"message"`
+	RawMessage  string         `json:"raw_message"`
+	Font        int            `json:"font"`
+	Sender      cqEvent.Sender `json:"sender"`
 }
 
 type RequestEvent struct {
@@ -49,7 +47,9 @@ var (
 	receivedNoticeEvent  NoticeEvent
 	receivedMetaEvent    MetaEvent
 )
-
+// 回复的消息内容
+var replyMsgs = make([]map[string]interface{}, 0)
+// 心跳计数
 var heart_count = 0
 
 // 判断上报类型
@@ -108,14 +108,15 @@ func Log_post_type(p []byte) error {
 }
 
 // 处理上报事件
-func Handle_event(p []byte, conn *websocket.Conn) {
+func Handle_event(p []byte) []map[string]interface{} {
+	replyMsgs = make([]map[string]interface{}, 0)
 	switch receivedEvent.PostType {
 	case "message":
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
+
 		// 解析cq码，获取无cq格式的消息内容
 		cqmsg := ParseCQmsg(receivedMsgEvent.Message)
-
 		// 定义正则表达式匹配以中文字符开头的命令
 		commandPattern := regexp.MustCompile(`^/([^ ]+)`)
 		// 使用正则表达式查找匹配的指令
@@ -125,66 +126,28 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 		// 判断是否at我
 		//Atme := Atme(cqmsg)
 
-		// 涩图tag
-		tags := utils.Get_tags(cqmsg.Text)
-		// 枪声
+		// 构造命令参数
+		params := cmd_params{
+			receivedMsgEvent: receivedMsgEvent,
+			tags:             utils.Get_tags(cqmsg.Text),
+			num:              1,
+		}
 
 		if msgtype == "private" {
-			switch command {
-			case "":
-				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				// 消息处理
-				message_reply := msgHandler(&receivedMsgEvent)
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply)
-			case "/help":
-				log.Printf("将对私聊回复,msgID:%d,UserID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18\n/枪声\n/枪声目录")
-			case "/涩图":
-				log.Println("将对私聊发送涩图 tag:", tags)
-				send_private_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 0, 1)
-			case "/涩图r18":
-				log.Println("将对私聊发送r18涩图 tag:", tags)
-				send_private_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
-			case "/枪声":
-				log.Println("将对私聊发送枪声:" + GetCQCode_HuntSound(cqmsg.Text))
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
-			case "/枪声目录":
-				log.Println("将对私聊发送枪声目录")
-				send_private_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetIndex())
-			default:
-				log.Printf("识别到未定义指令,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
+			cmd := privateCommandList[command]
+			if cmd != nil {
+				replyMsgs = append(replyMsgs, cmd(params))
+				return replyMsgs
+			} else {
+				log.Printf("识别到未定义指令,command:%s", command)
 			}
 		} else if msgtype == "group" {
-			switch command {
-			case "":
-				log.Printf("非指令消息,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-			case "/help":
-				log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18\n/禁言抽奖\n/枪声\n/枪声目录")
-			case "/chat":
-				log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
-				// 消息处理
-				message_reply := msgHandler(&receivedMsgEvent)
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply)
-			case "/涩图":
-				log.Println("将对群聊发送涩图 tags:", tags)
-				send_group_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 0, 1)
-			case "/涩图r18":
-				log.Println("将对群聊发送r18涩图 tags:", tags)
-				send_group_img(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, tags, 1, 1)
-			case "/枪声":
-				log.Println("将对群聊发送枪声" + GetCQCode_HuntSound(cqmsg.Text))
-				send_group_record(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, GetCQCode_HuntSound(cqmsg.Text))
-			case "/枪声目录":
-				log.Println("将对群聊发送枪声目录")
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, utils.GetIndex())
-			case "/禁言抽奖":
-				time := rand.Intn(60) + 1
-				log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
-				set_group_ban(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
-				send_group_msg(conn, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "已禁言"+fmt.Sprintf("%d", time)+"秒")
-			default:
-				log.Printf("识别到未定义指令,msgID:%d,UserID:%d,GroupID:%d,msg:%s,raw_msg:%s", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, receivedMsgEvent.Message, receivedMsgEvent.RawMessage)
+			cmd := groupCommandList[command]
+			if cmd != nil {
+				replyMsgs = append(replyMsgs, cmd(params))
+				return replyMsgs
+			} else {
+				log.Printf("识别到未定义指令,command:%s", command)
 			}
 		} else {
 			log.Println("接受到非私聊或者非指令的群聊消息")
@@ -198,19 +161,21 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 		switch notice_type {
 		// 群成员增加
 		case "group_increase":
-			group_increase_info := get_notice_info(p, receivedNoticeEvent.NoticeType).(GroupIncreaseNotice)
+			group_increase_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupIncreaseNotice)
 			log.Printf("群成员增加,UserID:%d,GroupID:%d", group_increase_info.UserID, group_increase_info.GroupID)
 
-			send_group_msg(conn, group_increase_info.UserID, group_increase_info.GroupID, "欢迎新成员加入~,发送 /help 可查看机器人全部指令")
+			replyMsgs = append(replyMsgs, msg_send("group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看指令列表~", false))
+			return replyMsgs
 		// 群成员减少
 		case "group_decrease":
-			group_decrease_info := get_notice_info(p, receivedNoticeEvent.NoticeType).(GroupDecreaseNotice)
+			group_decrease_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupDecreaseNotice)
 			log.Printf("群成员减少,UserID:%d,GroupID:%d", group_decrease_info.UserID, group_decrease_info.GroupID)
 
-			send_group_msg(conn, group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~")
+			replyMsgs = append(replyMsgs, msg_send("group", group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~", false))
+			return replyMsgs
 		// 消息撤回
 		case "group_recall":
-			group_recall_info := get_notice_info(p, receivedNoticeEvent.NoticeType).(GroupRecallNotice)
+			group_recall_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupRecallNotice)
 			log.Printf("消息撤回,UserID:%d,GroupID:%d", group_recall_info.UserID, group_recall_info.GroupID)
 		}
 
@@ -220,31 +185,18 @@ func Handle_event(p []byte, conn *websocket.Conn) {
 		switch request_type {
 		// 使用快速响应
 		case "friend":
-			friend_info := get_request_info(p, receivedRequestEvent.RequestType).(AddFriendRequest)
+			friend_info := cqEvent.Get_request_info(p, receivedRequestEvent.RequestType).(cqEvent.AddFriendRequest)
 			log.Println("好友请求:", friend_info.UserID, friend_info.Comment, friend_info.Flag)
 
-			fast_resp := map[string]interface{}{
-				"approve": true,
-				"remark":  "auto approve user",
-			}
-			err := conn.WriteJSON(fast_resp)
-			if err != nil {
-				log.Println("Error fast_resp approve:", err)
-			}
+			return replyMsgs
 		case "group":
-			group_info := get_request_info(p, receivedRequestEvent.RequestType).(AddGroupRequest)
+			group_info := cqEvent.Get_request_info(p, receivedRequestEvent.RequestType).(cqEvent.AddGroupRequest)
 			log.Println("群请求:", group_info.GroupID, group_info.UserID, group_info.Comment, group_info.Flag)
 
-			fast_resp := map[string]interface{}{
-				"approve": false,
-				"reason":  "you must notice this to my master:qq2654613995",
-			}
-			err := conn.WriteJSON(fast_resp)
-			if err != nil {
-				log.Println("Error fast_resp approve:", err)
-			}
+			return replyMsgs
 		}
 	case "meta_event":
 		// 元事件
 	}
+	return replyMsgs
 }

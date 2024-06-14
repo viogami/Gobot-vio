@@ -2,15 +2,15 @@ package tgbot
 
 import (
 	"log"
-	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/viogami/Gobot-vio/config"
 )
 
-// 定义你自己的环境变量
+// 获取环境变量
 var (
-	BOT_TOKEN      = os.Getenv("BOT_TOKEN")
-	TG_WEBHOOK_URL = os.Getenv("TG_WEBHOOK_URL")
+	BOT_TOKEN      = config.EnvConst.BOT_TOKEN
+	TG_WEBHOOK_URL = config.EnvConst.TG_WEBHOOK_URL
 )
 
 var superUserId int64 //管理员id

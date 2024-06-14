@@ -10,8 +10,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// handleWebSocket 用于处理WebSocket请求
-func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+// 用WebSocket进行gocq通信请求
+func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
@@ -38,7 +38,17 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		} else {
 			// 发送消息
-			gocq.Handle_event(p, conn)
+			message_send := gocq.Handle_event(p)
+			if len(message_send) == 0 {
+				continue
+			}
+			for _, msg := range message_send {
+				err = conn.WriteJSON(msg)
+				if err != nil {
+					log.Println("Error sending message:", err)
+					return
+				}
+			}
 		}
 	}
 }
