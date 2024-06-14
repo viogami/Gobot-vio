@@ -134,14 +134,14 @@ func Handle_event(p []byte) map[string]interface{} {
 		if msgtype == "private" {
 			cmd := privateCommandList[command]
 			if cmd != nil {
-				cmd(params)
+				return cmd(params)
 			} else {
 				log.Printf("识别到未定义指令,command:%s", command)
 			}
 		} else if msgtype == "group" {
 			cmd := groupCommandList[command]
 			if cmd != nil {
-				cmd(params)
+				return cmd(params)
 			} else {
 				log.Printf("识别到未定义指令,command:%s", command)
 			}
@@ -160,13 +160,13 @@ func Handle_event(p []byte) map[string]interface{} {
 			group_increase_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupIncreaseNotice)
 			log.Printf("群成员增加,UserID:%d,GroupID:%d", group_increase_info.UserID, group_increase_info.GroupID)
 
-			msg_send("group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看指令列表~", false)
+			return msg_send("group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看指令列表~", false)
 		// 群成员减少
 		case "group_decrease":
 			group_decrease_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupDecreaseNotice)
 			log.Printf("群成员减少,UserID:%d,GroupID:%d", group_decrease_info.UserID, group_decrease_info.GroupID)
 
-			msg_send("group", group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~", false)
+			return msg_send("group", group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~", false)
 		// 消息撤回
 		case "group_recall":
 			group_recall_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupRecallNotice)
