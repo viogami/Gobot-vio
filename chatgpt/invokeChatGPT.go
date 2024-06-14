@@ -9,14 +9,14 @@ import (
 
 // 定义环境变量
 var (
-	chatGPTAPIKey    = config.EnvConst.ChatGPTAPIKey
-	chatGPTURL_proxy = "https://one-api.bltcy.top/v1"
+	chatGPTAPIKey  string
+	chatGPTURL_proxy string
 )
 
 func InvokeChatGPTAPI(text string) (string, error) {
-	// appConfig := flag.String("config", "./app.yaml", "application config path")
-	// conf, _ := config.ConfigParse(*appConfig)
-	// chatGPTAPIKey = conf.Chatgpt.chatGPTAPIKey
+	chatGPTAPIKey = config.EnvConst.ChatGPTAPIKey
+	chatGPTURL_proxy = config.EnvConst.ChatGPTURL_proxy
+
 	prompt := GPTpreset["vio"]
 	conf := openai.DefaultConfig(chatGPTAPIKey)
 	conf.BaseURL = chatGPTURL_proxy
