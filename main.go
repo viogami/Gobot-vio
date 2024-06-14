@@ -6,8 +6,6 @@ import (
 )
 
 func main() {
-
 	env := config.GetEnv()
-
 	server.Run(env.PORT)
 }

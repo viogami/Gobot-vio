@@ -8,7 +8,7 @@ import (
 	"regexp"
 
 	"github.com/gorilla/websocket"
-	api "github.com/viogami/Gobot-vio/gocq/API"
+	api "github.com/viogami/Gobot-vio/gocq/api"
 	"github.com/viogami/Gobot-vio/gocq/cqEvent"
 	"github.com/viogami/Gobot-vio/utils"
 )
@@ -52,6 +52,7 @@ var (
 	receivedMetaEvent    MetaEvent
 )
 
+// 心跳计数
 var heart_count = 0
 
 // 判断上报类型
