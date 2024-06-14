@@ -198,5 +198,5 @@ func Handle_event(p []byte) []map[string]interface{} {
 	case "meta_event":
 		// 元事件
 	}
-	return replyMsgs
+	return nil
 }
