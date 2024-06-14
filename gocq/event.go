@@ -109,6 +109,7 @@ func Log_post_type(p []byte) error {
 
 // 处理上报事件
 func Handle_event(p []byte) []map[string]interface{} {
+	replyMsgs = make([]map[string]interface{}, 0)
 	switch receivedEvent.PostType {
 	case "message":
 		// 消息事件
