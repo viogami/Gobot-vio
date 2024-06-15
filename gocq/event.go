@@ -75,7 +75,7 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedMsgEvent:", err)
 			return err
 		}
-		log.Printf("Received%s,type:%s,sender:%d,groupid:%d",post_type,receivedMsgEvent.MessageType,receivedMsgEvent.Sender.UserID,receivedMsgEvent.GroupID)
+		log.Printf("Received-->%s:%s,sender:%d,groupid:%d",post_type,receivedMsgEvent.MessageType,receivedMsgEvent.Sender.UserID,receivedMsgEvent.GroupID)
 	} else if post_type == "request" {
 		// 请求事件
 		err := json.Unmarshal(p, &receivedRequestEvent)
@@ -83,7 +83,7 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedRequestEvent:", err)
 			return err
 		}
-		log.Println("Received ", post_type, ":", receivedRequestEvent.RequestType)
+		log.Printf("Received-->%s:%s", post_type, receivedRequestEvent.RequestType)
 	} else if post_type == "notice" {
 		// 通知事件
 		err := json.Unmarshal(p, &receivedNoticeEvent)
@@ -91,7 +91,7 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedNoticeEvent:", err)
 			return err
 		}
-		log.Println("Received ", post_type, ":", receivedNoticeEvent.NoticeType)
+		log.Printf("Received-->%s:%s", post_type, receivedNoticeEvent.NoticeType)
 	} else if post_type == "meta_event" {
 		// 元事件
 		err := json.Unmarshal(p, &receivedMetaEvent)
@@ -103,7 +103,7 @@ func Log_post_type(p []byte) error {
 		if receivedMetaEvent.MetaEventType == "heartbeat" {
 			heart_count++
 		} else {
-			log.Println("Received ", post_type, ":", receivedMetaEvent.MetaEventType)
+			log.Printf("Received-->%s:%s", post_type, receivedMetaEvent.MetaEventType)
 		}
 
 		if heart_count == 360 {

@@ -34,6 +34,11 @@ var groupCommandList = map[string]func(cmd_params) map[string]interface{}{
 	"/禁言抽奖":  groupCmd_BanLottery,
 }
 
+const (
+	privateCmd = "私聊指令:\n" + "/help:查看帮助\n" + "/涩图:随机涩图\n" + "/涩图r18:随机r18涩图\n" + "/枪声:随机枪声\n" + "/枪声目录:枪声目录\n"
+	groupCmd   = "群聊指令:\n" + "/help:查看帮助\n" + "/chat:聊天\n" + "/涩图:随机涩图\n" + "/涩图r18:随机r18涩图\n" + "/枪声:随机枪声\n" + "/枪声目录:枪声目录\n" + "/禁言抽奖:禁言抽奖0~180秒\n"
+)
+
 // ---------私聊指令处理函数---------
 // 空指令
 func privateCmd_null(params cmd_params) map[string]interface{} {
@@ -50,7 +55,7 @@ func privateCmd_help(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 
 	log.Printf("将对私聊回复,msgID:%d,UserID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID)
-	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/涩图\n/涩图r18\n/枪声\n/枪声目录", false)
+	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, privateCmd, false)
 }
 
 // 涩图 指令
@@ -61,10 +66,9 @@ func privateCmd_setu(params cmd_params) map[string]interface{} {
 	UserID := receivedMsgEvent.UserID
 	GroupID := receivedMsgEvent.GroupID
 
-	log.Println("将对私聊发送涩图 tag:", tags)
+	log.Printf("将对私聊发送涩图 tags:%s,nums:%d", tags, num)
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
-	log.Println("fa消息：", message_reply)
 	if message_reply == nil {
 		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
 	}
@@ -80,7 +84,7 @@ func privateCmd_r18(params cmd_params) map[string]interface{} {
 	UserID := receivedMsgEvent.UserID
 	GroupID := receivedMsgEvent.GroupID
 
-	log.Println("将对私聊发送r18涩图,tags:", tags)
+	log.Printf("将对私聊发送r18涩图 tags:%s,nums:%d", tags, num)
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 1, num)
 	if message_reply == nil {
@@ -111,7 +115,7 @@ func privateCmd_HuntSoundList(params cmd_params) map[string]interface{} {
 // ---------群聊指令处理函数---------
 // null 指令
 func groupCmd_null(params cmd_params) map[string]interface{} {
-	log.Printf("非指令消息")
+	log.Printf("非指令消息,sender:%d,groupid:%d", params.receivedMsgEvent.Sender.UserID, params.receivedMsgEvent.GroupID)
 	return nil
 }
 
@@ -119,7 +123,7 @@ func groupCmd_null(params cmd_params) map[string]interface{} {
 func groupCmd_help(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
-	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "目前支持的指令有：\n/help\n/chat\n/涩图\n/涩图r18\n/枪声\n/枪声目录\n/禁言抽奖", false)
+	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, groupCmd, false)
 }
 
 // chat 指令
@@ -140,7 +144,7 @@ func groupCmd_setu(params cmd_params) map[string]interface{} {
 	UserID := receivedMsgEvent.UserID
 	GroupID := receivedMsgEvent.GroupID
 
-	log.Println("将对群聊发送涩图 tags:", tags)
+	log.Printf("将对群聊发送涩图 tags:%s,nums:%d", tags, num)
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
 	if message_reply == nil {
@@ -158,7 +162,7 @@ func groupCmd_r18(params cmd_params) map[string]interface{} {
 	UserID := receivedMsgEvent.UserID
 	GroupID := receivedMsgEvent.GroupID
 
-	log.Println("将对群聊发送r18涩图 tags:", tags)
+	log.Printf("将对群聊发送r18涩图 tags:%s,nums:%d", tags, num)
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 1, num)
 	if message_reply == nil {
@@ -189,8 +193,8 @@ func groupCmd_HuntSoundList(params cmd_params) map[string]interface{} {
 // 禁言抽奖 指令
 func groupCmd_BanLottery(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
-	time := rand.Intn(60) + 1
-	log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
+	time := rand.Intn(180) + 1
+	log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d秒", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
 	replyMsgs = append(replyMsgs, msg_send("group", receivedMsgEvent.UserID, receivedMsgEvent.GroupID, fmt.Sprintf("恭喜中奖，禁言时间:%d秒~", time), false))
 	return group.Set_group_ban(receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
 }
