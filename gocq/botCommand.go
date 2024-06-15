@@ -71,7 +71,7 @@ func privateCmd_setu(params cmd_params) map[string]interface{} {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
 	if message_reply == nil {
-		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
+		replyMsgs = append(replyMsgs, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
 	}
 	// 发送消息
 	return msg_send_private_forward(UserID, message_reply)
@@ -89,7 +89,7 @@ func privateCmd_r18(params cmd_params) map[string]interface{} {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 1, num)
 	if message_reply == nil {
-		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
+		replyMsgs = append(replyMsgs, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
 	}
 	// 发送消息
 	return msg_send_private_forward(UserID, message_reply)
@@ -149,7 +149,7 @@ func groupCmd_setu(params cmd_params) map[string]interface{} {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
 	if message_reply == nil {
-		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
+		replyMsgs = append(replyMsgs, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
 	}
 	// 返回将要发送的消息
 	return msg_send_group_forward(GroupID, message_reply)
@@ -167,7 +167,7 @@ func groupCmd_r18(params cmd_params) map[string]interface{} {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 1, num)
 	if message_reply == nil {
-		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
+		replyMsgs = append(replyMsgs, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
 	}
 	// 返回将要发送的消息
 	return msg_send_group_forward(GroupID, message_reply)
