@@ -164,7 +164,7 @@ func Handle_event(p []byte) []map[string]interface{} {
 			group_increase_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupIncreaseNotice)
 			log.Printf("群成员增加,UserID:%d,GroupID:%d", group_increase_info.UserID, group_increase_info.GroupID)
 
-			replyMsgs = append(replyMsgs, msg_send("group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看指令列表~", false))
+			replyMsgs = append(replyMsgs, msg_send("group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看bot指令列表~", false))
 			return replyMsgs
 		// 群成员减少
 		case "group_decrease":

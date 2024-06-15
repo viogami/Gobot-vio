@@ -10,7 +10,7 @@ import (
 )
 
 // 消息处理函数
-func msgHandler(MsgEvent *MessageEvent) string {
+func msgGptHandler(MsgEvent *MessageEvent) string {
 	msgText := ParseCQmsg(MsgEvent.Message).Text
 
 	reply_res := Msg_Filter(msgText)

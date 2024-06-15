@@ -5,6 +5,7 @@ import (
 	"log"
 	"math/rand"
 
+	group "github.com/viogami/Gobot-vio/gocq/groupManage"
 	"github.com/viogami/Gobot-vio/utils"
 )
 
@@ -40,7 +41,7 @@ func privateCmd_null(params cmd_params) map[string]interface{} {
 
 	log.Printf("将对私聊回复,msgID:%d,UserID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID)
 	// 消息处理
-	message_reply := msgHandler(receivedMsgEvent)
+	message_reply := msgGptHandler(receivedMsgEvent)
 	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply, false)
 }
 
@@ -126,7 +127,7 @@ func groupCmd_chat(params cmd_params) map[string]interface{} {
 
 	log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
 	// 消息处理
-	message_reply := msgHandler(receivedMsgEvent)
+	message_reply := msgGptHandler(receivedMsgEvent)
 	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, message_reply, false)
 }
 
@@ -141,10 +142,11 @@ func groupCmd_setu(params cmd_params) map[string]interface{} {
 	log.Println("将对群聊发送涩图 tags:", tags)
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
+	log.Println("fa消息：", message_reply)
 	if message_reply == nil {
 		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
 	}
-	// 发送消息
+	// 返回将要发送的消息
 	return msg_send_group_forward(GroupID, message_reply)
 }
 
@@ -162,7 +164,7 @@ func groupCmd_r18(params cmd_params) map[string]interface{} {
 	if message_reply == nil {
 		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
 	}
-	// 发送消息
+	// 返回将要发送的消息
 	return msg_send_group_forward(GroupID, message_reply)
 }
 
@@ -190,7 +192,7 @@ func groupCmd_BanLottery(params cmd_params) map[string]interface{} {
 	time := rand.Intn(60) + 1
 	log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
 	replyMsgs = append(replyMsgs, msg_send("group", receivedMsgEvent.UserID, receivedMsgEvent.GroupID, fmt.Sprintf("恭喜中奖，禁言时间:%d秒~", time), false))
-	return set_group_ban(receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
+	return group.Set_group_ban(receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
 }
 
 // ------------------------------- 可复用代码 ----------------------------------

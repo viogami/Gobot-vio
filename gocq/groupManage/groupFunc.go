@@ -1,7 +1,7 @@
-package gocq
+package groupmanage
 
 // 设置群组禁言
-func set_group_ban(UserID int64, GroupID int64, time int) map[string]interface{} {
+func Set_group_ban(UserID int64, GroupID int64, time int) map[string]interface{} {
 	// 构建消息结构
 	sendMessage := map[string]interface{}{
 		"action": "set_group_ban",
