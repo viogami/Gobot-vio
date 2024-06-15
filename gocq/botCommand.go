@@ -64,6 +64,7 @@ func privateCmd_setu(params cmd_params) map[string]interface{} {
 	log.Println("将对私聊发送涩图 tag:", tags)
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
+	log.Println("fa消息：", message_reply)
 	if message_reply == nil {
 		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
 	}
@@ -142,7 +143,6 @@ func groupCmd_setu(params cmd_params) map[string]interface{} {
 	log.Println("将对群聊发送涩图 tags:", tags)
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
-	log.Println("fa消息：", message_reply)
 	if message_reply == nil {
 		msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false)
 	}

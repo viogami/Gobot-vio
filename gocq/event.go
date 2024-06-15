@@ -54,6 +54,13 @@ var heart_count = 0
 
 // 判断上报类型
 func Log_post_type(p []byte) error {
+	// 接受事件初始化
+	receivedEvent = Event{}
+	receivedMsgEvent = MessageEvent{}
+	receivedRequestEvent = RequestEvent{}
+	receivedNoticeEvent = NoticeEvent{}
+	receivedMetaEvent = MetaEvent{}
+
 	err := json.Unmarshal(p, &receivedEvent)
 	if err != nil {
 		log.Println("Error parsing JSON:", err)
@@ -68,7 +75,7 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedMsgEvent:", err)
 			return err
 		}
-		log.Println("Received ", post_type, ":", receivedMsgEvent.MessageType)
+		log.Printf("Received%s,type:%s,sender:%d,groupid:%d",post_type,receivedMsgEvent.MessageType,receivedMsgEvent.Sender.UserID,receivedMsgEvent.GroupID)
 	} else if post_type == "request" {
 		// 请求事件
 		err := json.Unmarshal(p, &receivedRequestEvent)
