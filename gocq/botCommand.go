@@ -32,11 +32,12 @@ var groupCommandList = map[string]func(cmd_params) map[string]interface{}{
 	"/枪声":    groupCmd_HuntSound,
 	"/枪声目录":  groupCmd_HuntSoundList,
 	"/禁言抽奖":  groupCmd_BanLottery,
+	"/给我管理": groupCmd_SetManager,
 }
 
 const (
 	privateCmd = "私聊指令:\n" + "/help:查看帮助\n" + "/涩图:随机涩图\n" + "/涩图r18:随机r18涩图\n" + "/枪声:随机枪声\n" + "/枪声目录:枪声目录\n"
-	groupCmd   = "群聊指令:\n" + "/help:查看帮助\n" + "/chat:聊天\n" + "/涩图:随机涩图\n" + "/涩图r18:随机r18涩图\n" + "/枪声:随机枪声\n" + "/枪声目录:枪声目录\n" + "/禁言抽奖:禁言抽奖0~180秒\n"
+	groupCmd   = "群聊指令:\n" + "/help:查看帮助\n" + "/chat:聊天\n" + "/涩图:随机涩图\n" + "/涩图r18:随机r18涩图\n" + "/枪声:随机枪声\n" + "/枪声目录:枪声目录\n" + "/禁言抽奖:禁言抽奖0~180秒\n + /给我管理:设置一个管理给你\n "
 )
 
 // ---------私聊指令处理函数---------
@@ -197,6 +198,14 @@ func groupCmd_BanLottery(params cmd_params) map[string]interface{} {
 	log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d秒", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
 	replyMsgs = append(replyMsgs, msg_send("group", receivedMsgEvent.UserID, receivedMsgEvent.GroupID, fmt.Sprintf("恭喜中奖，禁言时间:%d秒~", time), false))
 	return group.Set_group_ban(receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
+}
+
+// 给我管理 指令
+func groupCmd_SetManager(params cmd_params) map[string]interface{} {
+	receivedMsgEvent := params.receivedMsgEvent
+	log.Printf("将对群聊:%d,设置管理员:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID)
+	replyMsgs = append(replyMsgs, msg_send("group", receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "设为管理成功,仍不是管理请反思。", false))
+	return group.Set_group_manager(receivedMsgEvent.GroupID, receivedMsgEvent.UserID, true)
 }
 
 // ------------------------------- 可复用代码 ----------------------------------
