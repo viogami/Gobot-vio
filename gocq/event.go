@@ -47,10 +47,13 @@ var (
 	receivedNoticeEvent  NoticeEvent
 	receivedMetaEvent    MetaEvent
 )
+
 // 回复的消息内容
-var replyMsgs = make([]map[string]interface{}, 0)
+var sendToGocqList = make([]map[string]interface{}, 0)
 // 心跳计数
 var heart_count = 0
+// 撤回消息ID
+var recall_msg_id int64
 
 // 判断上报类型
 func Log_post_type(p []byte) error {
@@ -75,7 +78,7 @@ func Log_post_type(p []byte) error {
 			log.Println("Error parsing JSON to receivedMsgEvent:", err)
 			return err
 		}
-		log.Printf("Received-->%s:%s,sender:%d,groupid:%d",post_type,receivedMsgEvent.MessageType,receivedMsgEvent.Sender.UserID,receivedMsgEvent.GroupID)
+		log.Printf("Received-->%s:%s,sender:%d,groupid:%d", post_type, receivedMsgEvent.MessageType, receivedMsgEvent.Sender.UserID, receivedMsgEvent.GroupID)
 	} else if post_type == "request" {
 		// 请求事件
 		err := json.Unmarshal(p, &receivedRequestEvent)
@@ -116,22 +119,26 @@ func Log_post_type(p []byte) error {
 
 // 处理上报事件
 func Handle_event(p []byte) []map[string]interface{} {
-	replyMsgs = make([]map[string]interface{}, 0)
+	sendToGocqList = make([]map[string]interface{}, 0)
 	switch receivedEvent.PostType {
 	case "message":
 		// 消息事件
 		msgtype := receivedMsgEvent.MessageType
-
+		command := ""
 		// 解析cq码，获取无cq格式的消息内容
 		cqmsg := ParseCQmsg(receivedMsgEvent.Message)
-		// 定义正则表达式匹配以中文字符开头的命令
-		commandPattern := regexp.MustCompile(`^/([^ ]+)`)
-		// 使用正则表达式查找匹配的指令
-		command := commandPattern.FindString(cqmsg.Text)
-		log.Println("command:", command)
-
 		// 判断是否at我
-		//Atme := Atme(cqmsg)
+		Atme := Atme(cqmsg)
+		if Atme {
+			// 如果at我,则将命令设置为/chat
+			command = "/chat"
+		} else {
+			// 定义正则表达式匹配以中文字符开头的命令
+			commandPattern := regexp.MustCompile(`^/([^ ]+)`)
+			// 使用正则表达式查找匹配的指令
+			command = commandPattern.FindString(cqmsg.Text)
+		}
+		log.Println("command:", command)
 
 		// 构造命令参数
 		params := cmd_params{
@@ -143,16 +150,16 @@ func Handle_event(p []byte) []map[string]interface{} {
 		if msgtype == "private" {
 			cmd := privateCommandList[command]
 			if cmd != nil {
-				replyMsgs = append(replyMsgs, cmd(params))
-				return replyMsgs
+				sendToGocqList = append(sendToGocqList, cmd(params))
+				return sendToGocqList
 			} else {
 				log.Printf("识别到未定义指令,command:%s", command)
 			}
 		} else if msgtype == "group" {
 			cmd := groupCommandList[command]
 			if cmd != nil {
-				replyMsgs = append(replyMsgs, cmd(params))
-				return replyMsgs
+				sendToGocqList = append(sendToGocqList, cmd(params))
+				return sendToGocqList
 			} else {
 				log.Printf("识别到未定义指令,command:%s", command)
 			}
@@ -171,19 +178,20 @@ func Handle_event(p []byte) []map[string]interface{} {
 			group_increase_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupIncreaseNotice)
 			log.Printf("群成员增加,UserID:%d,GroupID:%d", group_increase_info.UserID, group_increase_info.GroupID)
 
-			replyMsgs = append(replyMsgs, msg_send("group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看bot指令列表~", false))
-			return replyMsgs
+			sendToGocqList = append(sendToGocqList, msg_send("group", group_increase_info.UserID, group_increase_info.GroupID, "欢迎加入,输入'/help',查看bot指令列表~", false))
+			return sendToGocqList
 		// 群成员减少
 		case "group_decrease":
 			group_decrease_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupDecreaseNotice)
 			log.Printf("群成员减少,UserID:%d,GroupID:%d", group_decrease_info.UserID, group_decrease_info.GroupID)
 
-			replyMsgs = append(replyMsgs, msg_send("group", group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~", false))
-			return replyMsgs
+			sendToGocqList = append(sendToGocqList, msg_send("group", group_decrease_info.UserID, group_decrease_info.GroupID, "有人离开了群聊~", false))
+			return sendToGocqList
 		// 消息撤回
 		case "group_recall":
 			group_recall_info := cqEvent.Get_notice_info(p, receivedNoticeEvent.NoticeType).(cqEvent.GroupRecallNotice)
 			log.Printf("消息撤回,UserID:%d,GroupID:%d", group_recall_info.UserID, group_recall_info.GroupID)
+			recall_msg_id = group_recall_info.MessageID
 		}
 
 	case "request":
@@ -195,12 +203,12 @@ func Handle_event(p []byte) []map[string]interface{} {
 			friend_info := cqEvent.Get_request_info(p, receivedRequestEvent.RequestType).(cqEvent.AddFriendRequest)
 			log.Println("好友请求:", friend_info.UserID, friend_info.Comment, friend_info.Flag)
 
-			return replyMsgs
+			return sendToGocqList
 		case "group":
 			group_info := cqEvent.Get_request_info(p, receivedRequestEvent.RequestType).(cqEvent.AddGroupRequest)
 			log.Println("群请求:", group_info.GroupID, group_info.UserID, group_info.Comment, group_info.Flag)
 
-			return replyMsgs
+			return sendToGocqList
 		}
 	case "meta_event":
 		// 元事件

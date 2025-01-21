@@ -13,7 +13,7 @@ import (
 func msgGptHandler(MsgEvent *MessageEvent) string {
 	msgText := ParseCQmsg(MsgEvent.Message).Text
 
-	reply_res := Msg_Filter(msgText)
+	reply_res := utils.Msg_Filter(msgText)
 
 	if reply_res == "" {
 		log.Println("调用ChatGPT API")
@@ -98,7 +98,7 @@ func Atme(cq CQmsg) bool {
 	return false
 }
 
-// 请求CQ码
+// 获得猎杀枪声的CQ码
 func GetCQCode_HuntSound(input string) string {
 	sound := utils.HuntSound{
 		Name:     "",
@@ -114,4 +114,58 @@ func GetCQCode_HuntSound(input string) string {
 	}
 
 	return "[CQ:record,file=" + utils.GetHuntSound(sound) + "]"
+}
+
+// 构建涩图消息回复
+func get_setu_MsgReply(tags []string, r18 int, num int) []CQCode {
+	// 调用Setu API
+	setu_info := utils.Get_setu(tags, r18, num)
+	if setu_info.Error != "" {
+		log.Println("随机色图api调用出错:", setu_info.Error)
+		return nil
+	}
+	if len(setu_info.Data) == 0 {
+		log.Println("随机色图api调用出错:tag搜索不到，返回数据为空")
+		return nil
+	}
+	// 构建 message_reply 切片
+	message_reply := []CQCode{
+		{
+			Type: "node",
+			Data: map[string]interface{}{
+				"name": "LV",
+				"uin":  "1524175162",
+				"content": []CQCode{
+					{
+						Type: "text",
+						Data: map[string]interface{}{
+							"text": fmt.Sprintf("tags:%s", tags),
+						},
+					},
+				},
+			},
+		},
+	}
+	// 循环存放多张图片数据
+	for i := 0; i < num; i++ {
+		setu_url := setu_info.Data[i].Urls.Regular
+		// 构建 message_reply 切片
+		setu_cqNode := CQCode{
+			Type: "node",
+			Data: map[string]interface{}{
+				"name": "LV",
+				"uin":  "1524175162",
+				"content": []CQCode{
+					{
+						Type: "image",
+						Data: map[string]interface{}{
+							"file": setu_url,
+						},
+					},
+				},
+			},
+		}
+		message_reply = append(message_reply, setu_cqNode)
+	}
+	return message_reply
 }

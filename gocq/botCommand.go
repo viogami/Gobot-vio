@@ -32,13 +32,22 @@ var groupCommandList = map[string]func(cmd_params) map[string]interface{}{
 	"/枪声":    groupCmd_HuntSound,
 	"/枪声目录":  groupCmd_HuntSoundList,
 	"/禁言抽奖":  groupCmd_BanLottery,
-	"/给我管理": groupCmd_SetManager,
+	"/给我管理":  groupCmd_SetManager,
+	"/获取身份":  groupCmd_GetIdentity,
+	"/撤回了什么": groupCmd_GetRecall,
 }
 
-const (
-	privateCmd = "私聊指令:\n" + "/help:查看帮助\n" + "/涩图:随机涩图\n" + "/涩图r18:随机r18涩图\n" + "/枪声:随机枪声\n" + "/枪声目录:枪声目录\n"
-	groupCmd   = "群聊指令:\n" + "/help:查看帮助\n" + "/chat:聊天\n" + "/涩图:随机涩图\n" + "/涩图r18:随机r18涩图\n" + "/枪声:随机枪声\n" + "/枪声目录:枪声目录\n" + "/禁言抽奖:禁言抽奖0~180秒\n + /给我管理:设置一个管理给你\n "
-)
+var commandDescription = map[string]string{
+	"/help":  "查看帮助",
+	"/涩图":    "随机涩图，指令后可接tag，用逗号分隔",
+	"/涩图r18": "随机r18涩图,规则同上",
+	"/枪声":    "随机发送一条枪声",
+	"/枪声目录":  "枪声目录",
+	"/禁言抽奖":  "禁言抽奖0~180秒",
+	"/给我管理":  "设置一个管理给你",
+	"/获取身份":  "获取用户身份",
+	"/撤回了什么": "获取上一条撤回消息",
+}
 
 // ---------私聊指令处理函数---------
 // 空指令
@@ -56,6 +65,7 @@ func privateCmd_help(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 
 	log.Printf("将对私聊回复,msgID:%d,UserID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID)
+	privateCmd := "私聊指令:\n" + commandDescription["/help"] + "\n" + commandDescription["/涩图"] + "\n" + commandDescription["/涩图r18"] + "\n" + commandDescription["/枪声"] + "\n" + commandDescription["/枪声目录"] + "\n"
 	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, privateCmd, false)
 }
 
@@ -71,7 +81,7 @@ func privateCmd_setu(params cmd_params) map[string]interface{} {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
 	if message_reply == nil {
-		replyMsgs = append(replyMsgs, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
+		sendToGocqList = append(sendToGocqList, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
 	}
 	// 发送消息
 	return msg_send_private_forward(UserID, message_reply)
@@ -89,7 +99,7 @@ func privateCmd_r18(params cmd_params) map[string]interface{} {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 1, num)
 	if message_reply == nil {
-		replyMsgs = append(replyMsgs, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
+		sendToGocqList = append(sendToGocqList, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
 	}
 	// 发送消息
 	return msg_send_private_forward(UserID, message_reply)
@@ -124,6 +134,7 @@ func groupCmd_null(params cmd_params) map[string]interface{} {
 func groupCmd_help(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
+	groupCmd := "群聊指令:\n" + commandDescription["/help"] + "\n" + commandDescription["/涩图"] + "\n" + commandDescription["/涩图r18"] + "\n" + commandDescription["/枪声"] + "\n" + commandDescription["/枪声目录"] + "\n" + commandDescription["/撤回了什么"] + "\n"
 	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, groupCmd, false)
 }
 
@@ -149,7 +160,7 @@ func groupCmd_setu(params cmd_params) map[string]interface{} {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 0, num)
 	if message_reply == nil {
-		replyMsgs = append(replyMsgs, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
+		sendToGocqList = append(sendToGocqList, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
 	}
 	// 返回将要发送的消息
 	return msg_send_group_forward(GroupID, message_reply)
@@ -167,7 +178,7 @@ func groupCmd_r18(params cmd_params) map[string]interface{} {
 	// 得到色图消息
 	message_reply := get_setu_MsgReply(tags, 1, num)
 	if message_reply == nil {
-		replyMsgs = append(replyMsgs, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
+		sendToGocqList = append(sendToGocqList, msg_send(receivedMsgEvent.MessageType, UserID, GroupID, "涩图获取失败,tag搜索不到图片...", false))
 	}
 	// 返回将要发送的消息
 	return msg_send_group_forward(GroupID, message_reply)
@@ -176,7 +187,6 @@ func groupCmd_r18(params cmd_params) map[string]interface{} {
 // 枪声 指令
 func groupCmd_HuntSound(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
-
 	// 解析cq码，获取无cq格式的消息内容'
 	cqmsg := ParseCQmsg(receivedMsgEvent.Message)
 	log.Println("将对群聊发送枪声" + GetCQCode_HuntSound(cqmsg.Text))
@@ -196,7 +206,7 @@ func groupCmd_BanLottery(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	time := rand.Intn(180) + 1
 	log.Printf("将对群聊:%d,禁言qq用户:%d,时间:%d秒", receivedMsgEvent.GroupID, receivedMsgEvent.UserID, time)
-	replyMsgs = append(replyMsgs, msg_send("group", receivedMsgEvent.UserID, receivedMsgEvent.GroupID, fmt.Sprintf("恭喜中奖，禁言时间:%d秒~", time), false))
+	sendToGocqList = append(sendToGocqList, msg_send("group", receivedMsgEvent.UserID, receivedMsgEvent.GroupID, fmt.Sprintf("恭喜中奖，禁言时间:%d秒~", time), false))
 	return group.Set_group_ban(receivedMsgEvent.UserID, receivedMsgEvent.GroupID, time)
 }
 
@@ -204,61 +214,21 @@ func groupCmd_BanLottery(params cmd_params) map[string]interface{} {
 func groupCmd_SetManager(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	log.Printf("将对群聊:%d,设置管理员:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID)
-	replyMsgs = append(replyMsgs, msg_send("group", receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "设为管理成功,仍不是管理请反思。", false))
+	sendToGocqList = append(sendToGocqList, msg_send("group", receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "设为管理成功,仍不是管理请反思。", false))
 	return group.Set_group_manager(receivedMsgEvent.GroupID, receivedMsgEvent.UserID, true)
 }
 
-// ------------------------------- 可复用代码 ----------------------------------
-// 寻找色图
-func get_setu_MsgReply(tags []string, r18 int, num int) []CQCode {
-	// 调用Setu API
-	setu_info := utils.Get_setu(tags, r18, num)
-	if setu_info.Error != "" {
-		log.Println("随机色图api调用出错:", setu_info.Error)
-		return nil
-	}
-	if len(setu_info.Data) == 0 {
-		log.Println("随机色图api调用出错:tag搜索不到，返回数据为空")
-		return nil
-	}
-	// 构建 message_reply 切片
-	message_reply := []CQCode{
-		{
-			Type: "node",
-			Data: map[string]interface{}{
-				"name": "LV",
-				"uin":  "1524175162",
-				"content": []CQCode{
-					{
-						Type: "text",
-						Data: map[string]interface{}{
-							"text": fmt.Sprintf("tags:%s", tags),
-						},
-					},
-				},
-			},
-		},
-	}
-	// 循环存放多张图片数据
-	for i := 0; i < num; i++ {
-		setu_url := setu_info.Data[i].Urls.Regular
-		// 构建 message_reply 切片
-		setu_cqNode := CQCode{
-			Type: "node",
-			Data: map[string]interface{}{
-				"name": "LV",
-				"uin":  "1524175162",
-				"content": []CQCode{
-					{
-						Type: "image",
-						Data: map[string]interface{}{
-							"file": setu_url,
-						},
-					},
-				},
-			},
-		}
-		message_reply = append(message_reply, setu_cqNode)
-	}
-	return message_reply
+// 撤回了什么 指令
+func groupCmd_GetRecall(params cmd_params) map[string]interface{} {
+	receivedMsgEvent := params.receivedMsgEvent
+	log.Printf("将对群聊:%d,获取撤回消息", receivedMsgEvent.GroupID)
+	return group.Get_group_recall(recall_msg_id)
+}
+
+// 获取身份 指令
+func groupCmd_GetIdentity(params cmd_params) map[string]interface{} {
+	receivedMsgEvent := params.receivedMsgEvent
+	log.Printf("将对群聊:%d,获取用户身份:%d", receivedMsgEvent.GroupID, receivedMsgEvent.UserID)
+	sendToGocqList = append(sendToGocqList, msg_send("group", receivedMsgEvent.UserID, receivedMsgEvent.GroupID, "获取用户身份成功", false))
+	return group.Get_group_member_info(receivedMsgEvent.GroupID, receivedMsgEvent.UserID)
 }

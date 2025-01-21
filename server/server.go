@@ -15,7 +15,6 @@ func Run(port string) {
 	// 根据配置文件创建bot
 	botplatform := strings.Split(config.EnvConst.BotPlatform, ",")
 	for _, v := range botplatform {
-		//tgbot.CreateTgbot()
 		switch v {
 		case "cqhttp":
 			wsOn(port)
@@ -23,6 +22,7 @@ func Run(port string) {
 			//创建一个tgbot
 			tgbot.CreateTgbot()
 		default:
+			// 默认打开cqhttp服务
 			wsOn(port)
 		}
 	}

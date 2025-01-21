@@ -90,7 +90,7 @@ func Get_setu(tags []string, r18 int, num int) SetuResponse {
 	return setuResponse
 }
 
-// 判断是否发送涩图
+// 判断是否发送涩图,获取涩图tag
 func Get_tags(input string) []string {
 	// 检查是否以 "/涩图 " 开头
 	if strings.HasPrefix(input, "/涩图 ") {

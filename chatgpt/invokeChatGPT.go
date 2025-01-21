@@ -11,13 +11,15 @@ import (
 var (
 	chatGPTAPIKey  string
 	chatGPTURL_proxy string
+	Role string = "vio"
 )
 
 func InvokeChatGPTAPI(text string) (string, error) {
 	chatGPTAPIKey = config.EnvConst.ChatGPTAPIKey
 	chatGPTURL_proxy = config.EnvConst.ChatGPTURL_proxy
 
-	prompt := GPTpreset["vio"]
+	prompt := GPTpreset[Role]
+
 	conf := openai.DefaultConfig(chatGPTAPIKey)
 	conf.BaseURL = chatGPTURL_proxy
 
