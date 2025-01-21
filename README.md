@@ -21,7 +21,7 @@
 - [X] QQ bot
   - [x] 随机涩图
   - [x] 猎杀对决枪声语音
-- [ ] 微信bot
+  - [x] 群组管理
 
 ## 写在前面/preface
 
@@ -38,7 +38,7 @@ chatgpt调用：
 - 在聊天中支持chatgpt的回复。该功能使用了[go-openai](https://github.com/sashabaranov/go-openai)库，支持了go语言对openai api的调用
 - 提示词参考：[awesome-chatgpt-prompts-zh](https://github.com/PlexPt/awesome-chatgpt-prompts-zh/blob/main/prompts-zh.json)
 
-本后端最终希望实现只对外暴露一个API,实现机器人通讯的应答模式,对不同平台创建不同的新服务,调用接口皆可进行通讯服务.通过环境变量设置启用平台。
+ > 重要：本项目的qqbot的设计模式有重大弊端，需要重构。具体可查看server/websocket.go。逻辑为监听gocq的响应，而做出相应的回应，是线性的过程。若需要主动向gocq发出通信，或者一次响应需要触发多次gocq的api则无法实现。需要重构部分代码，目前属于搁置状态，可以扩充的只有类似一问一答这种模式。
 
 **2024/5更新**：目前做了一次重大项目重构，使整个项目耦合程度下降，命令通过一个commandList哈希表来控制。websocket的conn不传入业务层，而是向外不断返回一个消息体，最后交给外层的ws连接发送。整个项目更加明了易读。添加了config配置文件，统一管理环境变量的初始化。
 

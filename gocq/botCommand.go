@@ -44,9 +44,9 @@ var commandDescription = map[string]string{
 	"/枪声":    "随机发送一条枪声",
 	"/枪声目录":  "枪声目录",
 	"/禁言抽奖":  "禁言抽奖0~180秒",
-	"/给我管理":  "设置一个管理给你",
-	"/获取身份":  "获取用户身份",
-	"/撤回了什么": "获取上一条撤回消息",
+	"/给我管理":  "设置一个管理给你,目前无效",
+	"/获取身份":  "获取用户身份,目前无效",
+	"/撤回了什么": "获取上一条撤回消息,目前无效",
 }
 
 // ---------私聊指令处理函数---------
@@ -65,7 +65,10 @@ func privateCmd_help(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 
 	log.Printf("将对私聊回复,msgID:%d,UserID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID)
-	privateCmd := "私聊指令:\n" + commandDescription["/help"] + "\n" + commandDescription["/涩图"] + "\n" + commandDescription["/涩图r18"] + "\n" + commandDescription["/枪声"] + "\n" + commandDescription["/枪声目录"] + "\n"
+	privateCmd := "私聊指令:\n"
+	for k, v := range commandDescription {
+		privateCmd += k + ":" + v + "\n"
+	}
 	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, privateCmd, false)
 }
 
@@ -134,7 +137,10 @@ func groupCmd_null(params cmd_params) map[string]interface{} {
 func groupCmd_help(params cmd_params) map[string]interface{} {
 	receivedMsgEvent := params.receivedMsgEvent
 	log.Printf("将对群聊回复,msgID:%d,UserID:%d,GroupID:%d", receivedMsgEvent.MessageID, receivedMsgEvent.UserID, receivedMsgEvent.GroupID)
-	groupCmd := "群聊指令:\n" + commandDescription["/help"] + "\n" + commandDescription["/涩图"] + "\n" + commandDescription["/涩图r18"] + "\n" + commandDescription["/枪声"] + "\n" + commandDescription["/枪声目录"] + "\n" + commandDescription["/撤回了什么"] + "\n"
+	groupCmd := "群聊指令:\n"
+	for k, v := range commandDescription {
+		groupCmd += k + ":" + v + "\n"
+	}
 	return msg_send(receivedMsgEvent.MessageType, receivedMsgEvent.UserID, receivedMsgEvent.GroupID, groupCmd, false)
 }
 
