@@ -1,4 +1,4 @@
-# GoBot
+# VioGo
 
 ![Go Reference](https://pkg.go.dev/badge/github.com/go-telegram-bot-api/telegram-bot-api/v5.svg)
 
@@ -19,9 +19,9 @@
 
 - [X] Telegram bot
 - [X] QQ bot
-  - [x] 随机涩图
-  - [x] 猎杀对决枪声语音
-  - [x] 群组管理
+  - [X] 随机涩图
+  - [X] 猎杀对决枪声语音
+  - [X] 群组管理
 
 ## 写在前面/preface
 
@@ -38,7 +38,7 @@ chatgpt调用：
 - 在聊天中支持chatgpt的回复。该功能使用了[go-openai](https://github.com/sashabaranov/go-openai)库，支持了go语言对openai api的调用
 - 提示词参考：[awesome-chatgpt-prompts-zh](https://github.com/PlexPt/awesome-chatgpt-prompts-zh/blob/main/prompts-zh.json)
 
- > 重要：本项目的qqbot的设计模式有重大弊端，需要重构。具体可查看server/websocket.go。逻辑为监听gocq的响应，而做出相应的回应，是线性的过程。若需要主动向gocq发出通信，或者一次响应需要触发多次gocq的api则无法实现。需要重构部分代码，目前属于搁置状态，可以扩充的只有类似一问一答这种模式。
+> 重要：本项目的qqbot的设计模式有重大弊端，需要重构。具体可查看server/websocket.go。逻辑为监听gocq的响应，而做出相应的回应，是线性的过程。若需要主动向gocq发出通信，或者一次响应需要触发多次gocq的api则无法实现。需要重构部分代码，目前属于搁置状态，可以扩充的只有类似一问一答这种模式。
 
 **2024/5更新**：目前做了一次重大项目重构，使整个项目耦合程度下降，命令通过一个commandList哈希表来控制。websocket的conn不传入业务层，而是向外不断返回一个消息体，最后交给外层的ws连接发送。整个项目更加明了易读。添加了config配置文件，统一管理环境变量的初始化。
 
@@ -68,7 +68,7 @@ chatgpt调用：
 - 微信公众号不建议集成，因为公众号的后端需要连接微信官方的后端，用一个新后端通过http请求调用这个bot后端比较好。
 - tgbot多参考官方示例和已有项目，官方的机器人接口很完善
 - chatgpt的调用参考go的openai库文档即可，也很完善。注意调用api是无法进行联系上下文对话的，要实现上下文对话只有把历史消息都post给api，这显然是不现实的。
-或者你将ai模型部署在本地，将历史记录存放在本地数据库中，而你的ai模型调用chatgpt(显然工作量太大)
+  或者你将ai模型部署在本地，将历史记录存放在本地数据库中，而你的ai模型调用chatgpt(显然工作量太大)
 
 ## 部署建议
 
@@ -151,4 +151,4 @@ chatGPTAPIKey=sk-your key
 ChatGPTURL_proxy = "https://your-proxy-site/v1"
 ```
 
-ChatGPTURL_proxy="<https://one-api.bltcy.top/v1>"
+ChatGPTURL_proxy="[https://one-api.bltcy.top/v1](https://one-api.bltcy.top/v1)"

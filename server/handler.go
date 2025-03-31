@@ -5,12 +5,35 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/viogami/Gobot-vio/gocq"
-
 	"github.com/gorilla/websocket"
+	"github.com/viogami/Gobot-vio/gocq"
 )
 
-// 用WebSocket进行gocq通信请求
+// GptMsgHandle 处理POST请求
+func GptMsgHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		// 获取表单数据
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, "Error parsing form data", http.StatusInternalServerError)
+			return
+		}
+		// 读取请求体
+		postmsg := r.Form.Get("usermsg")
+		if postmsg != "" {
+			log.Println("POST request,the usermsg:", postmsg)
+		} else {
+			http.Error(w, "Error:Don`t find the key:usermsg in the POST,maybe it`s a nil", http.StatusBadRequest)
+		}
+		// 调用ChatGPT API
+		gptResponse, err := NewAIServer().ProcessMessage(postmsg)
+		fmt.Fprintln(w, gptResponse)
+	} else {
+		http.Error(w, "Error: wrong HTTP method:"+r.Method+",required POST.", http.StatusMethodNotAllowed)
+	}
+}
+
+// GocqWsHandle 处理WebSocket请求
 func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {

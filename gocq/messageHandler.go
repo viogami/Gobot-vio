@@ -1,11 +1,11 @@
 package gocq
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strings"
 
-	"github.com/viogami/Gobot-vio/chatgpt"
 	"github.com/viogami/Gobot-vio/utils"
 )
 
@@ -17,7 +17,7 @@ func msgGptHandler(MsgEvent *MessageEvent) string {
 
 	if reply_res == "" {
 		log.Println("调用ChatGPT API")
-		gptResponse, err := chatgpt.InvokeChatGPTAPI(msgText)
+		gptResponse, err := "nil", errors.New("nil")
 		if err != nil {
 			log.Printf("Error calling ChatGPT API: %v", err)
 			gptResponse = "Error calling ChatGPT API" + fmt.Sprintf("%v", err)
