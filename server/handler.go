@@ -58,16 +58,10 @@ func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-		// 处理接收到的api响应
-		if gocq.GocqInstance == nil {
-			slog.Error("Error: GocqInstance is nil")
-			continue
-		}
-
 		// 处理接收到的事件
 		e, err := event.ParseEvent(p)
 		if err != nil {
-			slog.Error("Error: ", "err", err)
+			slog.Warn("Received unknown event, maybe a api response:", "warning", err)
 			continue
 		}
 		go e.LogInfo()

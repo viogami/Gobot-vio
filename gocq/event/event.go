@@ -2,7 +2,7 @@ package event
 
 import (
 	"encoding/json"
-	"log/slog"
+	"fmt"
 )
 
 type IEvent interface {
@@ -49,7 +49,6 @@ func ParseEvent(data []byte) (IEvent, error) {
 		}
 		return e, nil
 	default:
-		slog.Warn("Received unknown event", "raw data", string(data))
-		return nil, nil
+		return nil, fmt.Errorf("raw data: %s", string(data))
 	}
 }
