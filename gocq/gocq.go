@@ -1,9 +1,8 @@
 package gocq
 
 import (
-	"encoding/json"
-	"fmt"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -30,26 +29,7 @@ func (g *GocqServer) SendToGocq(action string, params map[string]any) error {
 		"action": action,
 		"params": params,
 	}
-
-	err := g.conn.WriteJSON(messageSend)
-	if err != nil {
-		return err
-	}
-	// 等待响应
-	_, msg, err := g.conn.ReadMessage()
-	if err != nil {
-		return err
-	}
-	// 解析消息
-	var response GocqResp
-	err = json.Unmarshal(msg, &response)
-	if err != nil {
-		return err
-	}
-	if response.Status != "ok" {
-		return fmt.Errorf("error: %s, msg: %s,wording: %s", response.Status, response.Msg, response.Wording)
-	}
-	return nil
+	return g.conn.WriteJSON(messageSend)
 }
 
 func (g *GocqServer) SendMessageWithEcho(action string, params map[string]any, echo string) error {
@@ -59,6 +39,15 @@ func (g *GocqServer) SendMessageWithEcho(action string, params map[string]any, e
 		"echo":   echo,
 	}
 	return g.conn.WriteJSON(messageSend)
+}
+
+func (g *GocqServer) IsConnected() bool {
+	g.writeMutex.Lock()
+	defer g.writeMutex.Unlock()
+
+	// 尝试发送一个ping消息来检查连接
+	err := g.conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second))
+	return err == nil
 }
 
 func (g *GocqServer) Reconnect(url string) error {
