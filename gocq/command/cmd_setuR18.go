@@ -1,6 +1,10 @@
 package command
 
-import "github.com/viogami/Gobot-vio/gocq"
+import (
+	"log/slog"
+
+	"github.com/viogami/Gobot-vio/gocq"
+)
 
 type cmdSetuR18 struct {
 	Command     string // 指令名称
@@ -10,14 +14,16 @@ type cmdSetuR18 struct {
 
 func (c *cmdSetuR18) Execute(params CommandParams) {
 	reply := "coming soon"
-	msgParams := gocq.MsgSendParams{
+	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
 		UserID:      params.UserId,
 		Message:     reply,
 		AutoEscape:  false,
 	}
-	gocq.MsgSend(msgParams)
+	slog.Info("执行指令:/涩图r18", "reply", reply)
+	sender := gocq.NewGocqSender()
+	sender.SendMsg(msgParams)
 }
 
 func (c *cmdSetuR18) GetInfo(index int) string {
@@ -32,7 +38,7 @@ func (c *cmdSetuR18) GetInfo(index int) string {
 	return ""
 }
 
-func NewCmdSetuR18() *cmdSetuR18 {
+func newCmdSetuR18() *cmdSetuR18 {
 	return &cmdSetuR18{
 		Command:     "/涩图r18",
 		Description: "随机r18涩图,规则同上",

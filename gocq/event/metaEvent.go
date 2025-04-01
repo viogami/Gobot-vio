@@ -21,7 +21,7 @@ func (m *MetaEvent) LogInfo() {
 	}
 }
 
-func (m *MetaEvent) Do() {
+func (m *MetaEvent) Handle() {
 	// 处理元事件
 	metaEventType := m.MetaEventType
 	switch metaEventType {

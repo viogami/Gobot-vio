@@ -47,7 +47,7 @@ type Urls struct {
 	Small    string `json:"small"`
 }
 
-func Get_setu(tags []string, r18 int, num int) SetuResponse {
+func GetSetu(tags []string, r18 int, num int) SetuResponse {
 	// 示例：构造一个 SetuRequest
 	requestData := SetuRequest{
 		R18:       r18,
@@ -91,7 +91,7 @@ func Get_setu(tags []string, r18 int, num int) SetuResponse {
 }
 
 // 判断是否发送涩图,获取涩图tag
-func Get_tags(input string) []string {
+func ReadTags(input string) []string {
 	// 检查是否以 "/涩图 " 开头
 	if strings.HasPrefix(input, "/涩图 ") {
 		// 获取 "/涩图 " 后面的部分
@@ -108,5 +108,5 @@ func Get_tags(input string) []string {
 		tags := strings.Split(tagsPart, "，")
 		return tags
 	}
-	return []string{"巨乳"}
+	return []string{"bijin"}
 }

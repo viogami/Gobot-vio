@@ -1,6 +1,8 @@
 package command
 
 import (
+	"log/slog"
+
 	"github.com/viogami/Gobot-vio/AIServer"
 	"github.com/viogami/Gobot-vio/gocq"
 )
@@ -13,15 +15,17 @@ type cmdChat struct {
 
 func (c *cmdChat) Execute(params CommandParams) {
 	reply := AIServer.NewAIServer().ProcessMessage(params.Message)
-	
-	msgParams := gocq.MsgSendParams{
+
+	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
-		UserID: 	params.UserId,
-		GroupID: 	params.GroupId,
+		UserID:      params.UserId,
+		GroupID:     params.GroupId,
 		Message:     reply,
 		AutoEscape:  false,
 	}
-	gocq.MsgSend(msgParams)
+	slog.Info("调用ai执行指令:/chat", "reply", reply)
+	sender := gocq.NewGocqSender()
+	sender.SendMsg(msgParams)
 }
 
 func (c *cmdChat) GetInfo(index int) string {
@@ -36,7 +40,7 @@ func (c *cmdChat) GetInfo(index int) string {
 	return ""
 }
 
-func NewCmdChat() *cmdChat {
+func newCmdChat() *cmdChat {
 	return &cmdChat{
 		Command:     "/chat",
 		Description: "聊天指令",

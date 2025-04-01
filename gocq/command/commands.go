@@ -11,30 +11,36 @@ type CommandParams struct {
 	Message     string
 	GroupId     int64
 	UserId      int64
+
+	SetuParams
+}
+
+type SetuParams struct {
+	Tags []string // 标签
 }
 
 var CommandList = []Command{
-	NewCmdNull(),
-	NewCmdHelp(),
-	NewCmdSetu(),
-	NewCmdSetuR18(),
-	NewCmdChat(),
-	NewCmdHuntSound(),
-	NewCmdHuntSoundList(),
-	NewCmdBanLottery(),
-	NewCmdSetManager(),
-	NewCmdGetRecall(),
+	newCmdNull(),
+	newCmdHelp(),
+	newCmdSetu(),
+	newCmdSetuR18(),
+	newCmdChat(),
+	newCmdHuntSound(),
+	// newCmdHuntSoundList(),
+	newCmdBanLottery(),
+	newCmdSetManager(),
+	newCmdGetRecall(),
 }
 
 var CommandMap = map[string]Command{
-	"":       NewCmdNull(),
-	"/help":  NewCmdHelp(),
-	"/涩图":    NewCmdSetu(),
-	"/涩图r18": NewCmdSetuR18(),
-	"/chat":  NewCmdChat(),
-	"/枪声":    NewCmdHuntSound(),
-	"/枪声目录":  NewCmdHuntSoundList(),
-	"/禁言抽奖":  NewCmdBanLottery(),
-	"/给我管理":  NewCmdSetManager(),
-	"/撤回了什么": NewCmdGetRecall(),
+	"":       newCmdNull(),
+	"/help":  newCmdHelp(),
+	"/涩图":    newCmdSetu(),
+	"/涩图r18": newCmdSetuR18(),
+	"/chat":  newCmdChat(),
+	"/枪声":    newCmdHuntSound(),
+	// "/枪声目录":  newCmdHuntSoundList(),
+	"/禁言抽奖":  newCmdBanLottery(),
+	"/给我管理":  newCmdSetManager(),
+	"/撤回了什么": newCmdGetRecall(),
 }

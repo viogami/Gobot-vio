@@ -7,7 +7,7 @@ import (
 
 type IEvent interface {
 	LogInfo()
-	Do()
+	Handle()
 }
 
 type Event struct {

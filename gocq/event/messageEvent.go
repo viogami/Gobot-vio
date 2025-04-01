@@ -7,6 +7,7 @@ import (
 
 	"github.com/viogami/Gobot-vio/gocq"
 	"github.com/viogami/Gobot-vio/gocq/command"
+	"github.com/viogami/Gobot-vio/utils"
 )
 
 type MessageEvent struct {
@@ -44,7 +45,7 @@ func (m *MessageEvent) LogInfo() {
 	)
 }
 
-func (m *MessageEvent) Do() {
+func (m *MessageEvent) Handle() {
 	cqmsg := gocq.ParseCQmsg(m.Message)
 	f := m.parseCommand(cqmsg)
 	if f == nil {
@@ -57,10 +58,15 @@ func (m *MessageEvent) Do() {
 		Message:     m.Message,
 		GroupId:     m.GroupID,
 		UserId:      m.UserID,
+
+		SetuParams: command.SetuParams{
+			Tags: utils.ReadTags(cqmsg.Text),
+		},
 	}
 
 	f.Execute(params)
 }
+
 
 func (m *MessageEvent) parseCommand(cqmsg gocq.CQmsg) command.Command {
 	cmdStr := "/chat"

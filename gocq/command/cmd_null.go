@@ -15,21 +15,19 @@ type cmdNull struct {
 
 func (c *cmdNull) Execute(params CommandParams) {
 	if params.MessageType == "group" {
-		slog.Info("群聊空指令,群号:%d,UserID:%d", params.GroupId, params.UserId)
 		return
 	}
-	if params.MessageType == "private" {
-		slog.Info("将对私聊回复,msgID:%d,UserID:%d", params.MessageId, params.UserId)
-	}
 	reply := AIServer.NewAIServer().ProcessMessage(params.Message)
-	msgParams := gocq.MsgSendParams{
+	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		UserID:      params.UserId,
 		GroupID:     params.GroupId,
 		Message:     reply,
 		AutoEscape:  false,
 	}
-	gocq.MsgSend(msgParams)
+	slog.Info("调用ai执行私聊", "reply", reply)
+	sender := gocq.NewGocqSender()
+	sender.SendMsg(msgParams)
 }
 
 func (c *cmdNull) GetInfo(index int) string {
@@ -44,7 +42,7 @@ func (c *cmdNull) GetInfo(index int) string {
 	return ""
 }
 
-func NewCmdNull() *cmdNull {
+func newCmdNull() *cmdNull {
 	return &cmdNull{
 		Command:     "",
 		Description: "空指令",

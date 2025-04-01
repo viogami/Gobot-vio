@@ -15,7 +15,7 @@ func (n *RequestEvent) LogInfo() {
 	slog.Info("RequestEvent", "request_type", n.RequestType)
 }
 
-func (n *RequestEvent) Do() {
+func (n *RequestEvent) Handle() {
 	// 处理请求事件
 	request_type := n.RequestType
 	switch request_type {

@@ -1,6 +1,11 @@
 package command
 
-import "github.com/viogami/Gobot-vio/gocq"
+import (
+	"log/slog"
+
+	"github.com/viogami/Gobot-vio/gocq"
+	"github.com/viogami/Gobot-vio/utils"
+)
 
 type cmdSetu struct {
 	Command     string // 指令名称
@@ -9,15 +14,28 @@ type cmdSetu struct {
 }
 
 func (c *cmdSetu) Execute(params CommandParams) {
-	reply := "coming soon"
-	msgParams := gocq.MsgSendParams{
-		MessageType: params.MessageType,
-		GroupID:     params.GroupId,
-		UserID:      params.UserId,
-		Message:     reply,
-		AutoEscape:  false,
+	reply := c.getSetuReply(gocq.SendSetuMsgParams{
+		Tags: params.Tags,
+		R18:  0,
+		Num:  1,
+	})
+	slog.Info("执行指令:/涩图", "reply", reply)
+	sender := gocq.NewGocqSender()
+	
+	if params.MessageType == "private" {
+		msgParams := gocq.SendPrivateForwardMsgParams{
+			UserID:  params.UserId,
+			Message: reply,
+		}
+		sender.SendPrivateForwardMsg(msgParams)
+		return
 	}
-	gocq.MsgSend(msgParams)
+	// 如果是群消息，使用 SendGroupForwardMsg 发送
+	msgParams := gocq.SendGroupForwardMsgParams{
+		GroupID: params.GroupId,
+		Message: reply,
+	}
+	sender.SendGroupForwardMsg(msgParams)
 }
 
 func (c *cmdSetu) GetInfo(index int) string {
@@ -32,7 +50,26 @@ func (c *cmdSetu) GetInfo(index int) string {
 	return ""
 }
 
-func NewCmdSetu() *cmdSetu {
+func (c *cmdSetu) getSetuReply(params gocq.SendSetuMsgParams) []gocq.CQCode {
+	reply := []gocq.CQCode{}
+	setuInfo := utils.GetSetu(params.Tags, params.R18, params.Num)
+	if setuInfo.Error != "" {
+		slog.Error("随机色图api调用出错", "error", setuInfo.Error)
+		return nil
+	}
+	if len(setuInfo.Data) == 0 {
+		slog.Error("随机色图api调用出错:tag搜索不到,返回数据为空")
+		return nil
+	}
+	for _, data := range setuInfo.Data {
+		reply = append(reply, gocq.NewCQCode("image", map[string]any{
+			"file": data.Urls.Regular,
+		}))
+	}
+	return reply
+}
+
+func newCmdSetu() *cmdSetu {
 	return &cmdSetu{
 		Command:     "/涩图",
 		Description: "随机涩图，指令后可接tag，用逗号分隔",

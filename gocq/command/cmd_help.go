@@ -16,19 +16,19 @@ func (c *cmdHelp) Execute(params CommandParams) {
 	reply := ""
 	if params.MessageType == "group" {
 		reply = c.groupReply()
-		slog.Info("群聊指令列表,群号:%d,UserID:%d", params.GroupId, params.UserId)
 	} else if params.MessageType == "private" {
 		reply = c.privateReply()
-		slog.Info("私聊指令列表,msgID:%d,UserID:%d", params.MessageId, params.UserId)
 	}
-	msgParams := gocq.MsgSendParams{
+	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		UserID:      params.UserId,
 		GroupID:     params.GroupId,
 		Message:     reply,
 		AutoEscape:  false,
 	}
-	gocq.MsgSend(msgParams)
+	slog.Info("执行指令:/help", "reply", reply)
+	sender := gocq.NewGocqSender()
+	sender.SendMsg(msgParams)
 }
 
 func (c *cmdHelp) GetInfo(index int) string {
@@ -45,7 +45,7 @@ func (c *cmdHelp) GetInfo(index int) string {
 
 func (c *cmdHelp) privateReply() string {
 	reply := "指令列表:\n"
-	for _, v := range CommandList {
+	for _, v := range CommandList[1:] {
 		if v.GetInfo(2) == "private" || v.GetInfo(2) == "all" {
 			reply += v.GetInfo(0) + ":" + v.GetInfo(1) + "\n"
 		}
@@ -55,7 +55,7 @@ func (c *cmdHelp) privateReply() string {
 
 func (c *cmdHelp) groupReply() string {
 	reply := "指令列表:\n"
-	for _, v := range CommandList {
+	for _, v := range CommandList[1:] {
 		if v.GetInfo(2) == "group" || v.GetInfo(2) == "all" {
 			reply += v.GetInfo(0) + ":" + v.GetInfo(1) + "\n"
 		}
@@ -64,7 +64,7 @@ func (c *cmdHelp) groupReply() string {
 
 }
 
-func NewCmdHelp() *cmdHelp {
+func newCmdHelp() *cmdHelp {
 	return &cmdHelp{
 		Command:     "/help",
 		Description: "查看帮助",

@@ -66,6 +66,6 @@ func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		go e.LogInfo()
-		go e.Do()
+		go e.Handle()
 	}
 }

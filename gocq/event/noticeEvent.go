@@ -46,31 +46,34 @@ func (n *NoticeEvent) LogInfo() {
 	)
 }
 
-func (n *NoticeEvent) Do() {
+func (n *NoticeEvent) Handle() {
 	notice_type := n.NoticeType
 	groupId := n.GroupID
 	userId := n.UserID
+
+	sender := gocq.NewGocqSender()
+
 	switch notice_type {
 	// 群成员增加
 	case "group_increase":
-		params := gocq.MsgSendParams{
+		params := gocq.SendMsgParams{
 			MessageType: "group",
 			GroupID:     groupId,
 			UserID:      userId,
 			Message:     "欢迎加入,输入'/help',查看bot指令列表~",
 			AutoEscape:  false,
 		}
-		gocq.MsgSend(params)
+		sender.SendMsg(params)
 	// 群成员减少
 	case "group_decrease":
-		params := gocq.MsgSendParams{
+		params := gocq.SendMsgParams{
 			MessageType: "group",
 			GroupID:     groupId,
 			UserID:      userId,
 			Message:     "有人离开了群聊~",
 			AutoEscape:  false,
 		}
-		gocq.MsgSend(params)
+		sender.SendMsg(params)
 	// 消息撤回
 	case "group_recall":
 		// TODO: 撤回消息

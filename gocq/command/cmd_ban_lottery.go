@@ -1,6 +1,10 @@
 package command
 
-import "github.com/viogami/Gobot-vio/gocq"
+import (
+	"log/slog"
+
+	"github.com/viogami/Gobot-vio/gocq"
+)
 
 type cmdBanLottery struct {
 	Command     string // 指令名称
@@ -10,14 +14,16 @@ type cmdBanLottery struct {
 
 func (c *cmdBanLottery) Execute(params CommandParams) {
 	reply := "coming soon"
-	msgParams := gocq.MsgSendParams{
+	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
 		UserID:      params.UserId,
 		Message:     reply,
 		AutoEscape:  false,
 	}
-	gocq.MsgSend(msgParams)
+	slog.Info("执行指令:/禁言抽奖", "reply", reply)
+	sender := gocq.NewGocqSender()
+	sender.SendMsg(msgParams)
 }
 
 func (c *cmdBanLottery) GetInfo(index int) string {
@@ -32,7 +38,7 @@ func (c *cmdBanLottery) GetInfo(index int) string {
 	return ""
 }
 
-func NewCmdBanLottery() *cmdBanLottery {
+func newCmdBanLottery() *cmdBanLottery {
 	return &cmdBanLottery{
 		Command:     "/禁言抽奖",
 		Description: "禁言抽奖0~180秒",

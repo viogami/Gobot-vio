@@ -16,26 +16,26 @@ var GocqInstance *GocqServer
 
 func NewGocqServer(conn *websocket.Conn) *GocqServer {
 	return &GocqServer{
-		conn: conn,
+		conn:       conn,
 		writeMutex: sync.Mutex{}, // 初始化互斥锁
 	}
 }
 
-func (g *GocqServer) SendMessage(action string, parms map[string]any) error {
+func (g *GocqServer) SendToGocq(action string, params map[string]any) error {
 	g.writeMutex.Lock()
-    defer g.writeMutex.Unlock()
+	defer g.writeMutex.Unlock()
 
 	messageSend := map[string]interface{}{
 		"action": action,
-		"params": parms,
+		"params": params,
 	}
 	return g.conn.WriteJSON(messageSend)
 }
 
-func (g *GocqServer) SendMessageWithEcho(action string, parms map[string]any, echo string) error {
+func (g *GocqServer) SendMessageWithEcho(action string, params map[string]any, echo string) error {
 	messageSend := map[string]interface{}{
 		"action": action,
-		"params": parms,
+		"params": params,
 		"echo":   echo,
 	}
 	return g.conn.WriteJSON(messageSend)

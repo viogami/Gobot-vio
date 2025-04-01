@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/viogami/Gobot-vio/utils"
 )
 
 type CQmsg struct {
@@ -65,4 +67,29 @@ func (cq *CQCode) GenerateCQCode() string {
 		cqCode += fmt.Sprintf(",%s=%s", key, value)
 	}
 	return cqCode + "]"
+}
+
+func NewCQCode(cqType string, data map[string]interface{}) CQCode {
+	return CQCode{
+		Type: cqType,
+		Data: data,
+	}
+}
+
+// 获得猎杀枪声的CQ码
+func GetCQCode_HuntSound(input string) string {
+	sound := utils.HuntSound{
+		Name:     "",
+		Distance: "",
+	}
+	parts := strings.Split(input, " ")
+	if len(parts) == 2 {
+		sound.Name = parts[1]
+	}
+	if len(parts) == 3 {
+		sound.Name = parts[1]
+		sound.Distance = parts[2]
+	}
+
+	return "[CQ:record,file=" + utils.GetHuntSound(sound) + "]"
 }

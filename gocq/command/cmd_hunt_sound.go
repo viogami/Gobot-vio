@@ -1,6 +1,10 @@
 package command
 
-import "github.com/viogami/Gobot-vio/gocq"
+import (
+	"log/slog"
+
+	"github.com/viogami/Gobot-vio/gocq"
+)
 
 type cmdHuntSound struct {
 	Command     string // 指令名称
@@ -10,14 +14,16 @@ type cmdHuntSound struct {
 
 func (c *cmdHuntSound) Execute(params CommandParams) {
 	reply := "coming soon"
-	msgParams := gocq.MsgSendParams{
+	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
 		UserID:      params.UserId,
 		Message:     reply,
 		AutoEscape:  false,
 	}
-	gocq.MsgSend(msgParams)
+	slog.Info("执行指令:/hunt_sound", "reply", reply)
+	sender := gocq.NewGocqSender()
+	sender.SendMsg(msgParams)
 }
 
 func (c *cmdHuntSound) GetInfo(index int) string {
@@ -32,7 +38,7 @@ func (c *cmdHuntSound) GetInfo(index int) string {
 	return ""
 }
 
-func NewCmdHuntSound() *cmdHuntSound {
+func newCmdHuntSound() *cmdHuntSound {
 	return &cmdHuntSound{
 		Command:     "/枪声",
 		Description: "随机枪声",

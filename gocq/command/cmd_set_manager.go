@@ -1,6 +1,10 @@
 package command
 
-import "github.com/viogami/Gobot-vio/gocq"
+import (
+	"log/slog"
+
+	"github.com/viogami/Gobot-vio/gocq"
+)
 
 type cmdSetManager struct {
 	Command     string // 指令名称
@@ -10,14 +14,16 @@ type cmdSetManager struct {
 
 func (c *cmdSetManager) Execute(params CommandParams) {
 	reply := "coming soon"
-	msgParams := gocq.MsgSendParams{
+	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
 		UserID:      params.UserId,
 		Message:     reply,
 		AutoEscape:  false,
 	}
-	gocq.MsgSend(msgParams)
+	slog.Info("执行指令:/给我管理", "reply", reply)
+	sender := gocq.NewGocqSender()
+	sender.SendMsg(msgParams)
 }
 
 func (c *cmdSetManager) GetInfo(index int) string {
@@ -32,7 +38,7 @@ func (c *cmdSetManager) GetInfo(index int) string {
 	return ""
 }
 
-func NewCmdSetManager() *cmdSetManager {
+func newCmdSetManager() *cmdSetManager {
 	return &cmdSetManager{
 		Command:     "/给我管理",
 		Description: "设置一个管理给你,目前无效",
