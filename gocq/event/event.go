@@ -3,7 +3,6 @@ package event
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 )
 
 type IEvent interface {
@@ -22,11 +21,6 @@ func ParseEvent(data []byte) (IEvent, error) {
 	var t Event
 	if err := json.Unmarshal(data, &t); err != nil {
 		return nil, err
-	}
-	// 添加对空PostType的日志记录
-	if t.PostType == "" {
-		slog.Warn("Received message with empty post_type", "raw_data", string(data))
-		return nil, fmt.Errorf("empty event type in message: %s", string(data))
 	}
 	// 根据 type 解析不同的事件
 	switch t.PostType {
@@ -55,6 +49,6 @@ func ParseEvent(data []byte) (IEvent, error) {
 		}
 		return e, nil
 	default:
-		return nil, fmt.Errorf("unknown event type: %s", t.PostType)
+		return nil, fmt.Errorf("empty event type in message: %s", string(data))
 	}
 }
