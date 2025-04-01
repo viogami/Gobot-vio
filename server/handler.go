@@ -65,7 +65,7 @@ func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
 			slog.Error("Error: ", "err", err)
 			continue
 		}
-		go e.LogInfo()
-		go e.Handle()
+		e.LogInfo()
+		e.Handle()
 	}
 }
