@@ -58,37 +58,14 @@ func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-		
+
 		// 处理接收到的消息
 		e, err := event.ParseEvent(p)
 		if err != nil {
 			slog.Error("Error: ", "err", err)
 			continue
 		}
-		go e.Slog()
+		go e.LogInfo()
 		go e.Do()
-
-		// 主动发送消息
-
-		// // 打印接收到的消息
-		// err = gocq.Log_post_type(p)
-		// if err != nil {
-		// 	slog.Error("Error: ","err",err)
-		// } else {
-		// 	// 发送消息
-		// 	message_send := gocq.Handle_event(p)
-		// 	if len(message_send) != 0 {
-		// 		go func() {
-		// 			for _, msg := range message_send {
-		// 				// 发送消息
-		// 				err = conn.WriteJSON(msg)
-		// 				if err != nil {
-		// 					slog.Error("Error: ", "err", err)
-		// 					return
-		// 				}
-		// 			}
-		// 		}()
-		// 	}
-		// }
 	}
 }

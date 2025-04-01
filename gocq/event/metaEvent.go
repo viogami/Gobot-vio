@@ -11,8 +11,14 @@ type MetaEvent struct {
 	MetaEventType string `json:"meta_event_type"`
 }
 
-func (m *MetaEvent) Slog() {
-	slog.Info("MetaEvent", "meta_event_type", m.MetaEventType)
+var heartCount int = 0
+
+func (m *MetaEvent) LogInfo() {
+	heartCount++
+	if heartCount == 50 {
+		slog.Info("MetaEvent", "meta_event_type", m.MetaEventType, "heartCount", heartCount)
+		heartCount = 0
+	}
 }
 
 func (m *MetaEvent) Do() {

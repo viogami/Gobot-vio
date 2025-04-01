@@ -11,7 +11,7 @@ type RequestEvent struct {
 	RequestType string `json:"request_type"`
 }
 
-func (n *RequestEvent) Slog() {
+func (n *RequestEvent) LogInfo() {
 	slog.Info("RequestEvent", "request_type", n.RequestType)
 }
 

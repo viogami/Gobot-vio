@@ -9,7 +9,7 @@ import (
 
 type GocqServer struct {
 	conn       *websocket.Conn
-	writeMutex sync.Mutex // 添加互斥锁
+	writeMutex sync.Mutex // 添加互斥锁，ws无并发安全
 }
 
 var GocqInstance *GocqServer
@@ -17,6 +17,7 @@ var GocqInstance *GocqServer
 func NewGocqServer(conn *websocket.Conn) *GocqServer {
 	return &GocqServer{
 		conn: conn,
+		writeMutex: sync.Mutex{}, // 初始化互斥锁
 	}
 }
 

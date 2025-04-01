@@ -30,7 +30,7 @@ type Sender struct {
 	Age      int32  `json:"age"`
 }
 
-func (m *MessageEvent) Slog() {
+func (m *MessageEvent) LogInfo() {
 	slog.Info("MessageEvent",
 		"message_type", m.MessageType,
 		"sub_type", m.SubType,

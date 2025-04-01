@@ -6,7 +6,7 @@ import (
 )
 
 type IEvent interface {
-	Slog()
+	LogInfo()
 	Do()
 }
 

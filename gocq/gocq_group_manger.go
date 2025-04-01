@@ -1,4 +1,4 @@
-package groupmanage
+package gocq
 
 // 设置群组禁言
 func Set_group_ban(UserID int64, GroupID int64, time int) map[string]interface{} {

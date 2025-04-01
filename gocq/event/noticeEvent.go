@@ -38,7 +38,7 @@ type NoticeEvent struct {
 	GroupID int64 `json:"group_id"`
 }
 
-func (n *NoticeEvent) Slog() {
+func (n *NoticeEvent) LogInfo() {
 	slog.Info("NoticeEvent",
 		"notice_type", POST_NOTICE_TYPE2STR[n.NoticeType],
 		"user_id", n.UserID,
