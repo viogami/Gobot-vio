@@ -1,62 +1,50 @@
 package gocq
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"strings"
 
 	"github.com/viogami/Gobot-vio/utils"
 )
-
-// 消息处理函数
-func msgGptHandler(MsgEvent *MessageEvent) string {
-	msgText := ParseCQmsg(MsgEvent.Message).Text
-
-	reply_res := utils.Msg_Filter(msgText)
-
-	if reply_res == "" {
-		log.Println("调用ChatGPT API")
-		gptResponse, err := "nil", errors.New("nil")
-		if err != nil {
-			log.Printf("Error calling ChatGPT API: %v", err)
-			gptResponse = "Error calling ChatGPT API" + fmt.Sprintf("%v", err)
-		}
-		return gptResponse
-	}
-	return reply_res
+type MsgSendParams struct {
+	MessageType string `json:"message_type"` // 消息类型, 支持 private、group , 分别对应私聊、群组, 如不传入, 则根据传入的 *_id 参数判断
+	UserID      int64  `json:"user_id"`      // 对方 QQ 号 ( 消息类型为 private 时需要 )
+	GroupID     int64  `json:"group_id"`     // 群号 ( 消息类型为 group 时需要 )
+	Message     string `json:"message"`      // 要发送的内容
+	AutoEscape  bool   `json:"auto_escape"`  // 消息内容是否作为纯文本发送 ( 即不解析 CQ 码 ) , 只在 message 字段是字符串时有效
 }
 
-// 发送私聊消息
-// @params
-// message_type	string	-	消息类型, 支持 private、group , 分别对应私聊、群组, 如不传入, 则根据传入的 *_id 参数判断
-// user_id	int64	-	对方 QQ 号 ( 消息类型为 private 时需要 )
-// group_id	int64	-	群号 ( 消息类型为 group 时需要 )
-// message	message	-	要发送的内容
-// auto_escape	boolean	false	消息内容是否作为纯文本发送 ( 即不解析 CQ 码 ) , 只在 message 字段是字符串时有效
-func msg_send(message_type string, user_id int64, group_id int64, message string, auto_escape bool) map[string]interface{} {
-	if message_type == "group" {
+func (params MsgSendParams) toMap() map[string]interface{} {
+	return map[string]interface{}{
+		"message_type": params.MessageType,
+		"user_id":      params.UserID,
+		"group_id":     params.GroupID,
+		"message":      params.Message,
+		"auto_escape":  params.AutoEscape,
+	}
+}
+
+func MsgSend(params MsgSendParams) {
+	// 终结点
+	action := "send_msg"
+
+	if params.MessageType == "group" {
 		cq := CQCode{
 			Type: "at",
 			Data: map[string]interface{}{
-				"qq": fmt.Sprintf("%d", user_id),
+				"qq": fmt.Sprintf("%d", params.UserID),
 			},
 		}
-		message = GenerateCQCode(cq) + message
+		params.Message = cq.GenerateCQCode() + params.Message
 	}
-	// 构建消息结构
-	message_send := map[string]interface{}{
-		"action": "send_msg",
-		"params": map[string]interface{}{
-			"message_type": message_type,
-			"user_id":      user_id,
-			"group_id":     group_id,
-			"message":      message,
-			"auto_escape":  auto_escape,
-		},
-		"echo": "echo_test", // 用于识别回调消息
+
+	// 发送消息
+	err := GocqInstance.SendMessage(action, params.toMap())
+	if err != nil {
+		log.Println("发送消息失败:", err)
+		return
 	}
-	return message_send
 }
 
 // 发送私聊合并消息
@@ -85,17 +73,6 @@ func msg_send_group_forward(GroupID int64, message_reply []CQCode) map[string]in
 		"echo": "echo_test",
 	}
 	return message_send
-}
-
-// 判断是否at我
-func Atme(cq CQmsg) bool {
-	CQcodes := cq.CQcodes
-	for _, CQcode := range CQcodes {
-		if CQcode.Type == "at" && CQcode.Data["qq"] == fmt.Sprintf("%d", receivedEvent.SelfID) {
-			return true
-		}
-	}
-	return false
 }
 
 // 获得猎杀枪声的CQ码

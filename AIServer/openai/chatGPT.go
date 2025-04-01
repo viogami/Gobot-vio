@@ -39,7 +39,7 @@ func (s *ChatGPTService) SetCharacter(character string) {
 	s.characterSetting = GPTpreset[character]
 }
 
-func (s *ChatGPTService) InvokeChatGPTAPI(text string) (string, error) {
+func (s *ChatGPTService) InvokeChatGPTAPI(text string) string {
 	resp, err := s.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
@@ -59,12 +59,12 @@ func (s *ChatGPTService) InvokeChatGPTAPI(text string) (string, error) {
 	if err != nil {
 		slog.Error("Error calling ChatGPT API", "error", err)
 		Resp := "gpt调用失败了😥 error:\n" + err.Error()
-		return Resp, err
+		return Resp
 	}
-	return resp.Choices[0].Message.Content, err
+	return resp.Choices[0].Message.Content
 }
 
-func (s *ChatGPTService) InvokeChatGPTAPIWithRole(text string, role string) (string, error) {
+func (s *ChatGPTService) InvokeChatGPTAPIWithRole(text string, role string) string {
 	s.Role = role
 	return s.InvokeChatGPTAPI(text)
 }

@@ -1,17 +1,15 @@
 package server
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 
 	redis "github.com/go-redis/redis/v8"
-
-	"github.com/viogami/Gobot-vio/tgbot"
 )
 
 type Server struct {
-	Port     string
-	redis    *redis.Client
+	Port  string
+	redis *redis.Client
 }
 
 func (s *Server) httpOn() {
@@ -24,15 +22,10 @@ func (s *Server) wsOn(port string) {
 	http.HandleFunc("/ws", GocqWsHandle)
 	// 启动 Web 服务器监听 port 端口
 	err := http.ListenAndServe(":"+port, nil)
-	log.Println("HTTP server is running on port:", port)
+	slog.Info("Server started", "port", port)
 	if err != nil {
-		log.Printf("Error starting server: %v\n", err)
+		slog.Error("Error starting server:", "err", err)
 	}
-}
-
-func (s *Server) tgbotOn() {
-	// 创建一个tgbot
-	tgbot.CreateTgbot()
 }
 
 func Run(port string) {
