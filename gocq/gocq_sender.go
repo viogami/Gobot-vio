@@ -34,22 +34,8 @@ func (s *GocqSender) SendMsg(params SendMsgParams) {
 
 func (s *GocqSender) SendGroupForwardMsg(params SendGroupForwardMsgParams) {
 	action := "send_group_forward_msg"
-	// 消息构建
-	reply := []CQCode{
-		{
-			Type: "node",
-			Data: map[string]interface{}{
-				"name":    "LV",
-				"uin":     "1524175162",
-				"content": params.Message,
-			},
-		},
-	}
 
-	err := GocqInstance.SendToGocq(action, map[string]any{
-		"group_id": params.GroupID,
-		"messages": reply,
-	})
+	err := GocqInstance.SendToGocq(action, params.toMap())
 	if err != nil {
 		slog.Error("发送群聊合并消息失败", "error", err)
 		return
@@ -58,22 +44,8 @@ func (s *GocqSender) SendGroupForwardMsg(params SendGroupForwardMsgParams) {
 
 func (s *GocqSender) SendPrivateForwardMsg(params SendPrivateForwardMsgParams) {
 	action := "send_private_forward_msg"
-	// 消息构建
-	reply := []CQCode{
-		{
-			Type: "node",
-			Data: map[string]interface{}{
-				"name":    "LV",
-				"uin":     "1524175162",
-				"content": params.Message,
-			},
-		},
-	}
 
-	err := GocqInstance.SendToGocq(action, map[string]any{
-		"user_id":  params.UserID,
-		"messages": reply,
-	})
+	err := GocqInstance.SendToGocq(action, params.toMap())
 	if err != nil {
 		slog.Error("发送私聊合并消息失败", "error", err)
 		return

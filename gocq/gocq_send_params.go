@@ -23,21 +23,27 @@ type SendGroupForwardMsgParams struct {
 	Message []CQCode `json:"messages"` // 消息列表
 }
 
+func (params SendGroupForwardMsgParams) toMap() map[string]interface{} {
+	return map[string]interface{}{
+		"group_id": params.GroupID,
+		"messages": params.Message,
+	}
+}
+
 type SendPrivateForwardMsgParams struct {
 	UserID  int64    `json:"user_id"`  // 对方 QQ 号
 	Message []CQCode `json:"messages"` // 消息列表
+}
+
+func (params SendPrivateForwardMsgParams) toMap() map[string]interface{} {
+	return map[string]interface{}{
+		"user_id":  params.UserID,
+		"messages": params.Message,
+	}
 }
 
 type SendSetuMsgParams struct {
 	Tags []string `json:"tags"` // 色图标签
 	R18  int      `json:"r18"`  // 是否 R18
 	Num  int      `json:"num"`  // 色图数量
-}
-
-func (params SendSetuMsgParams) toMap() map[string]interface{} {
-	return map[string]interface{}{
-		"tags": params.Tags,
-		"r18":  params.R18,
-		"num":  params.Num,
-	}
 }

@@ -56,7 +56,7 @@ func ParseCQmsg(input string) CQmsg {
 
 type CQCode struct {
 	Type string                 `json:"type"`
-	Data map[string]interface{} `json:"data"`
+	Data map[string]any `json:"data"`
 }
 
 // 生成CQ码字符串
@@ -69,7 +69,7 @@ func (cq *CQCode) GenerateCQCode() string {
 	return cqCode + "]"
 }
 
-func NewCQCode(cqType string, data map[string]interface{}) CQCode {
+func NewCQCode(cqType string, data map[string]any) CQCode {
 	return CQCode{
 		Type: cqType,
 		Data: data,

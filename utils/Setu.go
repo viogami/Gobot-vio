@@ -108,5 +108,5 @@ func ReadTags(input string) []string {
 		tags := strings.Split(tagsPart, "，")
 		return tags
 	}
-	return []string{"bijin"}
+	return []string{"巨乳"}
 }

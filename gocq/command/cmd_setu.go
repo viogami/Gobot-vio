@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/viogami/Gobot-vio/gocq"
@@ -21,7 +22,7 @@ func (c *cmdSetu) Execute(params CommandParams) {
 	})
 	slog.Info("执行指令:/涩图", "reply", reply)
 	sender := gocq.NewGocqSender()
-	
+
 	if params.MessageType == "private" {
 		msgParams := gocq.SendPrivateForwardMsgParams{
 			UserID:  params.UserId,
@@ -51,7 +52,24 @@ func (c *cmdSetu) GetInfo(index int) string {
 }
 
 func (c *cmdSetu) getSetuReply(params gocq.SendSetuMsgParams) []gocq.CQCode {
-	reply := []gocq.CQCode{}
+	reply := []gocq.CQCode{
+		{
+			Type: "node",
+			Data: map[string]interface{}{
+				"name": "LV",
+				"uin":  "1524175162",
+				"content": []gocq.CQCode{
+					{
+						Type: "text",
+						Data: map[string]any{
+							"text": fmt.Sprintf("tags:%s", params.Tags),
+						},
+					},
+				},
+			},
+		},
+	}
+	content := []gocq.CQCode{}
 	setuInfo := utils.GetSetu(params.Tags, params.R18, params.Num)
 	if setuInfo.Error != "" {
 		slog.Error("随机色图api调用出错", "error", setuInfo.Error)
@@ -62,17 +80,19 @@ func (c *cmdSetu) getSetuReply(params gocq.SendSetuMsgParams) []gocq.CQCode {
 		return nil
 	}
 	for _, data := range setuInfo.Data {
-		reply = append(reply, gocq.NewCQCode("image", map[string]any{
+		content = append(content, gocq.NewCQCode("image", map[string]any{
 			"file": data.Urls.Regular,
+			"url":  data.Urls.Regular,
 		}))
 	}
+	reply[0].Data["content"] = append(reply[0].Data["content"].([]gocq.CQCode), content...)
 	return reply
 }
 
 func newCmdSetu() *cmdSetu {
 	return &cmdSetu{
 		Command:     "/涩图",
-		Description: "随机涩图，指令后可接tag，用逗号分隔",
+		Description: "随机涩图,指令后可接tag,用逗号分隔",
 		CmdType:     "all",
 	}
 }
