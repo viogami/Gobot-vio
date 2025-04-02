@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/viogami/Gobot-vio/gocq"
+	"github.com/viogami/Gobot-vio/utils"
 )
 
 type cmdHuntSound struct {
@@ -13,7 +14,8 @@ type cmdHuntSound struct {
 }
 
 func (c *cmdHuntSound) Execute(params CommandParams) {
-	reply := "coming soon"
+	hs := utils.NewRandHuntSound() // 随机枪声，固定5m
+	reply := c.cqReply(hs.Sound)
 	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
@@ -24,6 +26,16 @@ func (c *cmdHuntSound) Execute(params CommandParams) {
 	slog.Info("执行指令:/hunt_sound", "reply", reply)
 	sender := gocq.NewGocqSender()
 	sender.SendMsg(msgParams)
+}
+
+func (c *cmdHuntSound) cqReply(soundUrl string) string {
+	ret := gocq.CQCode{
+		Type: "record",
+		Data: map[string]interface{}{
+			"file": soundUrl,
+		},
+	}
+	return ret.GenerateCQCode()
 }
 
 func (c *cmdHuntSound) GetInfo(index int) string {

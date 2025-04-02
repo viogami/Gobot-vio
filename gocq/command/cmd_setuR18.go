@@ -1,9 +1,11 @@
 package command
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/viogami/Gobot-vio/gocq"
+	"github.com/viogami/Gobot-vio/utils"
 )
 
 type cmdSetuR18 struct {
@@ -13,17 +15,28 @@ type cmdSetuR18 struct {
 }
 
 func (c *cmdSetuR18) Execute(params CommandParams) {
-	reply := "coming soon"
-	msgParams := gocq.SendMsgParams{
-		MessageType: params.MessageType,
-		GroupID:     params.GroupId,
-		UserID:      params.UserId,
-		Message:     reply,
-		AutoEscape:  false,
-	}
-	slog.Info("执行指令:/涩图r18", "reply", reply)
+	reply := c.getSetuReply(gocq.SendSetuMsgParams{
+		Tags: params.Tags,
+		R18:  1,
+		Num:  1,
+	})
+	slog.Info("执行指令:/涩图", "reply", reply)
 	sender := gocq.NewGocqSender()
-	sender.SendMsg(msgParams)
+
+	if params.MessageType == "private" {
+		msgParams := gocq.SendPrivateForwardMsgParams{
+			UserID:  params.UserId,
+			Message: reply,
+		}
+		sender.SendPrivateForwardMsg(msgParams)
+		return
+	}
+	// 如果是群消息，使用 SendGroupForwardMsg 发送
+	msgParams := gocq.SendGroupForwardMsgParams{
+		GroupID: params.GroupId,
+		Message: reply,
+	}
+	sender.SendGroupForwardMsg(msgParams)
 }
 
 func (c *cmdSetuR18) GetInfo(index int) string {
@@ -36,6 +49,44 @@ func (c *cmdSetuR18) GetInfo(index int) string {
 		return c.CmdType
 	}
 	return ""
+}
+
+func (c *cmdSetuR18) getSetuReply(params gocq.SendSetuMsgParams) []gocq.CQCode {
+	reply := []gocq.CQCode{
+		{
+			Type: "node",
+			Data: map[string]interface{}{
+				"name": "LV",
+				"uin":  "1524175162",
+				"content": []gocq.CQCode{
+					{
+						Type: "text",
+						Data: map[string]any{
+							"text": fmt.Sprintf("tags:%s", params.Tags),
+						},
+					},
+				},
+			},
+		},
+	}
+	content := []gocq.CQCode{}
+	setuInfo := utils.GetSetu(params.Tags, params.R18, params.Num)
+	if setuInfo.Error != "" {
+		slog.Error("随机色图api调用出错", "error", setuInfo.Error)
+		return nil
+	}
+	if len(setuInfo.Data) == 0 {
+		slog.Error("随机色图api调用出错:tag搜索不到,返回数据为空")
+		return nil
+	}
+	for _, data := range setuInfo.Data {
+		content = append(content, gocq.NewCQCode("image", map[string]any{
+			"file": data.Urls.Regular,
+			"url":  data.Urls.Regular,
+		}))
+	}
+	reply[0].Data["content"] = append(reply[0].Data["content"].([]gocq.CQCode), content...)
+	return reply
 }
 
 func newCmdSetuR18() *cmdSetuR18 {

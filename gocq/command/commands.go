@@ -26,21 +26,26 @@ var CommandList = []Command{
 	newCmdSetuR18(),
 	newCmdChat(),
 	newCmdHuntSound(),
-	// newCmdHuntSoundList(),
 	newCmdBanLottery(),
-	newCmdSetManager(),
 	newCmdGetRecall(),
 }
-
 var CommandMap = map[string]Command{
-	"":       newCmdNull(),
-	"/help":  newCmdHelp(),
-	"/涩图":    newCmdSetu(),
-	"/涩图r18": newCmdSetuR18(),
-	"/chat":  newCmdChat(),
-	"/枪声":    newCmdHuntSound(),
-	// "/枪声目录":  newCmdHuntSoundList(),
-	"/禁言抽奖":  newCmdBanLottery(),
-	"/给我管理":  newCmdSetManager(),
-	"/撤回了什么": newCmdGetRecall(),
+	"help":    newCmdHelp(),
+	"来份涩图":    newCmdSetu(),
+	"来份r18涩图": newCmdSetuR18(),
+	"/chat":   newCmdChat(),
+	"猎杀对决枪声":  newCmdHuntSound(),
+	"禁言抽奖":    newCmdBanLottery(),
+	"撤回了什么":   newCmdGetRecall(),
 }
+
+// var OriginalCommandMap = map[string]Command{
+// 	"":       newCmdNull(),
+// 	"/help":  newCmdHelp(),
+// 	"/涩图":    newCmdSetu(),
+// 	"/涩图r18": newCmdSetuR18(),
+// 	"/chat":  newCmdChat(),
+// 	"/枪声":    newCmdHuntSound(),
+// 	"/禁言抽奖":  newCmdBanLottery(),
+// 	"/撤回了什么": newCmdGetRecall(),
+// }

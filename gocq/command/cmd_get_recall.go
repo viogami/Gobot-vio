@@ -21,7 +21,7 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 		Message:     reply,
 		AutoEscape:  false,
 	}
-	slog.Info("执行指令:/禁言抽奖", "reply", reply)
+	slog.Info("执行指令:/撤回了什么", "reply", reply)
 	sender := gocq.NewGocqSender()
 	sender.SendMsg(msgParams)
 }

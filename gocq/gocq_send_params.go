@@ -22,7 +22,6 @@ type SendGroupForwardMsgParams struct {
 	GroupID int64    `json:"group_id"` // 群号
 	Message []CQCode `json:"messages"` // 消息列表
 }
-
 func (params SendGroupForwardMsgParams) toMap() map[string]interface{} {
 	return map[string]interface{}{
 		"group_id": params.GroupID,
@@ -34,7 +33,6 @@ type SendPrivateForwardMsgParams struct {
 	UserID  int64    `json:"user_id"`  // 对方 QQ 号
 	Message []CQCode `json:"messages"` // 消息列表
 }
-
 func (params SendPrivateForwardMsgParams) toMap() map[string]interface{} {
 	return map[string]interface{}{
 		"user_id":  params.UserID,
@@ -46,4 +44,17 @@ type SendSetuMsgParams struct {
 	Tags []string `json:"tags"` // 色图标签
 	R18  int      `json:"r18"`  // 是否 R18
 	Num  int      `json:"num"`  // 色图数量
+}
+
+type SendSetGroupBanParams struct {
+	GroupID  int64  `json:"group_id"` // 群号
+	UserID   int64  `json:"user_id"`  // 对方 QQ 号
+	Duration uint32 `json:"duration"` // 禁言时长, 单位秒, 0 为取消禁言,默认30*60
+}
+func (params SendSetGroupBanParams) toMap() map[string]interface{} {
+	return map[string]interface{}{
+		"group_id": params.GroupID,
+		"user_id":  params.UserID,
+		"duration": params.Duration,
+	}
 }

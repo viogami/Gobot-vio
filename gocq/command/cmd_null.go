@@ -2,9 +2,6 @@ package command
 
 import (
 	"log/slog"
-
-	"github.com/viogami/Gobot-vio/AIServer"
-	"github.com/viogami/Gobot-vio/gocq"
 )
 
 type cmdNull struct {
@@ -14,20 +11,7 @@ type cmdNull struct {
 }
 
 func (c *cmdNull) Execute(params CommandParams) {
-	if params.MessageType == "group" {
-		return
-	}
-	reply := AIServer.NewAIServer().ProcessMessage(params.Message)
-	msgParams := gocq.SendMsgParams{
-		MessageType: params.MessageType,
-		UserID:      params.UserId,
-		GroupID:     params.GroupId,
-		Message:     reply,
-		AutoEscape:  false,
-	}
-	slog.Info("调用ai执行私聊", "reply", reply)
-	sender := gocq.NewGocqSender()
-	sender.SendMsg(msgParams)
+	slog.Info("空指令")
 }
 
 func (c *cmdNull) GetInfo(index int) string {

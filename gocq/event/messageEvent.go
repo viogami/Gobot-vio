@@ -3,7 +3,6 @@ package event
 import (
 	"encoding/json"
 	"log/slog"
-	"regexp"
 
 	"github.com/viogami/Gobot-vio/gocq"
 	"github.com/viogami/Gobot-vio/gocq/command"
@@ -49,7 +48,7 @@ func (m *MessageEvent) Handle() {
 	cqmsg := gocq.ParseCQmsg(m.Message)
 	f := m.parseCommand(cqmsg)
 	if f == nil {
-		slog.Warn("MessageEvent", "msg", "接受到非私聊或者非指令的群聊消息", "command", cqmsg.Text)
+		slog.Info("MessageEvent", "接受到普通群聊消息", m.Message)
 		return
 	}
 	params := command.CommandParams{
@@ -67,19 +66,29 @@ func (m *MessageEvent) Handle() {
 	f.Execute(params)
 }
 
-
 func (m *MessageEvent) parseCommand(cqmsg gocq.CQmsg) command.Command {
-	cmdStr := "/chat"
-	// 判断是否at我,若否，则将命令为空
-	Atme := cqmsg.IsAtme(m.SelfID)
-	if !Atme {
-		cmdStr = ""
-	}
-	// 定义正则表达式匹配以中文字符开头的命令
-	commandPattern := regexp.MustCompile(`^/([^ ]+)`)
-	cmdStr = commandPattern.FindString(cqmsg.Text)
+	cmdStr := cqmsg.Text
 
-	return command.CommandMap[cmdStr]
+	// 判断是否是私聊消息
+	if m.MessageType == "private" {
+		r := command.CommandMap[cmdStr]
+		if r.GetInfo(2) == "private" || r.GetInfo(2) == "all" {
+			return r
+		}
+		return command.CommandMap["/chat"]
+	}
+	// 判断是否是群聊消息
+	if m.MessageType == "group" && cqmsg.IsAtme(m.SelfID) {
+		r := command.CommandMap[cmdStr]
+		if r.GetInfo(2) == "group" || r.GetInfo(2) == "all" {
+			return r
+		}
+		return command.CommandMap["/chat"]
+	}
+	// 正则表达式匹配是否是命令格式的消息
+	// commandPattern := regexp.MustCompile(`^/([^ ]+)`)
+	// cmdStr = commandPattern.FindString(cqmsg.Text)
+	return nil
 }
 
 func NewMessageEvent(p []byte) (*MessageEvent, error) {

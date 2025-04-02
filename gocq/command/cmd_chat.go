@@ -44,6 +44,6 @@ func newCmdChat() *cmdChat {
 	return &cmdChat{
 		Command:     "/chat",
 		Description: "聊天指令",
-		CmdType:     "group",
+		CmdType:     "all",
 	}
 }

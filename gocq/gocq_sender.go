@@ -51,3 +51,13 @@ func (s *GocqSender) SendPrivateForwardMsg(params SendPrivateForwardMsgParams) {
 		return
 	}
 }
+
+func (s *GocqSender) SetGroupBan(params SendSetGroupBanParams) {
+	action := "set_group_ban"
+
+	err := GocqInstance.SendToGocq(action, params.toMap())
+	if err != nil {
+		slog.Error("设置群禁言失败", "error", err)
+		return
+	}
+}
