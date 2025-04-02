@@ -61,3 +61,15 @@ func (s *GocqSender) SetGroupBan(params SendSetGroupBanParams) {
 		return
 	}
 }
+
+func (s *GocqSender) GetMsg(msgid int64) {
+	action := "get_msg"
+	params := map[string]interface{}{
+		"message_id": msgid,
+	}
+	err := GocqInstance.SendToGocq(action, params)
+	if err != nil {
+		slog.Error("获取消息失败", "error", err)
+		return
+	}
+}

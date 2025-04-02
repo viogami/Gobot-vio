@@ -53,8 +53,8 @@ func (c *cmdBanLottery) GetInfo(index int) string {
 
 func newCmdBanLottery() *cmdBanLottery {
 	return &cmdBanLottery{
-		Command:     "/禁言抽奖",
-		Description: "禁言抽奖0~180秒",
+		Command:     "禁言抽奖",
+		Description: "禁言抽奖0~600秒",
 		CmdType:     "group",
 	}
 }

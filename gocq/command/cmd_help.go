@@ -66,8 +66,8 @@ func (c *cmdHelp) groupReply() string {
 
 func newCmdHelp() *cmdHelp {
 	return &cmdHelp{
-		Command:     "/help",
-		Description: "查看帮助",
+		Command:     "help",
+		Description: "查看指令列表",
 		CmdType:     "all",
 	}
 }

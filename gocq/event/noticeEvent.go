@@ -34,8 +34,10 @@ type NoticeEvent struct {
 	Event
 	NoticeType string `json:"notice_type"`
 
-	UserID  int64 `json:"user_id"`
-	GroupID int64 `json:"group_id"`
+	UserID     int64 `json:"user_id"`
+	GroupID    int64 `json:"group_id"`
+	OperatorId int64 `json:"operator_id"`
+	MessageId  int64 `json:"message_id"`
 }
 
 func (n *NoticeEvent) LogInfo() {
@@ -43,6 +45,8 @@ func (n *NoticeEvent) LogInfo() {
 		"notice_type", POST_NOTICE_TYPE2STR[n.NoticeType],
 		"user_id", n.UserID,
 		"group_id", n.GroupID,
+		"operator_id", n.OperatorId,
+		"message_id", n.MessageId,
 	)
 }
 
@@ -50,9 +54,10 @@ func (n *NoticeEvent) Handle() {
 	notice_type := n.NoticeType
 	groupId := n.GroupID
 	userId := n.UserID
+	opId := n.OperatorId
+	msgId := n.MessageId
 
 	sender := gocq.NewGocqSender()
-
 	switch notice_type {
 	// 群成员增加
 	case "group_increase":
@@ -60,7 +65,7 @@ func (n *NoticeEvent) Handle() {
 			MessageType: "group",
 			GroupID:     groupId,
 			UserID:      userId,
-			Message:     "欢迎加入,输入'/help',查看bot指令列表~",
+			Message:     "欢迎~需要我就@我~输入'help',查看bot指令列表~",
 			AutoEscape:  false,
 		}
 		sender.SendMsg(params)
@@ -70,13 +75,14 @@ func (n *NoticeEvent) Handle() {
 			MessageType: "group",
 			GroupID:     groupId,
 			UserID:      userId,
-			Message:     "有人离开了群聊~",
+			Message:     "再见了宝宝~",
 			AutoEscape:  false,
 		}
 		sender.SendMsg(params)
 	// 消息撤回
 	case "group_recall":
-		// TODO: 撤回消息
+		// 储存撤回消息
+		gocq.GocqDataInstance.AddRecalledMsg(groupId, opId, msgId, userId)
 	}
 }
 

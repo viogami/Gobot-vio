@@ -22,19 +22,19 @@ type SetuParams struct {
 var CommandList = []Command{
 	newCmdNull(),
 	newCmdHelp(),
+	newCmdChat(),
 	newCmdSetu(),
 	newCmdSetuR18(),
-	newCmdChat(),
 	newCmdHuntSound(),
 	newCmdBanLottery(),
 	newCmdGetRecall(),
 }
 var CommandMap = map[string]Command{
 	"help":    newCmdHelp(),
+	"/chat":   newCmdChat(),
 	"来份涩图":    newCmdSetu(),
 	"来份r18涩图": newCmdSetuR18(),
-	"/chat":   newCmdChat(),
-	"猎杀对决枪声":  newCmdHuntSound(),
+	"打一枪听听":  newCmdHuntSound(),
 	"禁言抽奖":    newCmdBanLottery(),
 	"撤回了什么":   newCmdGetRecall(),
 }

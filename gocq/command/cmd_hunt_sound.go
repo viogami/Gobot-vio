@@ -52,8 +52,8 @@ func (c *cmdHuntSound) GetInfo(index int) string {
 
 func newCmdHuntSound() *cmdHuntSound {
 	return &cmdHuntSound{
-		Command:     "/枪声",
-		Description: "随机枪声",
+		Command:     "打一枪听听",
+		Description: "随机猎杀对决枪声，固定5米",
 		CmdType:     "all",
 	}
 }

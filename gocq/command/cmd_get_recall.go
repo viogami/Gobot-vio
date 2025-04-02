@@ -13,6 +13,9 @@ type cmdGetRecall struct {
 }
 
 func (c *cmdGetRecall) Execute(params CommandParams) {
+	sender := gocq.NewGocqSender()
+	// recallMsgId,recallOpId,recallUserId := gocq.GocqDataInstance.GetRecalledMsg(params.GroupId)
+
 	reply := "coming soon"
 	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
@@ -22,7 +25,7 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 		AutoEscape:  false,
 	}
 	slog.Info("执行指令:/撤回了什么", "reply", reply)
-	sender := gocq.NewGocqSender()
+	
 	sender.SendMsg(msgParams)
 }
 
@@ -40,7 +43,7 @@ func (c *cmdGetRecall) GetInfo(index int) string {
 
 func newCmdGetRecall() *cmdGetRecall {
 	return &cmdGetRecall{
-		Command:     "/撤回了什么",
+		Command:     "撤回了什么",
 		Description: "获取上一条撤回消息",
 		CmdType:     "group",
 	}

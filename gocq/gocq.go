@@ -15,6 +15,10 @@ type GocqServer struct {
 var GocqInstance *GocqServer
 
 func NewGocqServer(conn *websocket.Conn) *GocqServer {
+	// 初始化GocqData实例
+	if GocqDataInstance == nil {
+		GocqDataInstance = NewGocqData()
+	}
 	return &GocqServer{
 		conn:       conn,
 		writeMutex: sync.Mutex{}, // 初始化互斥锁

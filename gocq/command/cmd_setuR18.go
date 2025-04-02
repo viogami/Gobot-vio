@@ -91,7 +91,7 @@ func (c *cmdSetuR18) getSetuReply(params gocq.SendSetuMsgParams) []gocq.CQCode {
 
 func newCmdSetuR18() *cmdSetuR18 {
 	return &cmdSetuR18{
-		Command:     "/涩图r18",
+		Command:     "来份r18涩图",
 		Description: "随机r18涩图,规则同上",
 		CmdType:     "all",
 	}

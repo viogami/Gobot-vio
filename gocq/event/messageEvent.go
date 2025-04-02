@@ -68,22 +68,21 @@ func (m *MessageEvent) Handle() {
 
 func (m *MessageEvent) parseCommand(cqmsg gocq.CQmsg) command.Command {
 	cmdStr := cqmsg.Text
-
+	r := command.CommandMap[cmdStr]
+	if r == nil {
+		return command.CommandMap["/chat"]
+	}
 	// 判断是否是私聊消息
 	if m.MessageType == "private" {
-		r := command.CommandMap[cmdStr]
 		if r.GetInfo(2) == "private" || r.GetInfo(2) == "all" {
 			return r
 		}
-		return command.CommandMap["/chat"]
 	}
 	// 判断是否是群聊消息
 	if m.MessageType == "group" && cqmsg.IsAtme(m.SelfID) {
-		r := command.CommandMap[cmdStr]
 		if r.GetInfo(2) == "group" || r.GetInfo(2) == "all" {
 			return r
 		}
-		return command.CommandMap["/chat"]
 	}
 	// 正则表达式匹配是否是命令格式的消息
 	// commandPattern := regexp.MustCompile(`^/([^ ]+)`)
