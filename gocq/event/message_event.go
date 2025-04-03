@@ -72,13 +72,10 @@ func (m *MessageEvent) parseCommand(cqmsg cqCode.CQmsg) command.Command {
 
 	// 判断是否是私聊消息
 	if m.MessageType == "private" {
-		if r == nil {
-			return command.CommandMap["/chat"]
-		}
 		if r.GetInfo(2) == "private" || r.GetInfo(2) == "all" {
 			return r
 		}
-		return nil
+		return command.CommandMap["/chat"]
 	}
 	
 	// 判断是否是群聊消息
