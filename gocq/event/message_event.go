@@ -79,6 +79,8 @@ func (m *MessageEvent) parseCommand(cqmsg cqCode.CQmsg) command.Command {
 		}
 	}
 	// 判断是否是群聊消息
+	slog.Debug("cqmsg", cqmsg, "selfId", m.SelfID)
+	
 	if m.MessageType == "group" && cqmsg.IsAtme(m.SelfID) {
 		if r.GetInfo(2) == "group" || r.GetInfo(2) == "all" {
 			return r

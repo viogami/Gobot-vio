@@ -101,6 +101,13 @@ func (n *NoticeEvent) Handle() {
 		}
 		// 可选: 设置过期时间，例如3天后自动删除
 		client.Expire(context.Background(), key, 3*24*time.Hour)
+
+		slog.Debug("Stored recalled message in redis",
+			"key", key,
+			"message_id", msgId,
+			"user_id", userId,
+			"operator_id", opId,
+		)
 	}
 }
 
