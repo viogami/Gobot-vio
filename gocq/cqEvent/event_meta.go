@@ -71,7 +71,7 @@ type Lifecycle struct {
 	SubType       string `json:"sub_type"`
 }
 
-func Get_meta_event(p []byte, metaType string) interface{} {
+func Get_meta_event(p []byte, metaType string) any {
 	var heartbeat Heartbeat
 	var lifecycle Lifecycle
 

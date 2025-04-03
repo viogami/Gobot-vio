@@ -10,8 +10,8 @@ type SendMsgParams struct {
 	AutoEscape  bool   `json:"auto_escape"`  // 消息内容是否作为纯文本发送 ( 即不解析 CQ 码 ) , 只在 message 字段是字符串时有效
 }
 
-func (params SendMsgParams) toMap() map[string]interface{} {
-	return map[string]interface{}{
+func (params SendMsgParams) toMap() map[string]any {
+	return map[string]any{
 		"message_type": params.MessageType,
 		"user_id":      params.UserID,
 		"group_id":     params.GroupID,
@@ -25,8 +25,8 @@ type SendGroupForwardMsgParams struct {
 	Message []cqCode.CQCode `json:"messages"` // 消息列表
 }
 
-func (params SendGroupForwardMsgParams) toMap() map[string]interface{} {
-	return map[string]interface{}{
+func (params SendGroupForwardMsgParams) toMap() map[string]any {
+	return map[string]any{
 		"group_id": params.GroupID,
 		"messages": params.Message,
 	}
@@ -37,8 +37,8 @@ type SendPrivateForwardMsgParams struct {
 	Message []cqCode.CQCode `json:"messages"` // 消息列表
 }
 
-func (params SendPrivateForwardMsgParams) toMap() map[string]interface{} {
-	return map[string]interface{}{
+func (params SendPrivateForwardMsgParams) toMap() map[string]any {
+	return map[string]any{
 		"user_id":  params.UserID,
 		"messages": params.Message,
 	}
@@ -56,8 +56,8 @@ type SendSetGroupBanParams struct {
 	Duration uint32 `json:"duration"` // 禁言时长, 单位秒, 0 为取消禁言,默认30*60
 }
 
-func (params SendSetGroupBanParams) toMap() map[string]interface{} {
-	return map[string]interface{}{
+func (params SendSetGroupBanParams) toMap() map[string]any {
+	return map[string]any{
 		"group_id": params.GroupID,
 		"user_id":  params.UserID,
 		"duration": params.Duration,

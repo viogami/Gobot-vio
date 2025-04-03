@@ -25,7 +25,7 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 		slog.Error("获取上一次撤回的消息 ID 失败", "error", err)
 		return
 	}
-	var res map[string]interface{}
+	var res map[string]any
 	if err := json.Unmarshal([]byte(message[0]), &res); err != nil {
 		slog.Error("解析上一次撤回的消息 ID 失败", "error", err)
 		return
@@ -36,7 +36,7 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	userId := res["user_id"]
 
 	resp := sender.GetMsg(messageId)
-	
+
 	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
@@ -46,7 +46,7 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	}
 	sender.SendMsg(msgParams)
 
-	reply := fmt.Sprintf("时间:%d,发送者:%d,撤回人:%d", resp["time"],userId, operatorId)
+	reply := fmt.Sprintf("时间:%d,发送者:%d,撤回人:%d", resp["time"], userId, operatorId)
 	msgParams = gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,

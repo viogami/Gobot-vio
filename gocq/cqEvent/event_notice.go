@@ -267,7 +267,7 @@ type EssenceChangeNotice struct {
 }
 
 // 获取通知信息
-func Get_notice_info(p []byte, NoticeType string) interface{} {
+func Get_notice_info(p []byte, NoticeType string) any {
 	var (
 		group_upload_notice   GroupUploadFileNotice
 		group_admin_notice    GroupAdminChangeNotice

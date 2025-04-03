@@ -85,7 +85,7 @@ func (n *NoticeEvent) Handle() {
 	// 消息撤回
 	case "group_recall":
 		// 将撤回消息存储为有序列表中的JSON字符串
-		recallData, _ := json.Marshal(map[string]interface{}{
+		recallData, _ := json.Marshal(map[string]any{
 			"message_id":  msgId,
 			"user_id":     userId,
 			"operator_id": opId,

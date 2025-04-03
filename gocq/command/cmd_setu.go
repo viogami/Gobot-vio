@@ -56,7 +56,7 @@ func (c *cmdSetu) getSetuReply(params gocq.SendSetuMsgParams) []cqCode.CQCode {
 	reply := []cqCode.CQCode{
 		{
 			Type: "node",
-			Data: map[string]interface{}{
+			Data: map[string]any{
 				"name": "LV",
 				"uin":  "1524175162",
 				"content": []cqCode.CQCode{
