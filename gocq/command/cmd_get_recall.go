@@ -31,7 +31,7 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 		return
 	}
 	// 获取消息 ID 和消息内容
-	messageId := res["message_id"].(int32)
+	messageId := int32(res["message_id"].(float64))
 	operatorId := res["operator_id"]
 	userId := res["user_id"]
 

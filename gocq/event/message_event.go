@@ -72,10 +72,13 @@ func (m *MessageEvent) parseCommand(cqmsg cqCode.CQmsg) command.Command {
 
 	// 判断是否是私聊消息
 	if m.MessageType == "private" {
+		if r == nil {
+			return command.CommandMap["/chat"]
+		}
 		if r.GetInfo(2) == "private" || r.GetInfo(2) == "all" {
 			return r
 		}
-		return command.CommandMap["/chat"]
+		return nil
 	}
 	
 	// 判断是否是群聊消息
@@ -87,9 +90,6 @@ func (m *MessageEvent) parseCommand(cqmsg cqCode.CQmsg) command.Command {
 			return r
 		}
 	}
-	// 正则表达式匹配是否是命令格式的消息
-	// commandPattern := regexp.MustCompile(`^/([^ ]+)`)
-	// cmdStr = commandPattern.FindString(cqmsg.Text)
 	return nil
 }
 
