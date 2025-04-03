@@ -40,8 +40,8 @@ func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp map[
 	if err != nil {
 		return nil, err
 	}
-	if response["status"] != "ok" {
-		return nil, fmt.Errorf("调用gocq api失败: %s", response["message"])
+	if response == nil {
+		return nil, fmt.Errorf("response is nil")
 	}
 	slog.Info("调用gocq api成功", "action", action, "params", params)
 	return nil, nil

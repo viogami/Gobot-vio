@@ -36,8 +36,6 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	userId := res["user_id"]
 
 	resp := sender.GetMsg(messageId)
-
-	slog.Warn("获取消息", "resp", resp)
 	
 	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
