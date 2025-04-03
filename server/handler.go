@@ -61,8 +61,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		if event.IsEvent(p) {
 			e, _ := event.ParseEvent(p)
 			go e.LogInfo()
-			go e.Handle()
-			continue
+			e.Handle()
 		}
 	}
 }
