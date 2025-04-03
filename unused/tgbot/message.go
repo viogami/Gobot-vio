@@ -1,13 +1,12 @@
 package tgbot
 
 import (
-	"log"
 	"math/rand"
 	"strconv"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/viogami/Gobot-vio/chatgpt"
+	chatgpt "github.com/viogami/Gobot-vio/AI/openai"
 )
 
 // 检查当前是否应该发送消息
@@ -27,6 +26,8 @@ func checksmg(bot *tgbotapi.BotAPI, message *tgbotapi.Message) bool {
 
 // 处理用户消息逻辑
 func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+	// 创建gpt服务
+	gpt := chatgpt.NewChatGPTService()
 	// 分析消息数据
 	uid := message.From.ID
 	gid := message.Chat.ID
@@ -52,11 +53,8 @@ func HandleIncomingMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		sendMessage(bot, replymsg)
 
 		// 调用ChatGPT API
-		gptResponse, err := chatgpt.InvokeChatGPTAPI(text)
-		if err != nil {
-			log.Printf("Error calling ChatGPT API: %v", err)
-			gptResponse = "gpt调用失败了😥 错误信息：\n" + err.Error()
-		}
+		gptResponse := gpt.InvokeChatGPTAPI(text)
+
 		replymsg.Text = gptResponse
 
 		replymsg.ReplyToMessageID = message.MessageID //@发信息的人回复

@@ -1,45 +1,46 @@
 package server
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
-	"strings"
 
-	"github.com/viogami/Gobot-vio/config"
-	"github.com/viogami/Gobot-vio/tgbot"
+	redis "github.com/redis/go-redis/v9"
+	"github.com/viogami/Gobot-vio/gocq"
 )
 
-func Run(port string) {
-	// 默认打开http服务
-	httpOn()
-	// 根据配置文件创建bot
-	botplatform := strings.Split(config.EnvConst.BotPlatform, ",")
-	for _, v := range botplatform {
-		switch v {
-		case "cqhttp":
-			wsOn(port)
-		case "tgbot":
-			//创建一个tgbot
-			tgbot.CreateTgbot()
-		default:
-			// 默认打开cqhttp服务
-			wsOn(port)
-		}
+type Server struct {
+	Port  string
+	redis *redis.Client
+	gocq  *gocq.GocqServer
+}
+
+func (s *Server) Run() {
+	// /post 处理ai请求的路由
+	http.HandleFunc("/post", gptMsgHandle)
+	// 处理WebSocket请求的路由
+	http.HandleFunc("/ws", handleWebSocket)
+
+	// 启动 Web 服务器监听 port 端口
+	err := http.ListenAndServe(":"+s.Port, nil)
+	slog.Info("Server started", "port", s.Port)
+	if err != nil {
+		slog.Error("Error starting server:", "err", err)
 	}
 }
 
-func httpOn() {
-	// 设置 /post 路径的 HTTP 处理函数
-	http.HandleFunc("/post", GptMsgHandle)
-}
-
-func wsOn(port string) {
-	// 处理WebSocket请求的路由
-	http.HandleFunc("/ws", GocqWsHandle)
-	// 启动 Web 服务器监听 port 端口
-	err := http.ListenAndServe(":"+port, nil)
-	log.Println("HTTP server is running on port:", port)
+func NewServer(port string, redisURL string) *Server {
+	if redisURL == "" {
+		slog.Error("REDIS_URL environment variable not set")
+	}
+	// 解析 Redis URL
+	opt, err := redis.ParseURL(redisURL)
 	if err != nil {
-		log.Printf("Error starting server: %v\n", err)
+		slog.Error("Failed to parse Redis URL:", "err", err)
+	}
+
+	return &Server{
+		Port:  port,
+		redis: redis.NewClient(opt),
+		gocq:  gocq.NewGocqServer(redis.NewClient(opt)),
 	}
 }

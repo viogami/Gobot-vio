@@ -1,13 +1,8 @@
 package utils
 
 import (
-	"strings"
+	"math/rand"
 )
-
-type HuntSound struct {
-	Name     string
-	Distance string
-}
 
 var GunIndex = map[string]string{
 	"Berthier Mle 1892":         "Berthier Mle 1892",
@@ -83,8 +78,43 @@ var GunIndex = map[string]string{
 	"温菲百年庆典":                    "Winfield M1876 Centennial",
 }
 
-func GetHuntSound(sound HuntSound) string {
-	baseURL := "http://hunt.kamille.ovh/audio/"
+type HuntSound struct {
+	Name     string
+	Distance string
+	Sound    string
+}
+
+func NewRandHuntSound() HuntSound {
+	hs := new(HuntSound)
+	// 获取所有枪支名称（map的值）
+	gunNames := make([]string, 0, len(GunIndex))
+	uniqueNames := make(map[string]struct{}) // 用于去重
+	for _, name := range GunIndex {
+		// 由于不同key可能对应相同的value，我们需要去重
+		if _, exists := uniqueNames[name]; !exists {
+			gunNames = append(gunNames, name)
+			uniqueNames[name] = struct{}{}
+		}
+	}
+	// 随机选择一个
+	if len(gunNames) > 0 {
+		randomIndex := rand.Intn(len(gunNames))
+		hs.Name = gunNames[randomIndex]
+	} else {
+		hs.Name = "Lebel 1886" // 默认值
+	}
+	hs.Distance = "5m"
+
+	sound := hs.getHuntSound(*hs)
+	if sound == "" {
+		sound = "http://hunt.kamille.ovh/sounds/Lebel%201886-06.mp3"
+	}
+	hs.Sound = sound
+	return *hs
+}
+
+func (h *HuntSound) getHuntSound(sound HuntSound) string {
+	baseURL := "http://hunt.kamille.ovh/sounds/"
 	distance := sound.Distance
 
 	switch GunIndex[sound.Name] {
@@ -185,21 +215,6 @@ func distance2mp3(distance string) string {
 	case "0m":
 		return "09.mp3"
 	default:
-		return "06.mp3"
+		return "08.mp3"
 	}
-}
-
-// 获取枪目录
-func GetGunIndex() string {
-	uniqueMap := make(map[string]bool)
-	uniqueValues := []string{}
-
-	for _, value := range GunIndex {
-		if !uniqueMap[value] {
-			uniqueMap[value] = true
-			uniqueValues = append(uniqueValues, value)
-		}
-	}
-	result := strings.Join(uniqueValues, "\n")
-	return result
 }

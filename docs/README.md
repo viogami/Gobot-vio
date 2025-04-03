@@ -4,7 +4,9 @@
 
 纯go编写的机器人业务后端，bot取名为 **Vio** ，qq机器人的实现基于gocq提供的api，基于gocq的上报事件调用转发外部讯息并返回。
 
-其他平台也可在开发中，可参考现有逻辑。目前可以完成基于chatgpt聊天任务，部署在一个服务器可以多个平台共同调用。
+目前可以完成基于chatgpt聊天任务
+
+**目前正在重构，并且开发后台管理界面！**
 
 **如果你有想法和意见请提issue！这对我和bot都很重要！**
 **欢迎qq加群讨论：340961300**
@@ -23,7 +25,7 @@
   - [X] 猎杀对决枪声语音
   - [X] 群组管理
 
-## 写在前面/preface
+## 写在前面/Preface
 
 有部署聊天机器人的想法，但是我使用的国内服务器，而且服务器性能也一般，于是决定不用云服务器部署了，找个国外的Paas平台，把写的后端送上去就好了。
 
@@ -41,8 +43,6 @@ chatgpt调用：
 > 重要：本项目的qqbot的设计模式有重大弊端，需要重构。具体可查看server/websocket.go。逻辑为监听gocq的响应，而做出相应的回应，是线性的过程。若需要主动向gocq发出通信，或者一次响应需要触发多次gocq的api则无法实现。需要重构部分代码，目前属于搁置状态，可以扩充的只有类似一问一答这种模式。
 
 **2024/5更新**：目前做了一次重大项目重构，使整个项目耦合程度下降，命令通过一个commandList哈希表来控制。websocket的conn不传入业务层，而是向外不断返回一个消息体，最后交给外层的ws连接发送。整个项目更加明了易读。添加了config配置文件，统一管理环境变量的初始化。
-
-2025/4/1更新： 重大重构，基本相当于重写了一边，完善了项目架构，考虑了扩充和ws连接并发处理。
 
 ## 结构说明
 
@@ -66,7 +66,7 @@ chatgpt调用：
 
 - 完全遵循gocq文档，gocq/cqEvent文件夹中有其事件消息的全部结构体实现。通过创建一个命令哈希表 `map[string]func(params cmd_params))`，在事件处理函数中调用该函数，返回一个需要发送给gocq的消息体数组，每个消息体均可让gocq做出某一单一行为。
 - 使用go的websocket库创建和qqbot的ws连接，为基于gocq的qqbot的服务入口。
-- gocq的配置建议阅读我的[个人博客](http://viogami.me/index.php/blog/144/)
+- gocq的配置建议阅读我的[个人博客](http://viogami.tech/index.php/blog/144/)
 - 微信公众号不建议集成，因为公众号的后端需要连接微信官方的后端，用一个新后端通过http请求调用这个bot后端比较好。
 - tgbot多参考官方示例和已有项目，官方的机器人接口很完善
 - chatgpt的调用参考go的openai库文档即可，也很完善。注意调用api是无法进行联系上下文对话的，要实现上下文对话只有把历史消息都post给api，这显然是不现实的。
@@ -82,25 +82,11 @@ chatgpt调用：
 
 ### paas推荐
 
-对于
-
-- Cloudflare Workers
-- AirCode（国内团队做的）
-  它们侧重于
-
-> Fullstack Javascript Apps - Deploy and Host in Seconds
-
-对非 Nodejs 的后端参考意义不大。
-主要思路都是 Edge Network + Serverless Functions（函数代码在轻量级的 V8 沙盒中执行）
-
-- Fly.io
+- Heroku
+- Zeabur
 - Railway
 
- 这两需要绑信用卡，并且railway免费计划只有试用5$了
-
- 看重免费计划可以查询 [Free for dev](https://github.com/ripienaar/free-for-dev)中的列表.
-
-### 对于我/for me
+ 更多paas相关信息，可以查询 [Free for dev](https://github.com/ripienaar/free-for-dev)中的列表.
 
 Zeabur挺不错，国内社区，discord上回复也很即使，一键部署挺快的，github集成。
 zeabur上项目部署非常快,甚至不用写dockfile,而且对go项目有完整的支持,算是符合他们的口号:
@@ -109,7 +95,9 @@ zeabur上项目部署非常快,甚至不用写dockfile,而且对go项目有完�
 
 但是Zeabur每月5$，如果是聊天机器人，按量付费肯定是不够的。
 
-现在我用github学生包的heroku平台，**注册要关闭adguard，需要绑定国外银行卡，绑卡时建议关闭梯子**。
+Heroku只有欧洲和美国的部署点，但也是git集成，非常方便，现在我已经转移到了heroku，主要我有github学生包，可以白嫖heroku
+
+**heroku注册要关闭adguard，需要绑定国外银行卡，绑卡时建议关闭梯子**。
 
 ## Paas部署注意点
 
