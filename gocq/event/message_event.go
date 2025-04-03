@@ -68,23 +68,26 @@ func (m *MessageEvent) Handle() {
 
 func (m *MessageEvent) parseCommand(cqmsg cqCode.CQmsg) command.Command {
 	cmdStr := cqmsg.Text
-	r := command.CommandMap[cmdStr]
+	v, ok := command.CommandMap[cmdStr]
 
 	// 判断是否是私聊消息
 	if m.MessageType == "private" {
-		if r.GetInfo(2) == "private" || r.GetInfo(2) == "all" {
-			return r
+		if !ok {
+			return command.CommandMap["/chat"]
+		}
+		if v.GetInfo(2) == "private" || v.GetInfo(2) == "all" {
+			return v
 		}
 		return command.CommandMap["/chat"]
 	}
-	
+
 	// 判断是否是群聊消息
 	if m.MessageType == "group" && cqmsg.IsAtme(m.SelfID) {
-		if r == nil {
+		if !ok {
 			return command.CommandMap["/chat"]
 		}
-		if r.GetInfo(2) == "group" || r.GetInfo(2) == "all" {
-			return r
+		if v.GetInfo(2) == "group" || v.GetInfo(2) == "all" {
+			return v
 		}
 	}
 	return nil
