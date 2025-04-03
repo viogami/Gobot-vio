@@ -35,16 +35,16 @@ func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp map[
 		return nil, err
 	}
 	// 等待响应
-	var response map[string]interface{}
-	err = s.conn.ReadJSON(&response)
+	var r map[string]interface{}
+	err = s.conn.ReadJSON(&r)
 	if err != nil {
 		return nil, err
 	}
-	if response == nil {
+	if r == nil {
 		return nil, fmt.Errorf("response is nil")
 	}
 	slog.Info("调用gocq api成功", "action", action, "params", params)
-	return nil, nil
+	return r, nil
 }
 
 func (s *GocqSender) SendMsg(params SendMsgParams) {
