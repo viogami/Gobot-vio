@@ -3,9 +3,9 @@ package myopenai
 import (
 	"context"
 	"log/slog"
+	"os"
 
 	openai "github.com/sashabaranov/go-openai"
-	"github.com/viogami/Gobot-vio/config"
 )
 
 type ChatGPTService struct {
@@ -20,8 +20,8 @@ type ChatGPTService struct {
 
 func NewChatGPTService() *ChatGPTService {
 	s := new(ChatGPTService)
-	s.APIKey = config.EnvConst.ChatGPTAPIKey
-	s.URL_proxy = config.EnvConst.ChatGPTURL_proxy
+	s.APIKey = os.Getenv("ChatGPTAPIKey")
+	s.URL_proxy = os.Getenv("ChatGPTURL_proxy")
 	s.Role = openai.ChatMessageRoleUser
 	s.Character = "vio"
 	s.characterSetting = GPTpreset[s.Character]

@@ -16,6 +16,18 @@ type Event struct {
 	SelfID   int64  `json:"self_id"`
 }
 
+func IsEvent(data []byte) bool {
+	var t Event
+	if err := json.Unmarshal(data, &t); err != nil {
+		return false
+	}
+	// 验证必要的事件字段
+	if t.PostType == "" || t.Time == 0 || t.SelfID == 0 {
+		return false
+	}
+	return true
+}
+
 // 解析事件 JSON 数据
 func ParseEvent(data []byte) (IEvent, error) {
 	var t Event
@@ -49,6 +61,6 @@ func ParseEvent(data []byte) (IEvent, error) {
 		}
 		return e, nil
 	default:
-		return nil, fmt.Errorf("raw data: %s", string(data))
+		return nil, fmt.Errorf("解析事件失败,raw data: %s", string(data))
 	}
 }

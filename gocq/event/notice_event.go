@@ -1,8 +1,11 @@
 package event
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/viogami/Gobot-vio/gocq"
 )
@@ -57,7 +60,7 @@ func (n *NoticeEvent) Handle() {
 	opId := n.OperatorId
 	msgId := n.MessageId
 
-	sender := gocq.NewGocqSender()
+	sender := gocq.Instance.Sender
 	switch notice_type {
 	// 群成员增加
 	case "group_increase":
@@ -81,8 +84,23 @@ func (n *NoticeEvent) Handle() {
 		sender.SendMsg(params)
 	// 消息撤回
 	case "group_recall":
+		// 将撤回消息存储为有序列表中的JSON字符串
+		recallData, _ := json.Marshal(map[string]interface{}{
+			"message_id":  msgId,
+			"user_id":     userId,
+			"operator_id": opId,
+		})
 		// 储存撤回消息
-		gocq.GocqDataInstance.AddRecalledMsg(groupId, opId, msgId, userId)
+		client := gocq.Instance.RedisClient
+		// 使用RPUSH添加到群聊对应的撤回消息列表
+		key := fmt.Sprintf("%d", groupId)
+		err := client.RPush(context.Background(), key, string(recallData)).Err()
+		if err != nil {
+			slog.Error("Failed to store recalled message in redis", "error", err)
+			return
+		}
+		// 可选: 设置过期时间，例如3天后自动删除
+		client.Expire(context.Background(), key, 3*24*time.Hour)
 	}
 }
 

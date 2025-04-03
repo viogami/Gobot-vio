@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log/slog"
 
-	"github.com/viogami/Gobot-vio/gocq"
 	"github.com/viogami/Gobot-vio/gocq/command"
+	"github.com/viogami/Gobot-vio/gocq/cqCode"
 	"github.com/viogami/Gobot-vio/utils"
 )
 
@@ -45,7 +45,7 @@ func (m *MessageEvent) LogInfo() {
 }
 
 func (m *MessageEvent) Handle() {
-	cqmsg := gocq.ParseCQmsg(m.Message)
+	cqmsg := cqCode.ParseCQmsg(m.Message)
 	f := m.parseCommand(cqmsg)
 	if f == nil {
 		slog.Info("MessageEvent", "接受到普通群聊消息", m.Message)
@@ -66,7 +66,7 @@ func (m *MessageEvent) Handle() {
 	f.Execute(params)
 }
 
-func (m *MessageEvent) parseCommand(cqmsg gocq.CQmsg) command.Command {
+func (m *MessageEvent) parseCommand(cqmsg cqCode.CQmsg) command.Command {
 	cmdStr := cqmsg.Text
 	r := command.CommandMap[cmdStr]
 	if r == nil {

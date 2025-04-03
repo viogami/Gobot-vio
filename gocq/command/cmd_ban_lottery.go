@@ -9,7 +9,6 @@ import (
 )
 
 var maxDuration = 600 // 最大禁言时间
-
 type cmdBanLottery struct {
 	Command     string // 指令名称
 	Description string // 指令描述
@@ -17,7 +16,7 @@ type cmdBanLottery struct {
 }
 
 func (c *cmdBanLottery) Execute(params CommandParams) {
-	sender := gocq.NewGocqSender()
+	sender := gocq.Instance.Sender
 
 	duration, _ := rand.Int(rand.Reader, big.NewInt(int64(maxDuration)))
 	banParams := gocq.SendSetGroupBanParams{
@@ -36,7 +35,7 @@ func (c *cmdBanLottery) Execute(params CommandParams) {
 		AutoEscape:  false,
 	}
 	sender.SendMsg(msgParams)
-	slog.Info("执行指令:/禁言抽奖", "reply", reply)
+	slog.Info("执行指令:禁言抽奖", "reply", reply)
 }
 
 func (c *cmdBanLottery) GetInfo(index int) string {

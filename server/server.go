@@ -4,43 +4,43 @@ import (
 	"log/slog"
 	"net/http"
 
-	redis "github.com/go-redis/redis/v8"
+	redis "github.com/redis/go-redis/v9"
+	"github.com/viogami/Gobot-vio/gocq"
 )
 
 type Server struct {
 	Port  string
 	redis *redis.Client
+	gocq  *gocq.GocqServer
 }
 
-func (s *Server) httpOn() {
-	// 设置 /post 路径的 HTTP 处理函数
-	http.HandleFunc("/post", GptMsgHandle)
-}
-
-func (s *Server) wsOn(port string) {
+func (s *Server) Run() {
+	// /post 处理ai请求的路由
+	http.HandleFunc("/post", gptMsgHandle)
 	// 处理WebSocket请求的路由
-	http.HandleFunc("/ws", GocqWsHandle)
+	http.HandleFunc("/ws", handleWebSocket)
+
 	// 启动 Web 服务器监听 port 端口
-	err := http.ListenAndServe(":"+port, nil)
-	slog.Info("Server started", "port", port)
+	err := http.ListenAndServe(":"+s.Port, nil)
+	slog.Info("Server started", "port", s.Port)
 	if err != nil {
 		slog.Error("Error starting server:", "err", err)
 	}
 }
 
-func Run(port string) {
-	s := new(Server)
-	s.Port = port
-	// s.redis = redis.NewClient(&redis.Options{
-	// 	Addr:     "localhost:6379", // Redis 服务器地址和端口
-	// 	Password: "",               // Redis 密码，如果没有设置则为空
-	// 	DB:       0,               // Redis 数据库索引
-	// })
+func NewServer(port string, redisURL string) *Server {
+	if redisURL == "" {
+		slog.Error("REDIS_URL environment variable not set")
+	}
+	// 解析 Redis URL
+	opt, err := redis.ParseURL(redisURL)
+	if err != nil {
+		slog.Error("Failed to parse Redis URL:", "err", err)
+	}
 
-	// 启动 HTTP 服务器
-	s.httpOn()
-	// 启动 WebSocket 服务器
-	s.wsOn(port)
-	// 启动 Telegram Bot
-	// s.tgbotOn()
+	return &Server{
+		Port:  port,
+		redis: redis.NewClient(opt),
+		gocq:  gocq.NewGocqServer(redis.NewClient(opt)),
+	}
 }

@@ -1,7 +1,7 @@
-package AIServer
+package AI
 
 import (
-	openai "github.com/viogami/Gobot-vio/AIServer/openai"
+	openai "github.com/viogami/Gobot-vio/AI/openai"
 )
 
 type AIServer struct {

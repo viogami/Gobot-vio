@@ -6,13 +6,13 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/viogami/Gobot-vio/AIServer"
+	"github.com/viogami/Gobot-vio/AI"
 	"github.com/viogami/Gobot-vio/gocq"
 	"github.com/viogami/Gobot-vio/gocq/event"
 )
 
-// GptMsgHandle 处理POST请求
-func GptMsgHandle(w http.ResponseWriter, r *http.Request) {
+// gptMsgHandle 处理POST请求
+func gptMsgHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		// 获取表单数据
 		err := r.ParseForm()
@@ -28,15 +28,14 @@ func GptMsgHandle(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error:Don`t find the key:usermsg in the POST,maybe it`s a nil", http.StatusBadRequest)
 		}
 		// 调用ChatGPT API
-		gptResponse := AIServer.NewAIServer().ProcessMessage(postmsg)
+		gptResponse := AI.NewAIServer().ProcessMessage(postmsg)
 		fmt.Fprintln(w, gptResponse)
 	} else {
 		http.Error(w, "Error: wrong HTTP method:"+r.Method+",required POST.", http.StatusMethodNotAllowed)
 	}
 }
 
-// GocqWsHandle 处理WebSocket请求
-func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
+func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
@@ -44,27 +43,26 @@ func GocqWsHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println(err)
+		http.Error(w, "Could not open websocket connection", http.StatusBadRequest)
 		return
 	}
 	defer conn.Close()
 
-	// 创建一个GocqServer单例
-	gocq.GocqInstance = gocq.NewGocqServer(conn)
+	gocq.Instance.Sender = gocq.NewGocqSender(conn)
+
 	for {
 		// 从WebSocket连接读取消息
 		_, p, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println(err)
+			slog.Error("Error reading message from WebSocket:", "error", err)
 			return
 		}
 		// 处理接收到的事件
-		e, err := event.ParseEvent(p)
-		if err != nil {
-			slog.Warn("Received unknown event, maybe a api response:", "warning", err)
+		if event.IsEvent(p) {
+			e, _ := event.ParseEvent(p)
+			go e.LogInfo()
+			go e.Handle()
 			continue
 		}
-		go e.LogInfo()
-		go e.Handle()
 	}
 }

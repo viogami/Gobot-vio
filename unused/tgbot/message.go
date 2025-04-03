@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	chatgpt "github.com/viogami/Gobot-vio/AIServer/openai"
+	chatgpt "github.com/viogami/Gobot-vio/AI/openai"
 )
 
 // 检查当前是否应该发送消息

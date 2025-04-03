@@ -1,6 +1,6 @@
 package gocq
 
-type GocqResp struct {
+type GocqApiResp struct {
 	Status  string         `json:"status"`
 	Retcode int            `json:"retcode"`
 	Msg     string         `json:"msg"`

@@ -13,6 +13,8 @@ type cmdHelp struct {
 }
 
 func (c *cmdHelp) Execute(params CommandParams) {
+	sender := gocq.Instance.Sender
+
 	reply := ""
 	if params.MessageType == "group" {
 		reply = c.groupReply()
@@ -26,8 +28,8 @@ func (c *cmdHelp) Execute(params CommandParams) {
 		Message:     reply,
 		AutoEscape:  false,
 	}
-	slog.Info("执行指令:/help", "reply", reply)
-	sender := gocq.NewGocqSender()
+	slog.Info("执行指令:help", "reply", reply)
+
 	sender.SendMsg(msgParams)
 }
 

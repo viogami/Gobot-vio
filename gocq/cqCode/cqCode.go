@@ -1,4 +1,4 @@
-package gocq
+package cqCode
 
 import (
 	"fmt"

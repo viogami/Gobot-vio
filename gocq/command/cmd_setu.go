@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/viogami/Gobot-vio/gocq"
+	"github.com/viogami/Gobot-vio/gocq/cqCode"
 	"github.com/viogami/Gobot-vio/utils"
 )
 
@@ -20,8 +21,8 @@ func (c *cmdSetu) Execute(params CommandParams) {
 		R18:  0,
 		Num:  1,
 	})
-	slog.Info("执行指令:/涩图", "reply", reply)
-	sender := gocq.NewGocqSender()
+	slog.Info("执行指令:来份涩图", "reply", reply)
+	sender := gocq.Instance.Sender
 
 	if params.MessageType == "private" {
 		msgParams := gocq.SendPrivateForwardMsgParams{
@@ -51,14 +52,14 @@ func (c *cmdSetu) GetInfo(index int) string {
 	return ""
 }
 
-func (c *cmdSetu) getSetuReply(params gocq.SendSetuMsgParams) []gocq.CQCode {
-	reply := []gocq.CQCode{
+func (c *cmdSetu) getSetuReply(params gocq.SendSetuMsgParams) []cqCode.CQCode {
+	reply := []cqCode.CQCode{
 		{
 			Type: "node",
 			Data: map[string]interface{}{
 				"name": "LV",
 				"uin":  "1524175162",
-				"content": []gocq.CQCode{
+				"content": []cqCode.CQCode{
 					{
 						Type: "text",
 						Data: map[string]any{
@@ -69,7 +70,7 @@ func (c *cmdSetu) getSetuReply(params gocq.SendSetuMsgParams) []gocq.CQCode {
 			},
 		},
 	}
-	content := []gocq.CQCode{}
+	content := []cqCode.CQCode{}
 	setuInfo := utils.GetSetu(params.Tags, params.R18, params.Num)
 	if setuInfo.Error != "" {
 		slog.Error("随机色图api调用出错", "error", setuInfo.Error)
@@ -80,12 +81,12 @@ func (c *cmdSetu) getSetuReply(params gocq.SendSetuMsgParams) []gocq.CQCode {
 		return nil
 	}
 	for _, data := range setuInfo.Data {
-		content = append(content, gocq.NewCQCode("image", map[string]any{
+		content = append(content, cqCode.NewCQCode("image", map[string]any{
 			"file": data.Urls.Regular,
 			"url":  data.Urls.Regular,
 		}))
 	}
-	reply[0].Data["content"] = append(reply[0].Data["content"].([]gocq.CQCode), content...)
+	reply[0].Data["content"] = append(reply[0].Data["content"].([]cqCode.CQCode), content...)
 	return reply
 }
 

@@ -1,5 +1,7 @@
 package gocq
 
+import "github.com/viogami/Gobot-vio/gocq/cqCode"
+
 type SendMsgParams struct {
 	MessageType string `json:"message_type"` // 消息类型, 支持 private、group , 分别对应私聊、群组, 如不传入, 则根据传入的 *_id 参数判断
 	UserID      int64  `json:"user_id"`      // 对方 QQ 号 ( 消息类型为 private 时需要 )
@@ -19,9 +21,10 @@ func (params SendMsgParams) toMap() map[string]interface{} {
 }
 
 type SendGroupForwardMsgParams struct {
-	GroupID int64    `json:"group_id"` // 群号
-	Message []CQCode `json:"messages"` // 消息列表
+	GroupID int64           `json:"group_id"` // 群号
+	Message []cqCode.CQCode `json:"messages"` // 消息列表
 }
+
 func (params SendGroupForwardMsgParams) toMap() map[string]interface{} {
 	return map[string]interface{}{
 		"group_id": params.GroupID,
@@ -30,9 +33,10 @@ func (params SendGroupForwardMsgParams) toMap() map[string]interface{} {
 }
 
 type SendPrivateForwardMsgParams struct {
-	UserID  int64    `json:"user_id"`  // 对方 QQ 号
-	Message []CQCode `json:"messages"` // 消息列表
+	UserID  int64           `json:"user_id"`  // 对方 QQ 号
+	Message []cqCode.CQCode `json:"messages"` // 消息列表
 }
+
 func (params SendPrivateForwardMsgParams) toMap() map[string]interface{} {
 	return map[string]interface{}{
 		"user_id":  params.UserID,
@@ -51,6 +55,7 @@ type SendSetGroupBanParams struct {
 	UserID   int64  `json:"user_id"`  // 对方 QQ 号
 	Duration uint32 `json:"duration"` // 禁言时长, 单位秒, 0 为取消禁言,默认30*60
 }
+
 func (params SendSetGroupBanParams) toMap() map[string]interface{} {
 	return map[string]interface{}{
 		"group_id": params.GroupID,

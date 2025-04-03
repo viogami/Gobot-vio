@@ -1,6 +1,9 @@
 package command
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"log/slog"
 
 	"github.com/viogami/Gobot-vio/gocq"
@@ -13,20 +16,46 @@ type cmdGetRecall struct {
 }
 
 func (c *cmdGetRecall) Execute(params CommandParams) {
-	sender := gocq.NewGocqSender()
-	// recallMsgId,recallOpId,recallUserId := gocq.GocqDataInstance.GetRecalledMsg(params.GroupId)
+	client := gocq.Instance.RedisClient
+	sender := gocq.Instance.Sender
+	// 从 Redis 中获取上一次撤回的消息 ID
+	key := fmt.Sprintf("%d", params.GroupId)
+	message, err := client.LRange(context.Background(), key, 1, -1).Result()
+	if err != nil {
+		slog.Error("获取上一次撤回的消息 ID 失败", "error", err)
+		return
+	}
+	var res map[string]interface{}
+	if err := json.Unmarshal([]byte(message[0]), &res); err != nil {
+		slog.Error("解析上一次撤回的消息 ID 失败", "error", err)
+		return
+	}
+	// 获取消息 ID 和消息内容
+	messageId := res["message_id"].(int32)
+	operatorId := res["operator_id"]
+	userId := res["user_id"]
 
-	reply := "coming soon"
+	resp := sender.GetMsg(messageId)
+	
 	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
 		UserID:      params.UserId,
-		Message:     reply,
+		Message:     resp["message"].(string),
 		AutoEscape:  false,
 	}
-	slog.Info("执行指令:/撤回了什么", "reply", reply)
-	
 	sender.SendMsg(msgParams)
+
+	reply := fmt.Sprintf("时间:%d,发送者:%d,撤回人:%d", resp["time"],userId, operatorId)
+	msgParams = gocq.SendMsgParams{
+		MessageType: params.MessageType,
+		GroupID:     params.GroupId,
+		UserID:      params.UserId,
+		Message:     resp["message"].(string),
+		AutoEscape:  false,
+	}
+	sender.SendMsg(msgParams)
+	slog.Info("执行指令:撤回了什么", "reply", reply)
 }
 
 func (c *cmdGetRecall) GetInfo(index int) string {
