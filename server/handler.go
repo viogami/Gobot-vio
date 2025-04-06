@@ -61,14 +61,17 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			// 检查是否为 API 响应
-			var rawMsg map[string]any
+			var rawMsg gocq.RHttpResq
 			if err := json.Unmarshal(p, &rawMsg); err == nil {
-				if echo, ok := rawMsg["echo"].(string); ok {
-					// 分发到对应的响应 channel
-					if ch, ok := gocq.Instance.ResponseMap.LoadAndDelete(echo); ok {
-						ch.(chan map[string]any) <- rawMsg
-						continue
-					}
+				if rawMsg.Status != "ok" {
+					slog.Warn("Received error response from API", "wording", string(rawMsg.Wording))
+					continue
+				}
+				// 分发到对应的响应 channel
+				echo := rawMsg.Echo
+				if ch, ok := gocq.Instance.ResponseMap.LoadAndDelete(echo); ok {
+					ch.(chan gocq.RHttpResq) <- rawMsg
+					continue
 				}
 			}
 
