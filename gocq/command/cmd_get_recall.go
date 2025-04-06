@@ -27,13 +27,13 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	sender := gocq.Instance.Sender
 	// 从 Redis 中获取上一次撤回的消息 ID
 	key := fmt.Sprintf("%d", params.GroupId)
-	record, err := client.LRange(context.Background(), key, 1, -1).Result()
+	record, err := client.RPop(context.Background(), key).Result()
 	if err != nil {
 		slog.Error("获取上一次撤回的消息 ID 失败", "error", err)
 		return
 	}
 	redisData := new(redisRecord)
-	if err := json.Unmarshal([]byte(record[0]), &redisData); err != nil {
+	if err := json.Unmarshal([]byte(record), &redisData); err != nil {
 		slog.Error("解析上一次撤回的消息 ID 失败", "error", err)
 		return
 	}
