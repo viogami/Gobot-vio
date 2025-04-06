@@ -31,7 +31,7 @@ golang编写的机器人业务后端，bot取名为 **Vio** ，qq机器人的实
 
 - gocq可以通过[官方途径](https://github.com/Mrs4s/go-cqhttp)部署。gocq提供了链接指定bot的qq号，本项目只提供了bot的消息处理逻辑。
 - qsign服务器可以通过docker拉取，建议拉取新更新的，请使用txlib 9.x.x版本和手表协议，不然容易报错低版本。
-- 更多细节可以参考我的[个人博客](http://viogami.me/index.php/blog/144/)
+- 更多细节可以参考我的[个人博客](http://viogami.tech/index.php/blog/144/)
 
 ### 部署到paas平台
 
