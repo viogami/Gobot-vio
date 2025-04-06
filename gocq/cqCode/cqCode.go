@@ -36,7 +36,7 @@ func ParseCQmsg(input string) CQmsg {
 	for _, match := range matches {
 		cqCode := CQCode{
 			Type: match[1],
-			Data: make(map[string]interface{}),
+			Data: make(map[string]any),
 		}
 		if match[2] != "" && match[3] != "" {
 			// 如果有参数，将参数添加到 map 中

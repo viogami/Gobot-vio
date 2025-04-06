@@ -70,6 +70,6 @@ func newCmdHelp() *cmdHelp {
 	return &cmdHelp{
 		Command:     "help",
 		Description: "查看指令列表",
-		CmdType:     "all",
+		CmdType:     COMMAND_TYPE_ALL,
 	}
 }

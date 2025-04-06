@@ -27,14 +27,14 @@ func (c *cmdHuntSound) Execute(params CommandParams) {
 		AutoEscape:  false,
 	}
 	slog.Info("执行指令:打一枪听听", "reply", reply)
-	
+
 	sender.SendMsg(msgParams)
 }
 
 func (c *cmdHuntSound) cqReply(soundUrl string) string {
 	ret := cqCode.CQCode{
 		Type: "record",
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"file": soundUrl,
 		},
 	}
@@ -57,6 +57,6 @@ func newCmdHuntSound() *cmdHuntSound {
 	return &cmdHuntSound{
 		Command:     "打一枪听听",
 		Description: "随机猎杀对决枪声，固定5米",
-		CmdType:     "all",
+		CmdType:     COMMAND_TYPE_ALL,
 	}
 }

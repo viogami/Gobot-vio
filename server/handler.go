@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -50,19 +51,44 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	gocq.Instance.Sender = gocq.NewGocqSender(conn)
 
-	for {
-		// 从WebSocket连接读取消息
-		_, p, err := conn.ReadMessage()
-		if err != nil {
-			slog.Error("Error reading message from WebSocket:", "error", err)
-			return
+	// 启动一个 goroutine 读取 WebSocket 消息并发送到队列
+	go func() {
+		defer close(gocq.Instance.MsgQueue) // 确保在退出时关闭消息队列
+		for {
+			_, p, err := conn.ReadMessage()
+			if err != nil {
+				slog.Error("Error reading message from WebSocket:", "error", err)
+				return
+			}
+			// 检查是否为 API 响应
+			var rawMsg gocq.RHttpResq
+			if err := json.Unmarshal(p, &rawMsg); err == nil {
+				// 分发到对应的响应 channel
+				echo := rawMsg.Echo
+				if ch, ok := gocq.Instance.ResponseMap.LoadAndDelete(echo); ok {
+					ch.(chan gocq.RHttpResq) <- rawMsg
+					continue
+				}
+			}
+
+			gocq.Instance.MsgQueue <- p
 		}
-		// 处理接收到的事件
-		if event.IsEvent(p) {
-			e, _ := event.ParseEvent(p)
+	}()
+
+	// 主循环处理消息队列中的消息
+	for msg := range gocq.Instance.MsgQueue {
+		// 判断是否为事件消息
+		if event.IsEvent(msg) {
+			e, err := event.ParseEvent(msg)
+			if err != nil {
+				slog.Warn("Failed to parse event", "error", err)
+				continue
+			}
 			go e.LogInfo()
 			go e.Handle()
-			continue
+		} else {
+			// 处理非事件消息（如 API 响应）
+			slog.Warn("Received non-event message", "message", string(msg))
 		}
 	}
 }

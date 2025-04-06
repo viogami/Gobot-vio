@@ -35,7 +35,7 @@ func (c *cmdBanLottery) Execute(params CommandParams) {
 		AutoEscape:  false,
 	}
 	sender.SendMsg(msgParams)
-	slog.Info("执行指令:禁言抽奖", "reply", reply)
+	slog.Info("执行指令:禁言抽奖")
 }
 
 func (c *cmdBanLottery) GetInfo(index int) string {
@@ -54,6 +54,6 @@ func newCmdBanLottery() *cmdBanLottery {
 	return &cmdBanLottery{
 		Command:     "禁言抽奖",
 		Description: "禁言抽奖0~600秒",
-		CmdType:     "group",
+		CmdType:     COMMAND_TYPE_GROUP,
 	}
 }

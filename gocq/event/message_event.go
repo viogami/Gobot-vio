@@ -68,25 +68,32 @@ func (m *MessageEvent) Handle() {
 
 func (m *MessageEvent) parseCommand(cqmsg cqCode.CQmsg) command.Command {
 	cmdStr := cqmsg.Text
-	r := command.CommandMap[cmdStr]
-	if r == nil {
+	v, ok := command.CommandMap[cmdStr]
+
+	t := command.COMMAND_INFO_CMD_TYPE
+	t_private := command.COMMAND_TYPE_PRIVATE
+	t_group := command.COMMAND_TYPE_GROUP
+	t_all := command.COMMAND_TYPE_ALL
+	// 判断是否是私聊消息
+	if m.MessageType == t_private {
+		if !ok {
+			return command.CommandMap["/chat"]
+		}
+		if v.GetInfo(t) == t_private || v.GetInfo(t) == t_all {
+			return v
+		}
 		return command.CommandMap["/chat"]
 	}
-	// 判断是否是私聊消息
-	if m.MessageType == "private" {
-		if r.GetInfo(2) == "private" || r.GetInfo(2) == "all" {
-			return r
-		}
-	}
+
 	// 判断是否是群聊消息
-	if m.MessageType == "group" && cqmsg.IsAtme(m.SelfID) {
-		if r.GetInfo(2) == "group" || r.GetInfo(2) == "all" {
-			return r
+	if m.MessageType == t_group && cqmsg.IsAtme(m.SelfID) {
+		if !ok {
+			return command.CommandMap["/chat"]
+		}
+		if v.GetInfo(t) == t_group || v.GetInfo(t) == t_all {
+			return v
 		}
 	}
-	// 正则表达式匹配是否是命令格式的消息
-	// commandPattern := regexp.MustCompile(`^/([^ ]+)`)
-	// cmdStr = commandPattern.FindString(cqmsg.Text)
 	return nil
 }
 

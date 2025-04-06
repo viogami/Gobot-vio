@@ -8,8 +8,8 @@ import (
 
 func main() {
 	port := os.Getenv("PORT")
-	redisURL := os.Getenv("REDIS_URL")
+	redisURL := os.Getenv("REDISCLOUD_URL")
 	s := server.NewServer(port, redisURL)
-	
+
 	s.Run()
 }

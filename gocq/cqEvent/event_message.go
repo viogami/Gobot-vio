@@ -9,7 +9,7 @@ import (
 // 当前使用的是string形式，修改请到gocq的config文件中改变上报属性
 type Message struct {
 	// Type string      `json:"type"`
-	// Data interface{} `json:"data"`
+	// Data any `json:"data"`
 }
 type AtData struct {
 	QQ int64 `json:"qq"`
@@ -65,7 +65,7 @@ type GroupMessage struct {
 	Anonymous   Anonymous `json:"anonymous"`
 }
 
-func Get_msg_info(p []byte, msgType string) interface{} {
+func Get_msg_info(p []byte, msgType string) any {
 	var privateMessage PrivateMessage
 	var groupMessage GroupMessage
 	switch msgType {
@@ -89,8 +89,8 @@ func Get_msg_info(p []byte, msgType string) interface{} {
 // @params
 // reply	message	要回复的内容	不回复
 // auto_escape	boolean	消息内容是否作为纯文本发送 ( 即不解析 CQ 码 ) , 只在 reply 字段是字符串时有效	不转义
-func PrivateMsgFastOperate(reply string, auto_escape bool) map[string]interface{} {
-	sendMessage := map[string]interface{}{
+func PrivateMsgFastOperate(reply string, auto_escape bool) map[string]any {
+	sendMessage := map[string]any{
 		"reply":       reply,
 		"auto_escape": auto_escape,
 	}
@@ -106,8 +106,8 @@ func PrivateMsgFastOperate(reply string, auto_escape bool) map[string]interface{
 // kick	boolean	把发送者踢出群组 ( 需要登录号权限足够 ) , 不拒绝此人后续加群请求, 发送者是匿名用户时无效	不踢出
 // ban	boolean	禁言该消息发送者, 对匿名用户也有效	不禁言
 // ban_duration	number	若要执行禁言操作时的禁言时长	30 分钟
-func GroupMsgFastOperate(reply string, auto_escape bool, at_sender bool, delete bool, kick bool, ban bool, ban_duration int) map[string]interface{} {
-	sendMessage := map[string]interface{}{
+func GroupMsgFastOperate(reply string, auto_escape bool, at_sender bool, delete bool, kick bool, ban bool, ban_duration int) map[string]any {
+	sendMessage := map[string]any{
 		"reply":        reply,
 		"auto_escape":  auto_escape,
 		"at_sender":    at_sender,

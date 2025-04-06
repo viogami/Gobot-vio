@@ -56,7 +56,7 @@ func (c *cmdSetuR18) getSetuReply(params gocq.SendSetuMsgParams) []cqCode.CQCode
 	reply := []cqCode.CQCode{
 		{
 			Type: "node",
-			Data: map[string]interface{}{
+			Data: map[string]any{
 				"name": "LV",
 				"uin":  "1524175162",
 				"content": []cqCode.CQCode{
@@ -94,6 +94,6 @@ func newCmdSetuR18() *cmdSetuR18 {
 	return &cmdSetuR18{
 		Command:     "来份r18涩图",
 		Description: "随机r18涩图,规则同上",
-		CmdType:     "all",
+		CmdType:     COMMAND_TYPE_ALL,
 	}
 }

@@ -7,7 +7,14 @@ import (
 	"log/slog"
 
 	"github.com/viogami/Gobot-vio/gocq"
+	"github.com/viogami/Gobot-vio/utils"
 )
+
+type redisRecord struct {
+	MessageId  int32       `json:"message_id"`
+	OperatorId json.Number `json:"operator_id"`
+	UserId     json.Number `json:"user_id"`
+}
 
 type cmdGetRecall struct {
 	Command     string // 指令名称
@@ -20,42 +27,34 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	sender := gocq.Instance.Sender
 	// 从 Redis 中获取上一次撤回的消息 ID
 	key := fmt.Sprintf("%d", params.GroupId)
-	message, err := client.LRange(context.Background(), key, 1, -1).Result()
+	record, err := client.RPop(context.Background(), key).Result()
 	if err != nil {
 		slog.Error("获取上一次撤回的消息 ID 失败", "error", err)
 		return
 	}
-	var res map[string]interface{}
-	if err := json.Unmarshal([]byte(message[0]), &res); err != nil {
+	redisData := new(redisRecord)
+	if err := json.Unmarshal([]byte(record), &redisData); err != nil {
 		slog.Error("解析上一次撤回的消息 ID 失败", "error", err)
 		return
 	}
 	// 获取消息 ID 和消息内容
-	messageId := res["message_id"].(int32)
-	operatorId := res["operator_id"]
-	userId := res["user_id"]
+	messageId := redisData.MessageId
+	userId := redisData.UserId
+	operatorId := redisData.OperatorId
 
 	resp := sender.GetMsg(messageId)
-	
+	time := utils.Time2Str(resp["time"])
+
+	reply := fmt.Sprintf("撤回时间:%s\n发送者:%s\n撤回者:%s\n消息内容:%s", time, userId, operatorId, resp["message"])
 	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
 		UserID:      params.UserId,
-		Message:     resp["message"].(string),
+		Message:     reply,
 		AutoEscape:  false,
 	}
 	sender.SendMsg(msgParams)
-
-	reply := fmt.Sprintf("时间:%d,发送者:%d,撤回人:%d", resp["time"],userId, operatorId)
-	msgParams = gocq.SendMsgParams{
-		MessageType: params.MessageType,
-		GroupID:     params.GroupId,
-		UserID:      params.UserId,
-		Message:     resp["message"].(string),
-		AutoEscape:  false,
-	}
-	sender.SendMsg(msgParams)
-	slog.Info("执行指令:撤回了什么", "reply", reply)
+	slog.Info("执行指令:撤回了什么")
 }
 
 func (c *cmdGetRecall) GetInfo(index int) string {
@@ -74,6 +73,6 @@ func newCmdGetRecall() *cmdGetRecall {
 	return &cmdGetRecall{
 		Command:     "撤回了什么",
 		Description: "获取上一条撤回消息",
-		CmdType:     "group",
+		CmdType:     COMMAND_TYPE_GROUP,
 	}
 }
