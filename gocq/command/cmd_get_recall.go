@@ -7,6 +7,7 @@ import (
 	"log/slog"
 
 	"github.com/viogami/Gobot-vio/gocq"
+	"github.com/viogami/Gobot-vio/utils"
 )
 
 type redisRecord struct {
@@ -38,12 +39,13 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	}
 	// 获取消息 ID 和消息内容
 	messageId := redisData.MessageId
-	operatorId := redisData.OperatorId
 	userId := redisData.UserId
+	operatorId := redisData.OperatorId
 
 	resp := sender.GetMsg(messageId)
+	time := utils.TimeToStr(resp["time"])
 
-	reply := fmt.Sprintf("时间:%d\n发送者:%s\n撤回者:%s\n消息内容:%s", resp["time"], userId, operatorId, resp["message"])
+	reply := fmt.Sprintf("时间:%d\n发送者:%s\n撤回者:%s\n消息内容:%s", time, userId, operatorId, resp["message"])
 	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
