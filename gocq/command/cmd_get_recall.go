@@ -9,6 +9,12 @@ import (
 	"github.com/viogami/Gobot-vio/gocq"
 )
 
+type redisRecord struct {
+	MessageId  int32 `json:"message_id"`
+	OperatorId int32 `json:"operator_id"`
+	UserId     int32 `json:"user_id"`
+}
+
 type cmdGetRecall struct {
 	Command     string // 指令名称
 	Description string // 指令描述
@@ -20,20 +26,20 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	sender := gocq.Instance.Sender
 	// 从 Redis 中获取上一次撤回的消息 ID
 	key := fmt.Sprintf("%d", params.GroupId)
-	message, err := client.LRange(context.Background(), key, 1, -1).Result()
+	record, err := client.LRange(context.Background(), key, 1, -1).Result()
 	if err != nil {
 		slog.Error("获取上一次撤回的消息 ID 失败", "error", err)
 		return
 	}
-	var res map[string]any
-	if err := json.Unmarshal([]byte(message[0]), &res); err != nil {
+	redisData := new(redisRecord)
+	if err := json.Unmarshal([]byte(record[0]), &redisData); err != nil {
 		slog.Error("解析上一次撤回的消息 ID 失败", "error", err)
 		return
 	}
 	// 获取消息 ID 和消息内容
-	messageId := int32(res["message_id"].(float64))
-	operatorId := int32(res["operator_id"].(float64))
-	userId := int32(res["user_id"].(float64))
+	messageId := redisData.MessageId
+	operatorId := redisData.OperatorId
+	userId := redisData.UserId
 
 	resp := sender.GetMsg(messageId)
 
@@ -46,7 +52,7 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	}
 	sender.SendMsg(msgParams)
 
-	reply := fmt.Sprintf("时间:%d,发送者:%d,撤回人:%d", resp["time"], userId, operatorId)
+	reply := fmt.Sprintf("时间:%d,发送者:%d,撤回人:%d", resp["sender"].(map[string]any)["time"], userId, operatorId)
 	msgParams = gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
