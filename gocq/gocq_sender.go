@@ -1,7 +1,6 @@
 package gocq
 
 import (
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"sync"
@@ -23,7 +22,7 @@ func NewGocqSender(conn *websocket.Conn) *GocqSender {
 	}
 }
 
-func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp map[string]any, err error) {
+func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp RHttpResq, err error) {
 	s.writeMutex.Lock()
 
 	// 生成唯一echo值
@@ -46,17 +45,17 @@ func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp map[
 
 	if err != nil {
 		Instance.ResponseMap.Delete(echoValue)
-		return nil, err
+		return RHttpResq{}, err
 	}
 
 	// 等待响应
 	select {
 	case resp := <-responseChan:
 		slog.Info("收到api响应", "response", resp)
-		return resp, nil
+		return RHttpResq{}, nil
 	case <-time.After(5 * time.Second): // 超时时间
 		Instance.ResponseMap.Delete(echoValue)
-		return nil, fmt.Errorf("等待响应超时")
+		return RHttpResq{}, fmt.Errorf("等待响应超时")
 	}
 }
 
@@ -110,24 +109,17 @@ func (s *GocqSender) SetGroupBan(params SendSetGroupBanParams) {
 	}
 }
 
-func (s *GocqSender) GetMsg(msgid int32) RGetMsg {
+func (s *GocqSender) GetMsg(msgid int32) map[string]any {
 	action := "get_msg"
 	params := map[string]any{
 		"message_id": msgid,
 	}
 
-	rGetMsg := RGetMsg{}
-
 	resp, err := s.sendToGocq(action, params)
 	if err != nil {
 		slog.Error("获取消息失败", "error", err)
-		return RGetMsg{}
+		return nil
 	}
 
-	err = json.Unmarshal(resp["data"].([]byte), &rGetMsg)
-	if err != nil {
-		slog.Error("解析消息失败", "error", err)
-		return RGetMsg{}
-	}
-	return rGetMsg
+	return resp.Data
 }

@@ -43,17 +43,8 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 
 	resp := sender.GetMsg(messageId)
 
+	reply := fmt.Sprintf("时间:%d\n发送者:%s\n撤回者:%s\n消息内容:%s", resp["time"], userId, operatorId, resp["message"])
 	msgParams := gocq.SendMsgParams{
-		MessageType: params.MessageType,
-		GroupID:     params.GroupId,
-		UserID:      params.UserId,
-		Message:     fmt.Sprintf("撤回的消息:%s", resp.Message),
-		AutoEscape:  false,
-	}
-	sender.SendMsg(msgParams)
-
-	reply := fmt.Sprintf("时间:%d,发送者:%d,撤回人:%d", resp.Sender.Time, userId, operatorId)
-	msgParams = gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
 		UserID:      params.UserId,
