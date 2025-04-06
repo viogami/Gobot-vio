@@ -3,7 +3,6 @@ package gocq
 import (
 	"fmt"
 	"log/slog"
-	"net"
 	"sync"
 	"time"
 
@@ -36,51 +35,28 @@ func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp map[
 		"echo":   echoValue, // 添加echo字段
 	}
 
+	// 创建一个channel用于接收响应
+	responseChan := make(chan map[string]any, 1)
+	Instance.ResponseMap.Store(echoValue, responseChan)
+
 	// 发送请求
 	err = s.conn.WriteJSON(messageSend)
 	s.writeMutex.Unlock() // 发送后立即释放锁，允许其他请求发送
 
 	if err != nil {
+		Instance.ResponseMap.Delete(echoValue)
 		return nil, err
 	}
 
-	// 设置超时时间
-	deadline := time.Now().Add(5 * time.Second)
-
-	// 循环等待匹配echo的响应
-	for time.Now().Before(deadline) {
-		// 设置读取超时
-		err = s.conn.SetReadDeadline(time.Now().Add(500 * time.Millisecond))
-		if err != nil {
-			return nil, err
-		}
-
-		var r map[string]any
-		err = s.conn.ReadJSON(&r)
-
-		// 读取超时，继续循环
-		if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
-			continue
-		}
-
-		// 其他错误
-		if err != nil {
-			_ = s.conn.SetReadDeadline(time.Time{}) // 重置超时
-			return nil, err
-		}
-
-		// 检查是否为我们的响应
-		if echo, ok := r["echo"].(string); ok && echo == echoValue {
-			_ = s.conn.SetReadDeadline(time.Time{}) // 重置超时
-			slog.Info("调用gocq api成功", "action", action, "params", params)
-			return r, nil
-		}
+	// 等待响应
+	select {
+	case resp := <-responseChan:
+		return resp, nil
+	case <-time.After(5 * time.Second): // 超时时间
+		Instance.ResponseMap.Delete(echoValue)
+		return nil, fmt.Errorf("等待响应超时")
 	}
-
-	_ = s.conn.SetReadDeadline(time.Time{}) // 重置超时
-	return nil, fmt.Errorf("等待响应超时")
 }
-
 func (s *GocqSender) SendMsg(params SendMsgParams) {
 	action := "send_msg"
 
