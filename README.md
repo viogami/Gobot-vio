@@ -3,7 +3,7 @@
 ![Go Reference](https://pkg.go.dev/badge/github.com/go-telegram-bot-api/telegram-bot-api/v5.svg)
 ![viogo文档](https://img.shields.io/badge/version-1.0-violet)
 
-<p align="center"><a href="https://viogami.github.io/Gobot-vio/">中文文档</a> • <a href="#快速开始">快速开始</a> </p>
+<p align="center"><a href="https://viogami.github.io/VioGo/">中文文档</a> • <a href="#快速开始">快速开始</a> </p>
 
 golang编写的机器人业务后端，bot取名为 **Vio** ，qq机器人的实现基于gocq提供的api，监听gocq的上报事件调用转发外部讯息并返回。
 
