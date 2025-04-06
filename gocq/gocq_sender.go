@@ -36,7 +36,7 @@ func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp RHtt
 	}
 
 	// 创建一个channel用于接收响应
-	responseChan := make(chan map[string]any, 1)
+	responseChan := make(chan RHttpResq, 1)
 	Instance.ResponseMap.Store(echoValue, responseChan)
 
 	// 发送请求
@@ -52,7 +52,7 @@ func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp RHtt
 	select {
 	case resp := <-responseChan:
 		slog.Info("收到api响应", "response", resp)
-		return RHttpResq{}, nil
+		return resp, nil
 	case <-time.After(5 * time.Second): // 超时时间
 		Instance.ResponseMap.Delete(echoValue)
 		return RHttpResq{}, fmt.Errorf("等待响应超时")
