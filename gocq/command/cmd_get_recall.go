@@ -10,9 +10,9 @@ import (
 )
 
 type redisRecord struct {
-	MessageId  int32 `json:"message_id"`
-	OperatorId int64 `json:"operator_id"`
-	UserId     int64 `json:"user_id"`
+	MessageId  int32       `json:"message_id"`
+	OperatorId json.Number `json:"operator_id"`
+	UserId     json.Number `json:"user_id"`
 }
 
 type cmdGetRecall struct {
