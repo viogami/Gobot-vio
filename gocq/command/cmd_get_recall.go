@@ -43,9 +43,9 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	operatorId := redisData.OperatorId
 
 	resp := sender.GetMsg(messageId)
-	time := utils.TimeToStr(resp["time"])
+	time := utils.Time2Str(resp["time"])
 
-	reply := fmt.Sprintf("时间:%d\n发送者:%s\n撤回者:%s\n消息内容:%s", time, userId, operatorId, resp["message"])
+	reply := fmt.Sprintf("撤回时间:%s\n发送者:%s\n撤回者:%s\n消息内容:%s", time, userId, operatorId, resp["message"])
 	msgParams := gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,

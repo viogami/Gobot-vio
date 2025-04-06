@@ -3,11 +3,10 @@ package utils
 import "time"
 
 const (
-	TIME_FORMAT  = "2006-01-02 15:04:05"
-	TIME_FORMAT2 = "2006-01-02 15:04:05.000"
+	TIME_FORMAT = "2006-01-02 15:04:05"
 )
 
-func TimeToStr(t any) string {
+func Time2Str(t any) string {
 	if t == nil {
 		return ""
 	}
