@@ -90,7 +90,7 @@ func (m *MessageEvent) parseCommand(cqmsg cqCode.CQmsg) command.Command {
 		if !ok {
 			return command.CommandMap["/chat"]
 		}
-		if v.GetInfo(t) == t_private || v.GetInfo(t) == t_all {
+		if v.GetInfo(t) == t_group || v.GetInfo(t) == t_all {
 			return v
 		}
 	}
