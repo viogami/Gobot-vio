@@ -51,7 +51,7 @@ func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp map[
 	// 等待响应
 	select {
 	case resp := <-responseChan:
-		slog.Info("收到api响应","response", resp)
+		slog.Info("收到api响应", "response", resp)
 		return resp, nil
 	case <-time.After(5 * time.Second): // 超时时间
 		Instance.ResponseMap.Delete(echoValue)
@@ -109,7 +109,7 @@ func (s *GocqSender) SetGroupBan(params SendSetGroupBanParams) {
 	}
 }
 
-func (s *GocqSender) GetMsg(msgid int32) map[string]any {
+func (s *GocqSender) GetMsg(msgid int32) RGetMsg {
 	action := "get_msg"
 	params := map[string]any{
 		"message_id": msgid,
@@ -118,7 +118,17 @@ func (s *GocqSender) GetMsg(msgid int32) map[string]any {
 	resp, err := s.sendToGocq(action, params)
 	if err != nil {
 		slog.Error("获取消息失败", "error", err)
-		return nil
+		return RGetMsg{}
 	}
-	return resp
+	return RGetMsg{
+		Group:       resp["group"].(bool),
+		GroupId:     resp["group_id"].(int64),
+		MessageId:   resp["message_id"].(int32),
+		RealId:      resp["real_id"].(int32),
+		MessageType: resp["message_type"].(string),
+		Sender:      resp["sender"].(RSender),
+		Time:        resp["time"].(int32),
+		Message:     resp["message"].(string),
+		RawMessage:  resp["raw_message"].(string),
+	}
 }

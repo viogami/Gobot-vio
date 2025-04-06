@@ -11,8 +11,8 @@ import (
 
 type redisRecord struct {
 	MessageId  int32 `json:"message_id"`
-	OperatorId int32 `json:"operator_id"`
-	UserId     int32 `json:"user_id"`
+	OperatorId int64 `json:"operator_id"`
+	UserId     int64 `json:"user_id"`
 }
 
 type cmdGetRecall struct {
@@ -47,12 +47,12 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
 		UserID:      params.UserId,
-		Message:     fmt.Sprintf("撤回的消息:%s", resp["message"]),
+		Message:     fmt.Sprintf("撤回的消息:%s", resp.Message),
 		AutoEscape:  false,
 	}
 	sender.SendMsg(msgParams)
 
-	reply := fmt.Sprintf("时间:%d,发送者:%d,撤回人:%d", resp["sender"].(map[string]any)["time"], userId, operatorId)
+	reply := fmt.Sprintf("时间:%d,发送者:%d,撤回人:%d", resp.Sender.Time, userId, operatorId)
 	msgParams = gocq.SendMsgParams{
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,

@@ -12,6 +12,7 @@ type RHttpResq struct {
 type RSender struct {
 	UserID   int64  `json:"user_id"`
 	Nickname string `json:"nickname"`
+	Time     int32  `json:"time"`
 	// Sex      string `json:"sex"`
 	// Age      int32  `json:"age"`
 }
