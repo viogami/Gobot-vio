@@ -34,18 +34,21 @@ var CommandMap = map[string]Command{
 	"/chat":   newCmdChat(),
 	"来份涩图":    newCmdSetu(),
 	"来份r18涩图": newCmdSetuR18(),
-	"打一枪听听":  newCmdHuntSound(),
+	"打一枪听听":   newCmdHuntSound(),
 	"禁言抽奖":    newCmdBanLottery(),
 	"撤回了什么":   newCmdGetRecall(),
 }
 
-// var OriginalCommandMap = map[string]Command{
-// 	"":       newCmdNull(),
-// 	"/help":  newCmdHelp(),
-// 	"/涩图":    newCmdSetu(),
-// 	"/涩图r18": newCmdSetuR18(),
-// 	"/chat":  newCmdChat(),
-// 	"/枪声":    newCmdHuntSound(),
-// 	"/禁言抽奖":  newCmdBanLottery(),
-// 	"/撤回了什么": newCmdGetRecall(),
-// }
+const (
+	COMMAND_TYPE_ALL     = "all"     // 所有类型
+	COMMAND_TYPE_GROUP   = "group"   // 群聊类型
+	COMMAND_TYPE_PRIVATE = "private" // 私聊类型
+	COMMAND_TYPE_ADMIN   = "admin"   // 管理员类型
+	COMMAND_TYPE_OWNER   = "owner"   // 群主类型
+)
+
+const (
+	COMMAND_INFO_COMMAND     = 0 // 指令名称
+	COMMAND_INFO_DESCRIPTION = 1 // 指令描述
+	COMMAND_INFO_CMD_TYPE    = 2 // 指令类型
+)

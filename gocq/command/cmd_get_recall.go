@@ -32,8 +32,8 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	}
 	// 获取消息 ID 和消息内容
 	messageId := int32(res["message_id"].(float64))
-	operatorId := res["operator_id"]
-	userId := res["user_id"]
+	operatorId := int32(res["operator_id"].(float64))
+	userId := int32(res["user_id"].(float64))
 
 	resp := sender.GetMsg(messageId)
 
@@ -41,7 +41,7 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
 		UserID:      params.UserId,
-		Message:     resp["message"].(string),
+		Message:     fmt.Sprintf("撤回的消息:%s", resp["message"]),
 		AutoEscape:  false,
 	}
 	sender.SendMsg(msgParams)
@@ -51,11 +51,11 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 		MessageType: params.MessageType,
 		GroupID:     params.GroupId,
 		UserID:      params.UserId,
-		Message:     resp["message"].(string),
+		Message:     reply,
 		AutoEscape:  false,
 	}
 	sender.SendMsg(msgParams)
-	slog.Info("执行指令:撤回了什么", "reply", reply)
+	slog.Info("执行指令:撤回了什么")
 }
 
 func (c *cmdGetRecall) GetInfo(index int) string {
@@ -74,6 +74,6 @@ func newCmdGetRecall() *cmdGetRecall {
 	return &cmdGetRecall{
 		Command:     "撤回了什么",
 		Description: "获取上一条撤回消息",
-		CmdType:     "group",
+		CmdType:     COMMAND_TYPE_GROUP,
 	}
 }

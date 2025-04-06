@@ -24,7 +24,7 @@ func (c *cmdChat) Execute(params CommandParams) {
 		Message:     reply,
 		AutoEscape:  false,
 	}
-	slog.Info("调用ai执行指令:/chat", "reply", reply)
+	slog.Info("调用ai执行指令:/chat")
 
 	sender.SendMsg(msgParams)
 }
@@ -45,6 +45,6 @@ func newCmdChat() *cmdChat {
 	return &cmdChat{
 		Command:     "/chat",
 		Description: "聊天指令",
-		CmdType:     "all",
+		CmdType:     COMMAND_TYPE_ALL,
 	}
 }

@@ -30,6 +30,6 @@ func newCmdNull() *cmdNull {
 	return &cmdNull{
 		Command:     "",
 		Description: "空指令",
-		CmdType:     "all",
+		CmdType:     COMMAND_TYPE_ALL,
 	}
 }

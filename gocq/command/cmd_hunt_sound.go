@@ -57,6 +57,6 @@ func newCmdHuntSound() *cmdHuntSound {
 	return &cmdHuntSound{
 		Command:     "打一枪听听",
 		Description: "随机猎杀对决枪声，固定5米",
-		CmdType:     "all",
+		CmdType:     COMMAND_TYPE_ALL,
 	}
 }

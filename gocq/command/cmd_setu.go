@@ -94,6 +94,6 @@ func newCmdSetu() *cmdSetu {
 	return &cmdSetu{
 		Command:     "来份涩图",
 		Description: "随机涩图,指令后可接tag,用逗号分隔",
-		CmdType:     "all",
+		CmdType:     COMMAND_TYPE_ALL,
 	}
 }

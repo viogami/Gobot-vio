@@ -51,12 +51,14 @@ func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp map[
 	// 等待响应
 	select {
 	case resp := <-responseChan:
+		slog.Info("收到api响应","echo", echoValue, "response", resp)
 		return resp, nil
 	case <-time.After(5 * time.Second): // 超时时间
 		Instance.ResponseMap.Delete(echoValue)
 		return nil, fmt.Errorf("等待响应超时")
 	}
 }
+
 func (s *GocqSender) SendMsg(params SendMsgParams) {
 	action := "send_msg"
 
@@ -74,6 +76,7 @@ func (s *GocqSender) SendMsg(params SendMsgParams) {
 		slog.Error("发送消息失败", "error", err)
 		return
 	}
+	slog.Info("发送消息成功", "message", params.Message, "userId", params.UserID, "groupId", params.GroupID)
 }
 
 func (s *GocqSender) SendGroupForwardMsg(params SendGroupForwardMsgParams) {
