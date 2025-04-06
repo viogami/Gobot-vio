@@ -12,5 +12,5 @@ type ENV_TG struct {
 	TG_WEBHOOK_URL string
 }
 type ENV_REDIS struct {
-	REDIS_URL string
+	REDISCLOUD_URL string
 }
