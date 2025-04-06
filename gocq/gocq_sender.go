@@ -1,6 +1,7 @@
 package gocq
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"sync"
@@ -115,20 +116,18 @@ func (s *GocqSender) GetMsg(msgid int32) RGetMsg {
 		"message_id": msgid,
 	}
 
+	rGetMsg := RGetMsg{}
+
 	resp, err := s.sendToGocq(action, params)
 	if err != nil {
 		slog.Error("获取消息失败", "error", err)
 		return RGetMsg{}
 	}
-	return RGetMsg{
-		Group:       resp["group"].(bool),
-		GroupId:     resp["group_id"].(int64),
-		MessageId:   resp["message_id"].(int32),
-		RealId:      resp["real_id"].(int32),
-		MessageType: resp["message_type"].(string),
-		Sender:      resp["sender"].(RSender),
-		Time:        resp["time"].(int32),
-		Message:     resp["message"].(string),
-		RawMessage:  resp["raw_message"].(string),
+
+	err = json.Unmarshal(resp["data"].([]byte), &rGetMsg)
+	if err != nil {
+		slog.Error("解析消息失败", "error", err)
+		return RGetMsg{}
 	}
+	return rGetMsg
 }
