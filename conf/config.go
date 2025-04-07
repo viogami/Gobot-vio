@@ -23,7 +23,7 @@ type AIconfig struct {
 }
 
 // 初始化配置
-func Init() {
+func init() {
 	// 读取配置文件
 	data, err := os.ReadFile("conf/config.yaml")
 	if err != nil {
