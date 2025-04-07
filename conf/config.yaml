@@ -1,0 +1,10 @@
+AdminPanel:
+  host: localhost
+  port: 4514
+  username: admin
+  password: admin123
+
+EnabledService:
+  admin_panel_enabled: false
+  redis_enabled: true
+  mongodb_enabled: false

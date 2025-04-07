@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	_ "github.com/viogami/Gobot-vio/conf"
 	"github.com/viogami/Gobot-vio/server"
 )
 

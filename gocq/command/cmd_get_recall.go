@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	config "github.com/viogami/Gobot-vio/conf"
 	"github.com/viogami/Gobot-vio/gocq"
 	"github.com/viogami/Gobot-vio/utils"
 )
@@ -70,6 +71,9 @@ func (c *cmdGetRecall) GetInfo(index int) string {
 }
 
 func newCmdGetRecall() *cmdGetRecall {
+	if config.AppConfig.EnabledService.RedisEnabled == false {
+		return nil
+	}
 	return &cmdGetRecall{
 		Command:     "撤回了什么",
 		Description: "获取上一条撤回消息",
