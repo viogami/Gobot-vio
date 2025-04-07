@@ -71,7 +71,7 @@ func (c *cmdGetRecall) GetInfo(index int) string {
 }
 
 func newCmdGetRecall() *cmdGetRecall {
-	if config.AppConfig.EnabledService.RedisEnabled == false {
+	if config.AppConfig.Services.RedisEnabled == false {
 		return nil
 	}
 	return &cmdGetRecall{

@@ -10,21 +10,16 @@ import (
 var AppConfig Config
 
 type Config struct {
-	EnabledService
-	AdminPanel
+	Services Services `yaml:"Services"`
+	AIConfig AIconfig `yaml:"AIconfig"`
 }
 
-type EnabledService struct {
-	AdminPanelEnabled bool `yaml:"admin_panel_enabled"`
-	RedisEnabled      bool `yaml:"redis_enabled"`
-	MongoDBEnabled    bool `yaml:"mongodb_enabled"`
+type Services struct {
+	RedisEnabled bool `yaml:"redis_enabled"`
 }
 
-type AdminPanel struct {
-	AdminPanelHost string `yaml:"host"`
-	AdminPanelPort string `yaml:"port"`
-	AdminPanelUser string `yaml:"username"`
-	AdminPanelPass string `yaml:"password"`
+type AIconfig struct {
+	MaxMemorySize int `yaml:"max_memory_size"`
 }
 
 // 初始化配置

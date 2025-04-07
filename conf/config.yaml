@@ -1,10 +1,5 @@
-AdminPanel:
-  host: localhost
-  port: 4514
-  username: admin
-  password: admin123
+Services:
+  - redis_enabled: true
 
-EnabledService:
-  admin_panel_enabled: false
-  redis_enabled: true
-  mongodb_enabled: false
+AIconfig:
+  - max_memory_size: 4096
