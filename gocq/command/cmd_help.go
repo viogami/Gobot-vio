@@ -49,7 +49,7 @@ func (c *cmdHelp) privateReply() string {
 	reply := "指令列表:\n"
 	for _, v := range CommandList[1:] {
 		if v.GetInfo(2) == "private" || v.GetInfo(2) == "all" {
-			reply += v.GetInfo(0) + ":" + v.GetInfo(1) + "\n"
+			reply += "[" + v.GetInfo(0) + "]:" + v.GetInfo(1) + "\n"
 		}
 	}
 	return reply
@@ -59,7 +59,7 @@ func (c *cmdHelp) groupReply() string {
 	reply := "指令列表:\n"
 	for _, v := range CommandList[1:] {
 		if v.GetInfo(2) == "group" || v.GetInfo(2) == "all" {
-			reply += v.GetInfo(0) + ":" + v.GetInfo(1) + "\n"
+			reply +="[" + v.GetInfo(0) + "]:" + v.GetInfo(1) + "\n"
 		}
 	}
 	return reply
