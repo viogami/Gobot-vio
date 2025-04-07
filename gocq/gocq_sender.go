@@ -10,16 +10,11 @@ import (
 	"github.com/viogami/Gobot-vio/gocq/cqCode"
 )
 
+var maxWaitingTime = 10 * time.Second // 响应超时时间
+
 type GocqSender struct {
 	writeMutex sync.Mutex // 添加互斥锁，ws无并发安全
 	conn       *websocket.Conn
-}
-
-func NewGocqSender(conn *websocket.Conn) *GocqSender {
-	return &GocqSender{
-		writeMutex: sync.Mutex{}, // 初始化互斥锁
-		conn:       conn,
-	}
 }
 
 func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp RHttpResq, err error) {
@@ -57,7 +52,7 @@ func (s *GocqSender) sendToGocq(action string, params map[string]any) (resp RHtt
 		}
 		slog.Info("收到api响应", "response", resp)
 		return resp, nil
-	case <-time.After(5 * time.Second): // 超时时间
+	case <-time.After(maxWaitingTime): // 超时时间
 		Instance.ResponseMap.Delete(echoValue)
 		return RHttpResq{}, fmt.Errorf("等待响应超时")
 	}
@@ -126,4 +121,11 @@ func (s *GocqSender) GetMsg(msgid int32) map[string]any {
 	}
 
 	return resp.Data
+}
+
+func NewGocqSender(conn *websocket.Conn) *GocqSender {
+	return &GocqSender{
+		writeMutex: sync.Mutex{}, // 初始化互斥锁
+		conn:       conn,
+	}
 }

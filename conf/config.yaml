@@ -1,0 +1,5 @@
+Services:
+  - redis_enabled: true
+
+AIconfig:
+  - max_memory_size: 4096

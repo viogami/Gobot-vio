@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	config "github.com/viogami/Gobot-vio/conf"
 	"github.com/viogami/Gobot-vio/gocq"
 	"github.com/viogami/Gobot-vio/utils"
 )
@@ -25,11 +26,21 @@ type cmdGetRecall struct {
 func (c *cmdGetRecall) Execute(params CommandParams) {
 	client := gocq.Instance.RedisClient
 	sender := gocq.Instance.Sender
+	msgParams := gocq.SendMsgParams{
+		MessageType: params.MessageType,
+		GroupID:     params.GroupId,
+		UserID:      params.UserId,
+		Message:     "",
+		AutoEscape:  false,
+	}
+
 	// 从 Redis 中获取上一次撤回的消息 ID
 	key := fmt.Sprintf("%d", params.GroupId)
 	record, err := client.RPop(context.Background(), key).Result()
 	if err != nil {
-		slog.Error("获取上一次撤回的消息 ID 失败", "error", err)
+		slog.Warn("获取上一次撤回的消息 ID 失败", "error", err)
+		msgParams.Message = "找不到撤回的消息!可能已经过期了~"
+		sender.SendMsg(msgParams)
 		return
 	}
 	redisData := new(redisRecord)
@@ -45,14 +56,7 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	resp := sender.GetMsg(messageId)
 	time := utils.Time2Str(resp["time"])
 
-	reply := fmt.Sprintf("撤回时间:%s\n发送者:%s\n撤回者:%s\n消息内容:%s", time, userId, operatorId, resp["message"])
-	msgParams := gocq.SendMsgParams{
-		MessageType: params.MessageType,
-		GroupID:     params.GroupId,
-		UserID:      params.UserId,
-		Message:     reply,
-		AutoEscape:  false,
-	}
+	msgParams.Message = fmt.Sprintf("撤回时间:%s\n发送者:%s\n撤回者:%s\n消息内容:%s", time, userId, operatorId, resp["message"])
 	sender.SendMsg(msgParams)
 	slog.Info("执行指令:撤回了什么")
 }
@@ -70,6 +74,9 @@ func (c *cmdGetRecall) GetInfo(index int) string {
 }
 
 func newCmdGetRecall() *cmdGetRecall {
+	if config.AppConfig.Services.RedisEnabled == false {
+		return nil
+	}
 	return &cmdGetRecall{
 		Command:     "撤回了什么",
 		Description: "获取上一条撤回消息",

@@ -9,7 +9,7 @@ golang编写的机器人业务后端，bot取名为 **Vio** ，qq机器人的实
 
 可以完成基于chatgpt聊天任务，以及一些简单的指令响应。
 
-**目前正在重构，并且开发后台管理界面！除了聊天,VioGo的目标是可以在后台分析聊天数据的奇妙bot！**
+**目前正在重构，并且开发更多后台命令！除了聊天,VioGo的目标是可以在后台分析聊天数据的奇妙bot！**
 
 **如果你有想法和意见请提issue！这对我和bot都很重要！**
 **欢迎qq加群讨论：340961300**
@@ -22,7 +22,7 @@ golang编写的机器人业务后端，bot取名为 **Vio** ，qq机器人的实
   - [X] 发送已撤回的消息
   - [X] 禁言抽奖
 
-- 天然支持http请求，使用go原生net包，创建了`/post`请求的路由，可以解析post内容转发调用chatgpt。
+- 天然支持http请求，使用go原生net包，创建了 `/post`请求的路由，可以解析post内容转发调用chatgpt。
 - 配合[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)使用，用于实现qqbot,基于上报事件，调用gocq提供的api进行回复。注意参考[gocq官方文档](https://docs.go-cqhttp.org/reference/#websocket)。可以调用api发送图片，随机图片api[参考](https://api.lolicon.app/setu/v2)
 
 ## 快速开始
@@ -37,7 +37,7 @@ golang编写的机器人业务后端，bot取名为 **Vio** ，qq机器人的实
 
 可fork本仓库，用git连接到指定paas平台部署，注意配置环境变量即可。
 
-环境变量参考`config/env.go`文件
+环境变量参考 `config/env.go`文件
 
 ### 部署到本地
 
