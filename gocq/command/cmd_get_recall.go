@@ -55,6 +55,11 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 
 	resp := sender.GetMsg(messageId)
 	time := utils.Time2Str(resp["time"])
+	if resp["message"] == nil {
+		msgParams.Message = "没有收到撤回的消息~"
+		sender.SendMsg(msgParams)
+		return
+	}
 
 	msgParams.Message = fmt.Sprintf("撤回时间:%s\n发送者:%s\n撤回者:%s\n消息内容:%s", time, userId, operatorId, resp["message"])
 	sender.SendMsg(msgParams)

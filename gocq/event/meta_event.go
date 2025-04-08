@@ -3,22 +3,29 @@ package event
 import (
 	"encoding/json"
 	"log/slog"
+	"time"
 )
 
 type MetaEvent struct {
 	Event
 
-	MetaEventType string `json:"meta_event_type"`
+	MetaEventType     string `json:"meta_event_type"`
+	lastHeartbeatTime time.Time // 上次心跳时间
 }
 
-var heartCount int = 0
-
 func (m *MetaEvent) LogInfo() {
-	heartCount++
-	if heartCount == 50 {
-		slog.Info("MetaEvent", "meta_event_type", m.MetaEventType, "heartCount", heartCount)
-		heartCount = 0
+	if m.MetaEventType == "heartbeat" {
+		// 获取当前时间
+		now := time.Now()
+
+		// 检查是否超过 10 秒没有心跳
+		if now.Sub(m.lastHeartbeatTime) > 10*time.Second {
+			slog.Warn("超过10秒没有收到心跳事件", "last_heartbeat_time", m.lastHeartbeatTime)
+		}
+		return
 	}
+	// 其他元事件类型
+	slog.Info("MetaEvent", "meta_event_type", m.MetaEventType)
 }
 
 func (m *MetaEvent) Handle() {
@@ -27,6 +34,7 @@ func (m *MetaEvent) Handle() {
 	switch metaEventType {
 	case "heartbeat":
 		// 心跳事件
+		m.lastHeartbeatTime = time.Now()
 	case "lifecycle":
 		// 生命周期事件
 	default:
