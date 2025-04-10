@@ -4,7 +4,7 @@
 ![Go Reference](https://pkg.go.dev/badge/github.com/go-telegram-bot-api/telegram-bot-api/v5.svg)
 ![viogo文档](https://img.shields.io/badge/version-1.0-violet)
 
-<img src="./docs/logo.png" width="50" height="50" alt="logo">
+<p align="center"><img src="./docs/logo.png" width="120" height="120" alt="logo"></p>
 
 <p align="center"><a href="https://viogami.github.io/VioGo/">中文文档</a> • <a href="#快速开始">快速开始</a> </p>
 
