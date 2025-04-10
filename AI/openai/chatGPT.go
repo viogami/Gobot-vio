@@ -10,7 +10,7 @@ import (
 
 type ChatGPTService struct {
 	APIKey           string
-	URL_proxy        string
+	URL_PROXY        string
 	Role             string
 	Character        string
 	characterSetting string
@@ -21,13 +21,13 @@ type ChatGPTService struct {
 func NewChatGPTService() *ChatGPTService {
 	s := new(ChatGPTService)
 	s.APIKey = os.Getenv("ChatGPTAPIKey")
-	s.URL_proxy = os.Getenv("ChatGPTURL_proxy")
+	s.URL_PROXY = os.Getenv("ChatGPTURL_PROXY")
 	s.Role = openai.ChatMessageRoleUser
 	s.Character = "vio"
-	s.characterSetting = GPTpreset[s.Character]
+	s.characterSetting = gpt_preset[s.Character]
 
 	conf := openai.DefaultConfig(s.APIKey)
-	conf.BaseURL = s.URL_proxy
+	conf.BaseURL = s.URL_PROXY
 
 	s.client = openai.NewClientWithConfig(conf)
 
@@ -36,14 +36,14 @@ func NewChatGPTService() *ChatGPTService {
 
 func (s *ChatGPTService) SetCharacter(character string) {
 	s.Character = character
-	s.characterSetting = GPTpreset[character]
+	s.characterSetting = gpt_preset[character]
 }
 
 func (s *ChatGPTService) InvokeChatGPTAPI(text string) string {
 	resp, err := s.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model: openai.GPT4o,
+			Model: openai.GPT4o20241120,
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleSystem,
@@ -58,7 +58,7 @@ func (s *ChatGPTService) InvokeChatGPTAPI(text string) string {
 	)
 	if err != nil {
 		slog.Error("Error calling ChatGPT API", "error", err)
-		Resp := "gpt调用失败了😥 error:\n" + err.Error()
+		Resp := "AI调用失败了😥 error:\n" + err.Error()
 		return Resp
 	}
 	return resp.Choices[0].Message.Content
