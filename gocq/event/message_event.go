@@ -2,6 +2,7 @@ package event
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 
 	"github.com/viogami/viogo/gocq/command"
@@ -45,6 +46,9 @@ func (m *MessageEvent) LogInfo() {
 }
 
 func (m *MessageEvent) Handle() {
+	key := fmt.Sprintf("message_%d", m.UserID)
+	pushToRedis(key, m.Message, 1) // 将消息推送到redis
+
 	cqmsg := cqCode.ParseCQmsg(m.Message)
 	f := m.parseCommand(cqmsg)
 	if f == nil {

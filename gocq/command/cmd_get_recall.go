@@ -35,7 +35,7 @@ func (c *cmdGetRecall) Execute(params CommandParams) {
 	}
 
 	// 从 Redis 中获取上一次撤回的消息 ID
-	key := fmt.Sprintf("%d", params.GroupId)
+	key := fmt.Sprintf("group_recall_%d", params.GroupId)
 	record, err := client.RPop(context.Background(), key).Result()
 	if err != nil {
 		slog.Warn("获取上一次撤回的消息 ID 失败", "error", err)
