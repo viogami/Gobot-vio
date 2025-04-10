@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	redis "github.com/redis/go-redis/v9"
-	"github.com/viogami/Gobot-vio/gocq"
+	"github.com/viogami/viogo/gocq"
 )
 
 type Server struct {
@@ -15,6 +15,8 @@ type Server struct {
 }
 
 func (s *Server) Run() {
+	s.gocq = gocq.NewGocqServer(s.redis)
+
 	// /post 处理ai请求的路由
 	http.HandleFunc("/post", gptMsgHandle)
 	// 处理WebSocket请求的路由
@@ -28,7 +30,7 @@ func (s *Server) Run() {
 	}
 }
 
-func NewServer(port string, redisURL string) *Server {
+func (s *Server) WithRedis(redisURL string) {
 	if redisURL == "" {
 		slog.Error("REDIS_URL environment variable not set")
 	}
@@ -37,10 +39,13 @@ func NewServer(port string, redisURL string) *Server {
 	if err != nil {
 		slog.Error("Failed to parse Redis URL:", "err", err)
 	}
+	s.redis = redis.NewClient(opt)
+}
 
+func NewServer(port string) *Server {
 	return &Server{
-		Port:  port,
-		redis: redis.NewClient(opt),
-		gocq:  gocq.NewGocqServer(redis.NewClient(opt)),
+		Port: port,
+		redis: new(redis.Client),
+		gocq:  new(gocq.GocqServer),
 	}
 }

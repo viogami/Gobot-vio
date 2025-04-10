@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/viogami/Gobot-vio/gocq"
-	"github.com/viogami/Gobot-vio/gocq/cqCode"
-	"github.com/viogami/Gobot-vio/utils"
+	"github.com/viogami/viogo/gocq"
+	"github.com/viogami/viogo/gocq/cqCode"
+	"github.com/viogami/viogo/utils"
 )
 
 type cmdSetu struct {

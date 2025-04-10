@@ -1,4 +1,4 @@
-module github.com/viogami/Gobot-vio
+module github.com/viogami/viogo
 
 go 1.21.4
 

@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/viogami/Gobot-vio/AI"
-	"github.com/viogami/Gobot-vio/gocq"
-	"github.com/viogami/Gobot-vio/gocq/event"
+	"github.com/viogami/viogo/AI"
+	"github.com/viogami/viogo/gocq"
+	"github.com/viogami/viogo/gocq/event"
 )
 
 // gptMsgHandle 处理POST请求

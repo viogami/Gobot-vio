@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"log/slog"
 
-	"github.com/viogami/Gobot-vio/gocq/command"
-	"github.com/viogami/Gobot-vio/gocq/cqCode"
-	"github.com/viogami/Gobot-vio/utils"
+	"github.com/viogami/viogo/gocq/command"
+	"github.com/viogami/viogo/gocq/cqCode"
+	"github.com/viogami/viogo/utils"
 )
 
 type MessageEvent struct {

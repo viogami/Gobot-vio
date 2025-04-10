@@ -25,7 +25,7 @@ type AIconfig struct {
 // 初始化配置
 func init() {
 	// 读取配置文件
-	data, err := os.ReadFile("conf/config.yaml")
+	data, err := os.ReadFile("./config.yaml")
 	if err != nil {
 		slog.Error("读取配置文件失败", "error", err)
 	}

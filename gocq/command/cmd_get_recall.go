@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log/slog"
 
-	config "github.com/viogami/Gobot-vio/conf"
-	"github.com/viogami/Gobot-vio/gocq"
-	"github.com/viogami/Gobot-vio/utils"
+	config "github.com/viogami/viogo/conf"
+	"github.com/viogami/viogo/gocq"
+	"github.com/viogami/viogo/utils"
 )
 
 type redisRecord struct {

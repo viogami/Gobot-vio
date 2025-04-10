@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"math/big"
 
-	"github.com/viogami/Gobot-vio/gocq"
+	"github.com/viogami/viogo/gocq"
 )
 
 var maxDuration = 600 // 最大禁言时间

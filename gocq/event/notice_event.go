@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/viogami/Gobot-vio/gocq"
+	"github.com/viogami/viogo/gocq"
 )
 
 var POST_NOTICE_TYPE2STR = map[string]string{

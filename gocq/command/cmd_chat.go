@@ -3,8 +3,8 @@ package command
 import (
 	"log/slog"
 
-	"github.com/viogami/Gobot-vio/AI"
-	"github.com/viogami/Gobot-vio/gocq"
+	"github.com/viogami/viogo/AI"
+	"github.com/viogami/viogo/gocq"
 )
 
 type cmdChat struct {
